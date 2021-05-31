@@ -21,6 +21,11 @@ export const refstorage = {
     refstorage.init(key)
     return storeItemSubscribers[key]
   },
+  getSetting: (setting) => {
+    refstorage.init(setting.key, setting.default)
+
+    return storeItemSubscribers[setting.key].value
+  },
   get: (key, Default) => {
     refstorage.init(key, Default)
 

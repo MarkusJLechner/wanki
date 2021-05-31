@@ -19,13 +19,22 @@
       focus:outline-none
       focus:ring-2 focus:ring-blue-500
     "
+    @click="onClick"
   >
     <slot />
   </button>
 </template>
 
 <script>
+import { vibrate } from '../plugins/global.js'
+
 export default {
   props: {},
+
+  methods: {
+    onClick() {
+      vibrate()
+    },
+  },
 }
 </script>

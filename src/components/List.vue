@@ -76,6 +76,7 @@
 import router from '../router'
 import { refstorage } from '../store/globalstate.js'
 import { defineAsyncComponent } from 'vue'
+import { vibrate } from '../plugins/global.js'
 
 const ModalRadio = defineAsyncComponent(() => import('./ModalRadio.vue'))
 const InputBoolean = defineAsyncComponent(() => import('./InputBoolean.vue'))
@@ -157,19 +158,10 @@ export default {
     onClick(item) {
       this.$emit('item', item)
 
+      vibrate()
+
       if (item.radio) {
         this.radio = item.radio
-        /*
-        * radio: {
-            title: 'Deck for new cards',
-            key: 'setting/general/use-card',
-            default: 'current-deck',
-            items: [
-              { text: 'Use current deck', value: 'current-deck' },
-              { text: 'Decide by note type', value: 'note-type' },
-            ],
-          }
-        * */
       }
 
       if (item.toggle) {
