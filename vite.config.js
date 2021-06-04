@@ -17,4 +17,8 @@ export default defineConfig({
   },
 
   plugins: [vue()],
+
+  build: {
+    target: ['chrome87', 'edge88', 'es2019'],
+  },
 })
