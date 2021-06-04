@@ -40,6 +40,8 @@ export const refstorage = {
     storeItemSubscribers[key].value = value
   },
   toggle: (key) => {
+    vibrate()
+
     refstorage.init(key, false)
 
     storeItemSubscribers[key].value = !storeItemSubscribers[key].value
