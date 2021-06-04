@@ -84,7 +84,7 @@ export default {
       this.currentState = this.state.init
 
       try {
-        const [fileHandle] = await window.showOpenFilePicker()
+        const [fileHandle] = await showOpenFilePicker()
 
         this.currentState = this.state.loading
 
