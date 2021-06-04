@@ -8,6 +8,10 @@
     <span v-if="!isLoaded" @click="onInitImport">
       {{ getStateText }}
     </span>
+    <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
+      ERROR: {{ error }}
+    </div>
+
     <ul v-else>
       <li v-for="(file, index) in files" :key="index">{{ file.filename }}</li>
     </ul>
@@ -30,6 +34,7 @@ export default {
 
   data() {
     return {
+      error: null,
       state: {
         init: 'init',
         loading: 'loading',
@@ -50,7 +55,7 @@ export default {
     getStateText() {
       switch (this.currentState) {
       case this.state.init:
-        return 'Select .apkg file'
+        return 'Selecting .apkg file...'
       case this.state.loaded:
         return 'Loaded file'
       case this.state.loading:
@@ -74,6 +79,7 @@ export default {
     },
 
     async onInitImport() {
+      this.error = null
       this.files = []
       this.currentState = this.state.init
 
@@ -110,6 +116,7 @@ export default {
       } catch (e) {
         this.currentState = this.state.error
         console.error(e)
+        this.error = e.message
       }
     },
 

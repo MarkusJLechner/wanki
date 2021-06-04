@@ -67,7 +67,7 @@ const routes = [
   {
     path: '/setting/general',
     name: 'GeneralSettings',
-    component: () => GeneralSettings,
+    component: GeneralSettings,
     // component: () => import('pages/Settings/GeneralSettings.vue'),
   },
   {
