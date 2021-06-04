@@ -74,8 +74,8 @@
 </template>
 
 <script>
-import router from '../router'
-import { refstorage } from '../store/globalstate.js'
+import router from 'router'
+import { refstorage } from 'store/globalstate.js'
 import { defineAsyncComponent } from 'vue'
 
 const ModalRadio = defineAsyncComponent(() => import('./ModalRadio.vue'))

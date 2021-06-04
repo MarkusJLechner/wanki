@@ -25,9 +25,9 @@
 
 <script>
 import Sidepanel from './Sidepanel.vue'
-import { refstorage } from '../store/globalstate'
+import { refstorage } from 'store/globalstate'
 import ButtonIcon from './ButtonIcon.vue'
-import router from '../router'
+import router from 'router'
 
 export default {
   components: { ButtonIcon, Sidepanel },

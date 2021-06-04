@@ -1,7 +1,7 @@
 <template>
   <transition name="fade" appear>
     <div
-      v-if="show"
+      v-if="modelValue"
       class="fixed z-10 inset-0 bg-black bg-opacity-60 transition-opacity"
       aria-hidden="true"
       @click.stop="close"
@@ -9,7 +9,7 @@
   </transition>
   <transition name="slide-open" appear>
     <div
-      v-if="show"
+      v-if="modelValue"
       class="fixed z-20 inset-0 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
@@ -28,7 +28,7 @@
         "
       >
         <div
-          v-if="show"
+          v-if="modelValue"
           class="fixed z-10 inset-0 transition-opacity"
           aria-hidden="true"
           @click.stop="close"
@@ -58,10 +58,18 @@
             p-1
             min-w-[20rem]
             transition-all
+            max-h-[85vh]
+            relative
+            flex flex-col
           "
         >
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
-          <div class="" @click.stop.prevent>
+          <div
+            style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
+            class="overflow-y-scroll flex-grow"
+            :class="{ 'p-4': !noGutters }"
+            @click.stop.prevent
+          >
             <slot />
           </div>
           <div class="flex justify-end">
@@ -88,9 +96,14 @@ export default {
       type: String,
       default: '',
     },
+
+    noGutters: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  emits: ['close', 'update:modelValue'],
+  emits: ['close', 'update:modelValue', 'visible'],
 
   data() {
     return {
@@ -101,6 +114,7 @@ export default {
   watch: {
     modelValue(newValue) {
       this.show = newValue
+      this.$emit('visible', newValue)
     },
   },
 
@@ -119,36 +133,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.slide-open {
-  position: fixed;
-  top: 0;
-  transform: translate(0, 0) rotateX(0deg);
-}
-
-.slide-open-enter-active,
-.slide-open-leave-active {
-  transition: 0.2s;
-}
-
-.slide-open-enter-from {
-  opacity: 0;
-  transform: translate(0, -100px) perspective(700px) rotateX(45deg);
-}
-
-.slide-open-leave-to {
-  opacity: 0;
-  transform: translate(0, 10px);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

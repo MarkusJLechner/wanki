@@ -4,7 +4,7 @@
 
 <script>
 import ButtonIcon from './ButtonIcon.vue'
-import { refstorage } from '../store/globalstate'
+import { refstorage } from 'store/globalstate'
 import { watch } from 'vue'
 
 export default {
