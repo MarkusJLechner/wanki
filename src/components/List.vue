@@ -76,7 +76,6 @@
 import router from '../router'
 import { refstorage } from '../store/globalstate.js'
 import { defineAsyncComponent } from 'vue'
-import { vibrate } from '../plugins/global.js'
 
 const ModalRadio = defineAsyncComponent(() => import('./ModalRadio.vue'))
 const InputBoolean = defineAsyncComponent(() => import('./InputBoolean.vue'))
@@ -157,8 +156,6 @@ export default {
 
     onClick(item) {
       this.$emit('item', item)
-
-      vibrate()
 
       if (item.radio) {
         this.radio = item.radio

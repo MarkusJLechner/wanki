@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import { vibrate } from '../plugins/global.js'
 
 const storeItemSubscribers = {}
 
@@ -32,6 +33,8 @@ export const refstorage = {
     return storeItemSubscribers[key].value
   },
   set: (key, value) => {
+    vibrate()
+
     refstorage.init(key, value)
 
     storeItemSubscribers[key].value = value
