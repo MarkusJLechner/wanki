@@ -21,6 +21,7 @@
 <script>
 import BaseModal from './BaseModal.vue'
 import * as zip from '../plugins/zip/zip.min.js'
+import { promptFile } from '@/plugins/global.js'
 
 export default {
   components: { BaseModal },
@@ -84,11 +85,9 @@ export default {
       this.currentState = this.state.init
 
       try {
-        const [fileHandle] = await showOpenFilePicker()
-
         this.currentState = this.state.loading
 
-        const file = await fileHandle.getFile()
+        const file = await promptFile('.apkg')
 
         const zip = window.zip
         zip.configure({

@@ -6,3 +6,22 @@ export const vibrate = (pattern = 30) => {
     navigator.vibrate(pattern)
   }
 }
+
+export function promptFile(accept, multiple = false) {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.multiple = multiple
+  input.accept = accept
+  return new Promise(function (resolve) {
+    document.activeElement.onfocus = function () {
+      document.activeElement.onfocus = null
+      setTimeout(resolve, 500)
+    }
+    input.onchange = function () {
+      const files = Array.from(input.files)
+      if (multiple) return resolve(files)
+      resolve(files[0])
+    }
+    input.click()
+  })
+}
