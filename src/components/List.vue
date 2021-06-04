@@ -1,5 +1,5 @@
 <template>
-  <ul class="w-full text-lg" :class="{ 'py-2': !noGutters }">
+  <ul class="w-full flex flex-col text-lg" :class="{ 'py-2': !noGutters }">
     <li
       v-for="(item, index) in value"
       :key="index"
@@ -10,8 +10,7 @@
         flex
         w-full
         items-center
-        py-4
-        px-4
+        text-left
         mt-0
         mb-0
         min-h-[3rem]
@@ -21,6 +20,8 @@
         seperator: item.type === 'seperator',
         [item.class]: item.class,
         'my-2': getSubText(item),
+        'py-3 px-4': dense,
+        'py-4 px-4': !dense,
       }"
       @click="onClick(item)"
     >
@@ -93,6 +94,11 @@ export default {
     },
 
     noGutters: {
+      type: Boolean,
+      default: false,
+    },
+
+    dense: {
       type: Boolean,
       default: false,
     },

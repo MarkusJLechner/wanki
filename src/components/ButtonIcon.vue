@@ -1,6 +1,7 @@
 <template>
-  <button class="w-12 h-12 dark:text-white">
+  <button class="w-12 h-12 dark:text-white relative">
     <i :class="icon"></i>
+    <slot name="content" />
   </button>
 </template>
 
