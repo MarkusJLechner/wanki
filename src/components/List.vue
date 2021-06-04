@@ -4,6 +4,7 @@
       v-for="(item, index) in value"
       :key="index"
       class="
+        cursor-pointer
         relative
         focus:outline-none
         focus:ring-2 focus:ring-blue-500

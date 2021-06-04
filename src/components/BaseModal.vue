@@ -18,9 +18,9 @@
       <div
         class="
           flex
+          h-full
           items-center
           justify-center
-          min-h-screen
           pt-4
           px-4
           pb-20
@@ -66,7 +66,7 @@
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
-            class="overflow-y-scroll flex-grow"
+            class="overflow-y-auto flex-grow"
             :class="{ 'p-4': !noGutters }"
             @click.stop.prevent
           >
