@@ -1,9 +1,11 @@
 <template>
-  <TheHeader title="Error">
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
-  <h1>Error</h1>
+  <div>
+    <TheHeader title="Error">
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
+    <h1>Error</h1>
+  </div>
 </template>
 
 <script>

@@ -1,10 +1,12 @@
 <template>
-  <TheHeader title="Support Wanki">
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
+  <div>
+    <TheHeader title="Support Wanki">
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
 
-  <List :value="listItems" />
+    <List :value="listItems" />
+  </div>
 </template>
 
 <script>

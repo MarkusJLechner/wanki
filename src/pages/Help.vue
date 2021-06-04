@@ -1,10 +1,12 @@
 <template>
-  <TheHeader title="Help">
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
+  <div>
+    <TheHeader title="Help">
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
 
-  <List :value="listItems" />
+    <List :value="listItems" />
+  </div>
 </template>
 
 <script>

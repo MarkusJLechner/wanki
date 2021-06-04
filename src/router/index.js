@@ -58,38 +58,38 @@ const routes = [
   },
 
   {
-    path: '/settings',
+    path: '/settings/overview',
     name: 'Settings',
     component: Settings,
     // component: () => import('pages/Settings.vue'),
   },
 
   {
-    path: '/setting/general',
+    path: '/setting/wanki/general',
     name: 'GeneralSettings',
     component: GeneralSettings,
     // component: () => import('pages/Settings/GeneralSettings.vue'),
   },
   {
-    path: '/setting/advanced',
+    path: '/setting/wanki/advanced',
     name: 'Advanced',
     component: Advanced,
     // component: () => import('pages/Settings/Advanced.vue'),
   },
   {
-    path: '/setting/appearance',
+    path: '/setting/wanki/appearance',
     name: 'Appearance',
     component: Appearance,
     // component: () => import('pages/Settings/Appearance.vue'),
   },
   {
-    path: '/setting/gestures',
+    path: '/setting/wanki/gestures',
     name: 'Gestures',
     component: Gestures,
     // component: () => import('pages/Settings/Gestures.vue'),
   },
   {
-    path: '/setting/reviewing',
+    path: '/setting/wanki/reviewing',
     name: 'Reviewing',
     component: Reviewing,
     // component: () => import('pages/Settings/Reviewing.vue'),

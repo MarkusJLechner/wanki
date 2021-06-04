@@ -1,9 +1,11 @@
 <template>
-  <TheHeader title="Statistics">
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
-  <h1>Statistics</h1>
+  <div>
+    <TheHeader title="Statistics">
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
+    <h1>Statistics</h1>
+  </div>
 </template>
 
 <script>

@@ -1,12 +1,14 @@
 <template>
-  <TheHeader title="Settings" back-button>
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
+  <div>
+    <TheHeader title="Settings" back-button>
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
 
-  <MainContent>
-    <List :value="listItems" />
-  </MainContent>
+    <MainContent>
+      <List :value="listItems" />
+    </MainContent>
+  </div>
 </template>
 
 <script>
@@ -25,27 +27,27 @@ export default {
         {
           text: 'General settings',
           subtext: 'Various settings',
-          route: '/setting/general',
+          route: '/setting/wanki/general',
         },
         {
           text: 'Reviewing',
           subtext: 'Non-deck-specific reviewer settings',
-          route: '/setting/reviewing',
+          route: '/setting/wanki/reviewing',
         },
         {
           text: 'Appearance',
           subtext: 'Change themes and default font',
-          route: '/setting/appearance',
+          route: '/setting/wanki/appearance',
         },
         {
           text: 'Gestures',
           subtext: 'Use taps and swipes instead of buttons',
-          route: '/setting/gestures',
+          route: '/setting/wanki/gestures',
         },
         {
           text: 'Advanced',
           subtext: 'Optimization and experimental features',
-          route: '/setting/advanced',
+          route: '/setting/wanki/advanced',
         },
       ],
     }

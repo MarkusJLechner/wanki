@@ -1,9 +1,11 @@
 <template>
-  <TheHeader title="Review">
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
-  <h1>Review</h1>
+  <div>
+    <TheHeader title="Review">
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
+    <h1>Review</h1>
+  </div>
 </template>
 
 <script>

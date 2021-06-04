@@ -63,7 +63,7 @@ export default {
             refstorage.get('darkTheme', false) ? 'fas fa-sun' : 'fas fa-moon',
           text: 'Dark mode',
         },
-        { icon: 'fas fa-cog', text: 'Settings', route: 'settings' },
+        { icon: 'fas fa-cog', text: 'Settings', route: '/settings/overview' },
         { icon: 'fas fa-question-circle', text: 'Help', route: 'help' },
         { icon: 'fas fa-life-ring', text: 'Support Wanki', route: 'support' },
       ],
