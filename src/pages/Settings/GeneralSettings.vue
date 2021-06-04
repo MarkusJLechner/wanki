@@ -91,7 +91,7 @@ export default {
             items: [
               { text: 'English', value: 'english' },
               { text: 'Deutsch', value: 'german' },
-              { text: '日本', value: 'japanese' },
+              { text: '日本語', value: 'japanese' },
             ],
           },
         },

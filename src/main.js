@@ -8,3 +8,9 @@ app.config.devtools = true
 app.use(router)
 app.use(store)
 app.mount('#app')
+
+if (!import.meta.hot) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+  }
+}
