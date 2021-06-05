@@ -14,7 +14,8 @@
         <div
           v-if="menu"
           class="
-            bg-gray-700
+            dark:bg-gray-700
+            bg-gray-200
             z-200
             rounded-md
             shadow-xl
@@ -33,8 +34,11 @@
 </template>
 
 <script>
-import ButtonIcon from './ButtonIcon.vue'
-import List from './List.vue'
+import ButtonIcon from 'components/ButtonIcon.vue'
+import { defineAsyncComponent } from 'vue'
+
+const List = defineAsyncComponent(() => import('components/List.vue'))
+
 export default {
   components: { ButtonIcon, List },
 
@@ -44,6 +48,8 @@ export default {
       default: () => [],
     },
   },
+
+  emits: ['item'],
 
   data() {
     return {

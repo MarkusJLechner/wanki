@@ -79,8 +79,12 @@ import router from 'router'
 import { refstorage } from 'store/globalstate.js'
 import { defineAsyncComponent } from 'vue'
 
-const ModalRadio = defineAsyncComponent(() => import('./ModalRadio.vue'))
-const InputBoolean = defineAsyncComponent(() => import('./InputBoolean.vue'))
+const ModalRadio = defineAsyncComponent(() =>
+  import('components/ModalRadio.vue'),
+)
+const InputBoolean = defineAsyncComponent(() =>
+  import('components/InputBoolean.vue'),
+)
 
 export default {
   components: {

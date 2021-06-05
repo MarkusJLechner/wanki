@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import BaseModal from './BaseModal.vue'
-import * as zip from '../plugins/zip/zip.min.js'
-import { promptFile } from '@/plugins/global.js'
+import BaseModal from 'components/BaseModal.vue'
+import * as zip from 'plugins/zip/zip.min.js'
+import { promptFile } from 'plugins/global.js'
 
 export default {
   components: { BaseModal },
@@ -91,7 +91,7 @@ export default {
 
         const zip = window.zip
         zip.configure({
-          workerScripts: { inflate: ['../plugins/zip/z-worker.js'] },
+          workerScripts: { inflate: ['plugins/zip/z-worker.js'] },
         })
 
         const model = (() => {

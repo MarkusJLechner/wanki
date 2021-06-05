@@ -54,8 +54,6 @@ export default {
 
       this.transitionName = transitionName || 'fade'
 
-      console.log(this.transitionName)
-
       next()
     })
   },

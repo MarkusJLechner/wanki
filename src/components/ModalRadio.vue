@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import BaseModal from './BaseModal.vue'
-import InputRadio from './InputRadio.vue'
+import BaseModal from 'components/BaseModal.vue'
+import InputRadio from 'components/InputRadio.vue'
 import { refstorage } from 'store/globalstate.js'
 
 export default {

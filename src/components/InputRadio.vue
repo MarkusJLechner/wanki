@@ -30,7 +30,7 @@
 <script>
 import { defineAsyncComponent } from 'vue'
 
-const List = defineAsyncComponent(() => import('./List.vue'))
+const List = defineAsyncComponent(() => import('components/List.vue'))
 
 export default {
   components: { List },
