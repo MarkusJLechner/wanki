@@ -87,21 +87,32 @@ export const parseFile = async (file) => {
     })
   }
 
-  //const SQL = await initSqlJs({
-  //  // Required to load the wasm binary asynchronously. Of course, you can host it wherever you want
-  //  // You can omit locateFile completely when running in node
-  //  locateFile: (file) => `https://sql.js.org/dist/${file}`,
-  //})
-  //
-  //const db = new SQL.Database(parsed.sqllite)
+  try {
+    const SQL = await initSqlJs({
+      locateFile: () => '/sql-wasm.wasm',
+    })
 
-  // console.log(SQL)
+    const db = new SQL.Database(parsed.sqllite)
+
+    console.log(SQL)
+  } catch (e) {
+    console.log(e)
+  }
 
   const playMedia = async (index) => {
     if (typeof index === 'string') {
       index = Object.values(parsed.mediaMapping).findIndex((a) => a === index)
     }
     const blob = parsed.media[index]
+
+    if (!blob) {
+      throw new Error(
+        'Could not find media with index ' +
+          index +
+          ' in filelength ' +
+          parsed.media.length,
+      )
+    }
 
     const url = await URL.createObjectURL(blob)
     const audio = new Audio()
@@ -122,7 +133,7 @@ export const parseFile = async (file) => {
     }
   }
 
-  await fun({ start: 100, max: 10, time: 500 })
+  await fun({ start: 0, max: 10, time: 500 })
 
   return {
     playMedia: playMedia,
