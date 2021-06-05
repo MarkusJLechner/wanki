@@ -1,7 +1,9 @@
 <template>
-  <TheHeader title="Advanced" back-button> </TheHeader>
+  <div>
+    <TheHeader title="Advanced" back-button> </TheHeader>
 
-  <List :value="listItems" />
+    <List :value="listItems" />
+  </div>
 </template>
 
 <script>

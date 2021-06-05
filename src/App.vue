@@ -1,17 +1,11 @@
 <template>
-  <main
-    class="
-      dark:text-white
-      h-screen
-      flex flex-col
-      text-lg
-      dark:bg-gray-600
-      bg-gray-200
-    "
-  >
+  <main class="dark:bg-gray-600 bg-gray-200 dark:text-white h-screen text-lg">
     <router-view v-slot="{ Component, route }">
-      <transition :name="route.meta.transition || transitionName">
-        <component :is="Component" />
+      <transition appear :name="route.meta.transition || transitionName">
+        <component
+          :is="Component"
+          class="flex flex-col dark:bg-gray-600 h-screen bg-gray-200"
+        />
       </transition>
     </router-view>
   </main>
@@ -122,10 +116,10 @@ body {
   z-index: 300;
 }
 
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
+.slide-left-enter-to,
+.slide-left-leave-to,
+.slide-right-enter-to,
+.slide-right-leave-to {
   transition-duration: 0.2s;
   transition-property: height, opacity, transform;
   overflow: hidden;
@@ -135,12 +129,12 @@ body {
 }
 
 .slide-left-enter-from,
-.slide-right-leave-active {
+.slide-right-leave-to {
   opacity: 0;
   transform: translate(2em, 0);
 }
 
-.slide-left-leave-active,
+.slide-left-leave-to,
 .slide-right-enter-from {
   opacity: 0;
   transform: translate(-2em, 0);

@@ -1,22 +1,24 @@
 <template>
-  <TheHeader title="General Settings" back-button>
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
+  <div>
+    <TheHeader title="General Settings" back-button>
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
 
-  <MainContent>
-    <Group value="Sync">
-      <List :value="listItemsSync" />
-    </Group>
+    <MainContent>
+      <Group value="Sync">
+        <List :value="listItemsSync" />
+      </Group>
 
-    <Group value="Wanki">
-      <List :value="listItemsWanki" />
-    </Group>
+      <Group value="Wanki">
+        <List :value="listItemsWanki" />
+      </Group>
 
-    <Group value="Notifications">
-      <List :value="listItemsNotifications" />
-    </Group>
-  </MainContent>
+      <Group value="Notifications">
+        <List :value="listItemsNotifications" />
+      </Group>
+    </MainContent>
+  </div>
 </template>
 
 <script>

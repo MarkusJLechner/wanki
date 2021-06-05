@@ -1,10 +1,12 @@
 <template>
-  <TheHeader title="Appearance" back-button>
-    <FlexSpacer />
-    <ThemeSwitcher />
-  </TheHeader>
+  <div>
+    <TheHeader title="Appearance" back-button>
+      <FlexSpacer />
+      <ThemeSwitcher />
+    </TheHeader>
 
-  <List :value="listItems" />
+    <List :value="listItems" />
+  </div>
 </template>
 
 <script>

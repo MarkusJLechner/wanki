@@ -1,11 +1,14 @@
 <template>
   <ButtonIcon class="toggle-button" icon="fas fa-bars" @click="toggle()" />
 
-  <div
-    :class="{ hidden: !openState }"
-    class="bg-black opacity-50 fixed w-full h-screen top-0 left-0"
-    @click="close()"
-  ></div>
+  <transition name="fade">
+    <div
+      v-if="openState"
+      class="bg-black opacity-50 fixed w-full h-screen top-0 left-0"
+      @mousedown.stop="close()"
+      @touchstart.stop="close()"
+    ></div>
+  </transition>
   <nav
     ref="slide"
     :class="{ open: openState }"

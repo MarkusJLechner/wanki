@@ -1,7 +1,9 @@
 <template>
-  <TheHeader title="Gestures" back-button> </TheHeader>
+  <div>
+    <TheHeader title="Gestures" back-button> </TheHeader>
 
-  <List :value="listItems" />
+    <List :value="listItems" />
+  </div>
 </template>
 
 <script>

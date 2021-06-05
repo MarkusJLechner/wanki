@@ -1,4 +1,13 @@
 <template>
+  <transition name="fade" appear>
+    <div
+      v-if="menu"
+      class="fixed z-100 inset-0 bg-black bg-opacity-20 transition-opacity"
+      aria-hidden="true"
+      @mousedown.stop="closeMenu()"
+      @touchstart.stop="closeMenu()"
+    ></div>
+  </transition>
   <ButtonIcon icon="fas fa-ellipsis-v" @click="openMenu">
     <template #content>
       <transition name="slide-open">
@@ -45,6 +54,10 @@ export default {
   methods: {
     openMenu() {
       this.menu = !this.menu
+    },
+
+    closeMenu() {
+      this.menu = false
     },
 
     onClickItem(item) {
