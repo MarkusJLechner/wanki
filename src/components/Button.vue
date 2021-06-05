@@ -20,12 +20,17 @@
       focus:ring-2 focus:ring-blue-500
     "
   >
-    <slot />
+    <slot>{{ text }}</slot>
   </button>
 </template>
 
 <script>
 export default {
-  props: {},
+  props: {
+    text: {
+      type: String,
+      default: '',
+    },
+  },
 }
 </script>

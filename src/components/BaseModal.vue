@@ -4,7 +4,7 @@
       v-if="modelValue"
       class="fixed z-10 inset-0 bg-black bg-opacity-60 transition-opacity"
       aria-hidden="true"
-      @click.stop="close"
+      @click.stop="onClose"
     ></div>
   </transition>
   <transition name="slide-open" appear>
@@ -31,7 +31,7 @@
           v-if="modelValue"
           class="fixed z-10 inset-0 transition-opacity"
           aria-hidden="true"
-          @click.stop="close"
+          @click.stop="onClose"
         ></div>
 
         <!-- This element is to trick the browser into centering the modal contents. -->
@@ -72,9 +72,15 @@
           >
             <slot />
           </div>
-          <div class="flex justify-end">
-            <Button @click="close">Cancel</Button>
-          </div>
+
+          <ButtonActions
+            :confirm="confirm"
+            :actions="actions"
+            :disable-confirm="disableConfirm"
+            @close="onClose"
+            @confirm="onConfirm"
+            @click:action="onAction"
+          />
         </div>
       </div>
     </div>
@@ -82,10 +88,10 @@
 </template>
 
 <script>
-import Button from 'components/Button.vue'
+import ButtonActions from '@/components/ButtonActions.vue'
 
 export default {
-  components: { Button },
+  components: { ButtonActions },
 
   props: {
     modelValue: {
@@ -102,9 +108,24 @@ export default {
       type: Boolean,
       default: false,
     },
+
+    confirm: {
+      type: [Boolean, String],
+      default: undefined,
+    },
+
+    disableConfirm: {
+      type: Boolean,
+      default: false,
+    },
+
+    actions: {
+      type: Array,
+      default: undefined,
+    },
   },
 
-  emits: ['close', 'update:modelValue', 'visible'],
+  emits: ['click:action', 'confirm', 'close', 'update:modelValue', 'visible'],
 
   data() {
     return {
@@ -126,10 +147,22 @@ export default {
       this.show = true
     },
 
-    close() {
+    onClose() {
       this.$emit('close')
+      this.closeModal()
+    },
+
+    onConfirm() {
+      this.$emit('confirm')
+    },
+
+    closeModal() {
       this.$emit('update:modelValue', false)
       this.show = false
+    },
+
+    onAction(action) {
+      this.$emit('click:action', action)
     },
   },
 }
