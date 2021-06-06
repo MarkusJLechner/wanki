@@ -1,100 +1,57 @@
 /* globals zip, document, URL, MouseEvent, AbortController, alert */
 
 import * as zip from 'plugins/zip/zip.min.js'
+import { unzipSync } from 'fflate'
 import initSqlJs from 'sql.js/dist/sql-asm.js'
 
 export const parseFile = async (file) => {
-  const zip = window.zip
+  console.time('fflate t')
+  const fileBuffer = await file.arrayBuffer()
 
-  zip.configure({
-    workerScripts: {
-      inflate: ['/z-worker-fflate.js', '/fflate.min.js'],
-      deflate: ['/z-worker-fflate.js', '/fflate.min.js'],
-    },
+  const decompressed = await new Promise((resolve) => {
+    resolve(unzipSync(new Uint8Array(fileBuffer)))
   })
-
-  const zipGetEntries = (file, options) => {
-    return new zip.ZipReader(new zip.BlobReader(file)).getEntries(options)
-  }
-
-  const entries = await zipGetEntries(file, {
-    filenameEncoding: 'cp437',
+  const filesDecompressed = Object.keys(decompressed).map((key) => {
+    let value = decompressed[key]
+    let type = 'media'
+    if (key === 'media') {
+      type = 'mapping'
+      value = JSON.parse(new TextDecoder().decode(value))
+    }
+    if (key === 'collection.anki2') {
+      type = 'sql'
+    }
+    return { filename: key, file: value, type: type }
   })
+  console.timeEnd('fflate t')
 
-  let files = []
   const parsed = {
     sqllite: null,
     media: [],
     mediaMapping: {},
   }
 
-  if (entries.length) {
-    files = await Promise.all(
-      entries.map(async (entry) => {
-        const isMedia = +entry.filename >= 0
-        const isSql = entry.filename === 'collection.anki2'
-        const isMapping = entry.filename === 'media'
+  console.time('foreach')
+  filesDecompressed.forEach((file) => {
+    if (file.type === 'sql') {
+      parsed.sqllite = file.file
+    }
 
-        const type = (() => {
-          if (isSql) {
-            return 'sql'
-          }
-          if (isMedia) {
-            return 'media'
-          }
-          if (isMapping) {
-            return 'mapping'
-          }
+    if (file.type === 'mapping') {
+      parsed.mediaMapping = file.file
+    }
 
-          return ''
-        })()
-
-        const writer = () => {
-          if (isSql) {
-            return new zip.Uint8ArrayWriter()
-          }
-          if (isMedia) {
-            return new zip.BlobWriter()
-          }
-
-          return new zip.TextWriter()
-        }
-        let file = await entry.getData(writer(), {
-          onprogress: (index, max) => {},
-        })
-
-        if (isMapping) {
-          file = JSON.parse(file)
-        }
-
-        const filename = Number.isNaN(Number.parseInt(entry.filename))
-          ? entry.filename
-          : +entry.filename
-
-        return { filename: filename, file: file, type: type }
-      }),
-    )
-
-    files.forEach((file) => {
-      if (file.type === 'sql') {
-        parsed.sqllite = file.file
-      }
-
-      if (file.type === 'mapping') {
-        parsed.mediaMapping = file.file
-      }
-
-      if (file.type === 'media') {
-        parsed.media[file.filename] = file.file
-      }
-    })
-  }
+    if (file.type === 'media') {
+      parsed.media[file.filename] = file.file
+    }
+  })
+  console.timeEnd('foreach')
 
   const playMedia = async (index) => {
     if (typeof index === 'string') {
       index = Object.values(parsed.mediaMapping).findIndex((a) => a === index)
     }
-    const blob = parsed.media[index]
+    const blob = new Blob([parsed.media[index].buffer])
 
     if (!blob) {
       throw new Error(
@@ -108,7 +65,7 @@ export const parseFile = async (file) => {
     const url = await URL.createObjectURL(blob)
     const audio = new Audio()
     audio.src = url
-    await audio.play()
+    return audio.play()
   }
 
   const fun = async ({ max = 5, start = 0, time = 600 } = {}) => {
@@ -124,21 +81,15 @@ export const parseFile = async (file) => {
     }
   }
 
+  let database = null
   try {
+    console.time('sql')
     const SQL = await initSqlJs()
-    //const SQL = await initSqlJs({
-    //  locateFile: () => '/sql-wasm.wasm',
-    //})
-    console.log('init', SQL)
-
-    const db = new SQL.Database(parsed.sqllite)
-    await db.run(
-      'SELECT guid, mid, mod, usn, tags, flds, flags, data FROM notes WHERE id = 1',
-    )
-
-    console.log(SQL, db)
+    database = new SQL.Database(parsed.sqllite)
+    console.timeEnd('sql')
   } catch (e) {
     console.log(e)
+    throw new Error('Error while parsing database')
   }
 
   fun({ start: 0, max: 10, time: 500 })
@@ -148,6 +99,7 @@ export const parseFile = async (file) => {
     mediaMapping: parsed.mediaMapping,
     sqllite: parsed.sqllite,
     media: parsed.media,
+    db: database,
     fun: fun,
   }
 }

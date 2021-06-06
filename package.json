@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "fflate": "^0.7.0",
     "sql.js": "^1.5.0",
     "vue": "^3.0.5",
     "vue-router": "^4.0.8",
