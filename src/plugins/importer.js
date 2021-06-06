@@ -1,7 +1,7 @@
 /* globals zip, document, URL, MouseEvent, AbortController, alert */
 
 import * as zip from 'plugins/zip/zip.min.js'
-import * as initSqlJs from 'sql.js/dist/sql-wasm.js'
+import initSqlJs from 'sql.js/dist/sql-asm.js'
 
 export const parseFile = async (file) => {
   const zip = window.zip
@@ -12,20 +12,6 @@ export const parseFile = async (file) => {
       deflate: ['/z-worker-fflate.js', '/fflate.min.js'],
     },
   })
-
-  try {
-    const SQL = await initSqlJs()
-    //const SQL = await initSqlJs({
-    //  locateFile: () => '/sql-wasm.wasm',
-    //})
-    console.log('init', SQL)
-
-    const db = new SQL.Database()
-
-    console.log(SQL, db)
-  } catch (e) {
-    console.log(e)
-  }
 
   const zipGetEntries = (file, options) => {
     return new zip.ZipReader(new zip.BlobReader(file)).getEntries(options)
@@ -138,7 +124,24 @@ export const parseFile = async (file) => {
     }
   }
 
-  await fun({ start: 0, max: 10, time: 500 })
+  try {
+    const SQL = await initSqlJs()
+    //const SQL = await initSqlJs({
+    //  locateFile: () => '/sql-wasm.wasm',
+    //})
+    console.log('init', SQL)
+
+    const db = new SQL.Database(parsed.sqllite)
+    await db.run(
+      'SELECT guid, mid, mod, usn, tags, flds, flags, data FROM notes WHERE id = 1',
+    )
+
+    console.log(SQL, db)
+  } catch (e) {
+    console.log(e)
+  }
+
+  fun({ start: 0, max: 10, time: 500 })
 
   return {
     playMedia: playMedia,
