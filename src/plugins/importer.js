@@ -1,14 +1,31 @@
 /* globals zip, document, URL, MouseEvent, AbortController, alert */
 
 import * as zip from 'plugins/zip/zip.min.js'
-import * as initSqlJs from 'sql.js'
+import * as initSqlJs from 'sql.js/dist/sql-wasm.js'
 
 export const parseFile = async (file) => {
   const zip = window.zip
 
   zip.configure({
-    workerScripts: { inflate: ['/z-worker.js'] },
+    workerScripts: {
+      inflate: ['/z-worker-fflate.js', '/fflate.min.js'],
+      deflate: ['/z-worker-fflate.js', '/fflate.min.js'],
+    },
   })
+
+  try {
+    const SQL = await initSqlJs()
+    //const SQL = await initSqlJs({
+    //  locateFile: () => '/sql-wasm.wasm',
+    //})
+    console.log('init', SQL)
+
+    const db = new SQL.Database()
+
+    console.log(SQL, db)
+  } catch (e) {
+    console.log(e)
+  }
 
   const zipGetEntries = (file, options) => {
     return new zip.ZipReader(new zip.BlobReader(file)).getEntries(options)
@@ -85,18 +102,6 @@ export const parseFile = async (file) => {
         parsed.media[file.filename] = file.file
       }
     })
-  }
-
-  try {
-    const SQL = await initSqlJs({
-      locateFile: () => '/sql-wasm.wasm',
-    })
-
-    const db = new SQL.Database(parsed.sqllite)
-
-    console.log(SQL)
-  } catch (e) {
-    console.log(e)
   }
 
   const playMedia = async (index) => {
