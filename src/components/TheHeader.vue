@@ -7,6 +7,7 @@
       dark:text-white
       text-gray-900
       items-center
+      py-1
     "
   >
     <div v-if="backButton">
