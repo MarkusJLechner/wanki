@@ -3,10 +3,14 @@ import App from './App.vue'
 import router from './router'
 import './assets/styles/index.css'
 import store from './store'
+
+import List from '@/components/List.vue'
+
 const app = createApp(App)
 app.config.devtools = true
 app.use(router)
 app.use(store)
+
 app.mount('#app')
 
 if (!import.meta.hot) {

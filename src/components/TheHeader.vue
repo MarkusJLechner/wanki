@@ -24,10 +24,12 @@
 </template>
 
 <script>
-import Sidepanel from 'components/Sidepanel.vue'
+const Sidepanel = defineAsyncComponent(() => import('components/Sidepanel.vue'))
+
 import { refstorage } from 'store/globalstate'
 import ButtonIcon from 'components/ButtonIcon.vue'
 import router from 'router'
+import { defineAsyncComponent } from 'vue'
 
 export default {
   components: { ButtonIcon, Sidepanel },

@@ -14,6 +14,7 @@
 <script>
 import { watch } from 'vue'
 import { refstorage } from './store/globalstate'
+import { persist } from '@/plugins/storage.js'
 
 export default {
   data() {
@@ -21,7 +22,10 @@ export default {
       transitionName: 'fade',
     }
   },
+
   mounted() {
+    this.initStorage()
+
     refstorage.get('darkTheme', true)
 
     let htmlClasses = document.querySelector('html').classList
@@ -59,6 +63,10 @@ export default {
   },
 
   methods: {
+    async initStorage() {
+      await persist()
+    },
+
     beforeLeave(element) {
       this.prevHeight = getComputedStyle(element).height
     },

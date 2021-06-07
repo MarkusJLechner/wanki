@@ -68,7 +68,6 @@
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
             class="overflow-y-auto flex-grow"
             :class="{ 'p-4': !noGutters }"
-            @click.stop.prevent
           >
             <slot />
           </div>
@@ -125,7 +124,14 @@ export default {
     },
   },
 
-  emits: ['click:action', 'confirm', 'close', 'update:modelValue', 'visible'],
+  emits: [
+    'click:action',
+    'confirm',
+    'open',
+    'close',
+    'update:modelValue',
+    'visible',
+  ],
 
   data() {
     return {

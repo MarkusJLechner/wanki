@@ -29,12 +29,10 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
-
 const List = defineAsyncComponent(() => import('components/List.vue'))
 
 export default {
   components: { List },
-
   props: {
     items: {
       type: Array,

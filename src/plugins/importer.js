@@ -1,16 +1,19 @@
-/* globals zip, document, URL, MouseEvent, AbortController, alert */
-
-import * as zip from 'plugins/zip/zip.min.js'
 import { unzipSync } from 'fflate'
 import initSqlJs from 'sql.js/dist/sql-asm.js'
+import { database } from '@/plugins/storage.js'
 
 export const parseFile = async (file) => {
-  console.time('fflate t')
+  if (!file) {
+    throw new Error('No file defined')
+  }
+
   const fileBuffer = await file.arrayBuffer()
 
   const decompressed = await new Promise((resolve) => {
     resolve(unzipSync(new Uint8Array(fileBuffer)))
   })
+
+  let valid = false
   const filesDecompressed = Object.keys(decompressed).map((key) => {
     let value = decompressed[key]
     let type = 'media'
@@ -19,11 +22,15 @@ export const parseFile = async (file) => {
       value = JSON.parse(new TextDecoder().decode(value))
     }
     if (key === 'collection.anki2') {
+      valid = true
       type = 'sql'
     }
     return { filename: key, file: value, type: type }
   })
-  console.timeEnd('fflate t')
+
+  if (!valid) {
+    throw new Error('No valid anki file')
+  }
 
   const parsed = {
     sqllite: null,
@@ -31,7 +38,6 @@ export const parseFile = async (file) => {
     mediaMapping: {},
   }
 
-  console.time('foreach')
   filesDecompressed.forEach((file) => {
     if (file.type === 'sql') {
       parsed.sqllite = file.file
@@ -45,61 +51,85 @@ export const parseFile = async (file) => {
       parsed.media[file.filename] = file.file
     }
   })
-  console.timeEnd('foreach')
 
-  const playMedia = async (index) => {
-    if (typeof index === 'string') {
-      index = Object.values(parsed.mediaMapping).findIndex((a) => a === index)
+  let database = null
+  try {
+    const SQL = await initSqlJs()
+    database = new SQL.Database(parsed.sqllite)
+  } catch (e) {
+    console.log(e)
+    throw new Error('Error while parsing database')
+  }
+
+  return {
+    mediaMapping: parsed.mediaMapping,
+    media: parsed.media,
+    db: database,
+  }
+}
+
+export const fun = async (parsedDeck) => {
+  return async function play({ max = 5, start = 0, time = 600 } = {}) {
+    for (let ii = 0; ii < max; ii++) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, time)
+      })
+      try {
+        ;(await media(parsedDeck)).play(ii + start)
+      } catch (e) {
+        console.error(e)
+      }
     }
-    const blob = new Blob([parsed.media[index].buffer])
+  }
+}
 
-    if (!blob) {
+export const media = async (parsedDeck) => {
+  return async function play(index) {
+    if (typeof index === 'string') {
+      index = Object.values(parsedDeck.mediaMapping).findIndex(
+        (a) => a === index,
+      )
+    }
+
+    const uint8 = parsedDeck.media[index]
+    if (!uint8) {
       throw new Error(
         'Could not find media with index ' +
           index +
           ' in filelength ' +
-          parsed.media.length,
+          parsedDeck.media.length,
       )
     }
+
+    const blob = new Blob([uint8.buffer])
 
     const url = await URL.createObjectURL(blob)
     const audio = new Audio()
     audio.src = url
     return audio.play()
   }
+}
 
-  const fun = async ({ max = 5, start = 0, time = 600 } = {}) => {
-    for (let ii = 0; ii < max; ii++) {
-      await new Promise((resolve) => {
-        setTimeout(resolve, time)
-      })
-      try {
-        await playMedia(ii + start)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  }
+export const importParsedObject = async (object) => {
+  const sqlDecks = JSON.parse(
+    object.db.exec('select decks from col limit 1')[0].values,
+  )
 
-  let database = null
-  try {
-    console.time('sql')
-    const SQL = await initSqlJs()
-    database = new SQL.Database(parsed.sqllite)
-    console.timeEnd('sql')
-  } catch (e) {
-    console.log(e)
-    throw new Error('Error while parsing database')
-  }
+  console.log({ sqlDecks })
 
-  fun({ start: 0, max: 10, time: 500 })
+  const [sqlDeckId, sqlDeckCol] = Object.entries(sqlDecks).filter(
+    (entry) => entry[1].name !== 'Default',
+  )[0]
 
-  return {
-    playMedia: playMedia,
-    mediaMapping: parsed.mediaMapping,
-    sqllite: parsed.sqllite,
-    media: parsed.media,
-    db: database,
-    fun: fun,
-  }
+  console.log([sqlDeckId, sqlDeckCol])
+  const deck = await database.deck
+  await deck.set(sqlDeckId, {
+    name: sqlDeckCol.name,
+    id: sqlDeckId,
+    apkg: object,
+    col: sqlDeckCol,
+  })
+
+  document.dispatchEvent(new Event('page/overview/update'))
+  document.dispatchEvent(new Event('indexeddb/decks/update'))
 }

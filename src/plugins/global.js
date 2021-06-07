@@ -12,16 +12,20 @@ export function promptFile(accept, multiple = false) {
   input.type = 'file'
   input.multiple = multiple
   input.accept = accept
-  return new Promise(function (resolve) {
-    document.activeElement.onfocus = function () {
-      document.activeElement.onfocus = null
-      setTimeout(resolve, 500)
+  return new Promise(function (resolve, reject) {
+    try {
+      document.activeElement.onfocus = function () {
+        document.activeElement.onfocus = null
+        setTimeout(resolve, 200)
+      }
+      input.onchange = function () {
+        const files = Array.from(input.files)
+        if (multiple) return resolve(files)
+        resolve(files[0])
+      }
+      input.click()
+    } catch (e) {
+      reject(e)
     }
-    input.onchange = function () {
-      const files = Array.from(input.files)
-      if (multiple) return resolve(files)
-      resolve(files[0])
-    }
-    input.click()
   })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @dragover="onImport">
     <TheHeader title="Overview">
       <FlexSpacer />
       <ThemeSwitcher />
@@ -20,45 +20,97 @@
 
     <ModalImport v-model="showModalImport" />
 
-    <h1>Overview</h1>
+    <span v-if="loading" class="p-4">Loading decks...</span>
+    <List v-else-if="decks.length" :value="decks" />
+    <span v-else class="p-4 leading-10 block"
+      >No decks available. Download
+      <a
+        class="text-blue-700 dark:text-blue-300"
+        target="_blank"
+        href="https://ankiweb.net/shared/decks/"
+      >
+        shared decks here
+      </a>
+      and import them here
+    </span>
   </div>
 </template>
 
 <script>
+const List = defineAsyncComponent(() => import('components/List.vue'))
+const ButtonOptions = defineAsyncComponent(() =>
+  import('components/ButtonOptions.vue'),
+)
+import ModalImport from 'components/ModalImport.vue'
 import TheHeader from 'components/TheHeader.vue'
 import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
-import ButtonOptions from 'components/ButtonOptions.vue'
-import ModalImport from 'components/ModalImport.vue'
+import { database } from 'plugins/storage.js'
+import { defineAsyncComponent } from 'vue'
 
 export default {
+  name: 'Overview',
+
   components: {
+    TheHeader,
+    List,
     ModalImport,
     ButtonOptions,
     ThemeSwitcher,
     FlexSpacer,
-    TheHeader,
   },
 
   data() {
     return {
+      decks: [],
+      loading: false,
       showModalImport: false,
     }
   },
 
+  mounted() {
+    this.updateList()
+    document.addEventListener('page/overview/update', this.updateList)
+  },
+
+  unmounted() {
+    document.removeEventListener('page/overview/update', this.updateList)
+  },
+
   methods: {
+    async updateList() {
+      this.closeImport()
+      this.loading = true
+
+      const deck = await database.deck
+
+      this.decks = (await deck.all()).map((item) => {
+        return {
+          text: item.name,
+        }
+      })
+
+      this.loading = false
+
+      console.log(this.decks)
+    },
+
     onClick(item) {
       switch (item.value) {
-      case 'import':
-        return this.onImport()
-      default:
-        break
+        case 'import':
+          return this.onImport()
+        default:
+          break
       }
       console.log(item)
     },
 
-    async onImport() {
+    onImport() {
       this.showModalImport = true
+    },
+
+    closeImport() {
+      this.showModalImport = false
     },
   },
 }

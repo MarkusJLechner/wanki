@@ -5,10 +5,21 @@
     confirm="Import"
     :disable-confirm="!canImport"
     @update:model-value="$emit('update:model-value', $event)"
-    @visible="onVisible"
     @confirm="onImport"
   >
-    <span v-if="!isLoaded" @click="onInitImport">
+    <span class="block">
+      Select an <code>.apkg</code> file. Download
+      <a
+        class="text-blue-700 dark:text-blue-300"
+        target="_blank"
+        href="https://ankiweb.net/shared/decks/"
+        >shared decks here</a
+      >
+    </span>
+
+    <input-file :accept="accept" class="my-2" @select="onInitImport" />
+
+    <span class="text-right block text-sm" @click="onInitImport">
       {{ getStateText }}
     </span>
     <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
@@ -26,14 +37,21 @@
 <script>
 import BaseModal from 'components/BaseModal.vue'
 import { promptFile } from 'plugins/global.js'
-import { parseFile } from '@/plugins/importer.js'
+import { importParsedObject, parseFile } from '@/plugins/importer.js'
+import InputFile from '@/components/InputFile.vue'
+import { persist } from '@/plugins/storage.js'
 
-let files = []
+let parsed = null
 
 export default {
-  components: { BaseModal },
+  components: { InputFile, BaseModal },
 
   props: {
+    accept: {
+      type: String,
+      default: '*.apkg',
+    },
+
     modelValue: {
       type: Boolean,
       default: false,
@@ -51,8 +69,8 @@ export default {
         notFound: 'notFound',
         error: 'error',
       },
-      currentState: 'loaded',
-      files: [],
+      currentState: 'init',
+      loaded: {},
       renderingFiles: [],
     }
   },
@@ -62,47 +80,29 @@ export default {
       return this.currentState === this.state.loaded
     },
 
-    isLoaded() {
-      return this.currentState === this.state.loaded
-    },
-
     getStateText() {
       switch (this.currentState) {
-      case this.state.init:
-        return 'Selecting .apkg file...'
-      case this.state.loaded:
-        return 'Loaded file'
-      case this.state.loading:
-        return 'Loading file...'
-      case this.state.imported:
-        return 'Imported'
-      case this.state.notFound:
-        return 'Not valid file, missing the anki data'
-      case this.state.error:
-        return 'Error while reading .apkg file. Click to select another file'
-      default:
-        return 'Unknown state'
+        case this.state.init:
+          return 'Select .apkg file...'
+        case this.state.loaded:
+          return 'Successfully loaded file'
+        case this.state.loading:
+          return 'Loading file...'
+        case this.state.imported:
+          return 'Imported'
+        case this.state.notFound:
+          return 'Not valid file, missing the anki data'
+        case this.state.error:
+          return 'Error while reading .apkg file. Click to select another file'
+        default:
+          return 'Unknown state'
       }
     },
   },
 
   methods: {
-    onVisible(visible) {
-      if (!visible) {
-        return
-      }
-      this.onInitImport()
-    },
-
-    zipGetEntries(file, options) {
-      return new this.zip.ZipReader(new this.zip.BlobReader(file)).getEntries(
-        options,
-      )
-    },
-
-    async onInitImport() {
+    async onInitImport(files) {
       this.error = null
-      files = []
       this.files = []
       this.renderingFiles = []
       this.currentState = this.state.init
@@ -110,22 +110,23 @@ export default {
       try {
         this.currentState = this.state.loading
 
-        const file = await promptFile('*.apkg')
+        const file = files.length ? files[0] : await promptFile(this.accept)
 
-        const parsed = await parseFile(file)
+        parsed = await parseFile(file)
+
         console.log(parsed)
 
         const res = parsed.db.exec('SELECT * FROM notes')
 
-        parsed.fun({
-          start: Math.floor(Math.random() * parsed.media.length) - 10,
-          max: 10,
-          time: 700,
-        })
+        // parsed.fun({
+        //   start: Math.floor(Math.random() * parsed.media.length),
+        //   max: 10,
+        //   time: 700,
+        // })
 
         console.log(res)
 
-        this.currentState = this.state.imported
+        this.currentState = this.state.loaded
       } catch (e) {
         this.currentState = this.state.error
         console.error(e)
@@ -134,14 +135,15 @@ export default {
     },
 
     async onImport() {
-      console.log('do import')
-
-      if (this.files.length > 0) {
-        await this.download(files[0])
-        console.log(files[0])
-      } else {
-        console.log('wtf')
+      if (!parsed) {
+        return
       }
+
+      console.log(parsed)
+
+      await persist()
+      const deck = await importParsedObject(parsed)
+      console.log(deck)
     },
   },
 }

@@ -87,6 +87,8 @@ const InputBoolean = defineAsyncComponent(() =>
 )
 
 export default {
+  name: 'List',
+
   components: {
     ModalRadio,
     InputBoolean,

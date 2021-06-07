@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+code {
+  @apply border border-gray-500 text-sm font-bold inline-block px-1 rounded;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -11,32 +15,32 @@
 }
 
 .slide-open {
-    position: fixed;
-    top: 0;
-    transform: translate(0, 0) rotateX(0deg);
+  position: fixed;
+  top: 0;
+  transform: translate(0, 0) rotateX(0deg);
 }
 
 .slide-open-enter-active,
 .slide-open-leave-active {
-    transition: 0.2s;
+  transition: 0.2s;
 }
 
 .slide-open-enter-from {
-    opacity: 0;
-    transform: translate(0, -100px) perspective(700px) rotateX(45deg);
+  opacity: 0;
+  transform: translate(0, -100px) perspective(700px) rotateX(45deg);
 }
 
 .slide-open-leave-to {
-    opacity: 0;
-    transform: translate(0, 10px);
+  opacity: 0;
+  transform: translate(0, 10px);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
