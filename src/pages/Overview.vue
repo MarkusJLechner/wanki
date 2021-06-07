@@ -92,12 +92,12 @@ export default {
     }
   },
 
-  activated() {
+  mounted() {
     this.updateList()
     document.addEventListener('page/overview/update', this.updateList)
   },
 
-  deactivated() {
+  unmounted() {
     document.removeEventListener('page/overview/update', this.updateList)
   },
 
