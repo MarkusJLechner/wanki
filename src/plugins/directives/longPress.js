@@ -8,22 +8,30 @@ export default {
     }
 
     let pressTimer = null
+    let onLongPress = false
 
     const start = (e) => {
-      // e.stopPropagation()
-      // e.preventDefault()
       if (e.type === 'click' && e.button !== 0) {
         return
       }
 
       if (pressTimer === null) {
-        pressTimer = setTimeout(() => value(e), PRESS_TIMEOUT)
+        pressTimer = setTimeout(() => {
+          onLongPress = true
+          value(e)
+        }, PRESS_TIMEOUT)
       }
     }
 
-    const cancel = () => {
+    const cancel = (e) => {
+      if (onLongPress) {
+        e.stopPropagation()
+        e.preventDefault()
+      }
+
       if (pressTimer !== null) {
         clearTimeout(pressTimer)
+        onLongPress = false
         pressTimer = null
       }
     }

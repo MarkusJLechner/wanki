@@ -24,7 +24,12 @@
       >Loading decks <loading-icon class="ml-2" />
     </span>
 
-    <List v-else-if="decks.length" :value="decks" @long-press="onMenu">
+    <List
+      v-else-if="decks.length"
+      no-gutters
+      :value="decks"
+      @long-press="onMenu"
+    >
       <template #suffix-item>
         <NumberDue :value="0" color="blue" />
         <NumberDue :value="2" color="red" />
@@ -43,6 +48,11 @@
       </a>
       and import them here
     </span>
+
+    <ModalOptionsDeck
+      :model-value="modalOptionsItem"
+      @close="modalOptionsItem = null"
+    />
   </div>
 </template>
 
@@ -56,11 +66,13 @@ import { database } from 'plugins/storage.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
+import ModalOptionsDeck from '@/components/ModalOptionsDeck.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    ModalOptionsDeck,
     NumberDue,
     LoadingIcon,
     ButtonOptions,
@@ -76,6 +88,7 @@ export default {
       decks: [],
       loading: false,
       showModalImport: false,
+      modalOptionsItem: null,
     }
   },
 
@@ -118,6 +131,7 @@ export default {
 
     onMenu(item) {
       console.log('menu', item)
+      this.modalOptionsItem = item
     },
 
     onImport() {
