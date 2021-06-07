@@ -1,10 +1,13 @@
 <template>
   <BaseModal
     :model-value="!!modelValue"
-    title="Deck options"
+    :title="modelValue?.text"
     @close="$emit('close')"
   >
-    {{ modelValue.text }}
+    <div v-if="modelValue">
+      {{ modelValue.data.col.id }}
+      <span class="block" v-html="modelValue.data.col.desc"></span>
+    </div>
   </BaseModal>
 </template>
 

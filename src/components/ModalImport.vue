@@ -20,6 +20,7 @@
     <input-file :accept="accept" class="my-2" @select="onInitImport" />
 
     <span class="text-right block text-sm" @click="onInitImport">
+      <loading-icon v-if="currentState === state.loading" />
       {{ getStateText }}
     </span>
     <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
@@ -40,16 +41,17 @@ import { promptFile } from 'plugins/global.js'
 import { importParsedObject, parseFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
 import { persist } from '@/plugins/storage.js'
+import LoadingIcon from '@/components/LoadingIcon.vue'
 
 let parsed = null
 
 export default {
-  components: { InputFile, BaseModal },
+  components: { LoadingIcon, InputFile, BaseModal },
 
   props: {
     accept: {
       type: String,
-      default: '*.apkg',
+      default: '.apkg',
     },
 
     modelValue: {
@@ -85,9 +87,9 @@ export default {
         case this.state.init:
           return 'Select .apkg file...'
         case this.state.loaded:
-          return 'Successfully loaded file'
+          return 'Successfully parsed file'
         case this.state.loading:
-          return 'Loading file...'
+          return 'Parsing file...'
         case this.state.imported:
           return 'Imported'
         case this.state.notFound:

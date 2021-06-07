@@ -30,10 +30,10 @@
       :value="decks"
       @long-press="onMenu"
     >
-      <template #suffix-item>
-        <NumberDue :value="0" color="blue" />
-        <NumberDue :value="2" color="red" />
-        <NumberDue :value="2" color="green" />
+      <template #suffix-item="{ item }">
+        <NumberDue :value="item.data.col.newToday[1]" color="blue" />
+        <NumberDue :value="item.data.col.revToday[1]" color="red" />
+        <NumberDue :value="item.data.col.lrnToday[1]" color="green" />
       </template>
     </List>
 
@@ -92,12 +92,12 @@ export default {
     }
   },
 
-  mounted() {
+  activated() {
     this.updateList()
     document.addEventListener('page/overview/update', this.updateList)
   },
 
-  unmounted() {
+  deactivated() {
     document.removeEventListener('page/overview/update', this.updateList)
   },
 
@@ -111,6 +111,10 @@ export default {
       this.decks = (await deck.all()).map((item) => {
         return {
           text: item.name,
+          data: {
+            col: item.col,
+            apkg: item.apkg,
+          },
         }
       })
 
@@ -126,11 +130,9 @@ export default {
         default:
           break
       }
-      console.log(item)
     },
 
     onMenu(item) {
-      console.log('menu', item)
       this.modalOptionsItem = item
     },
 
