@@ -16,14 +16,24 @@ const Ripple = {
 
     setProps(Object.keys(binding.modifiers), props)
     props.event.forEach((e) =>
-      el.addEventListener(e, function (event) {
-        rippler(event, el, binding.value)
-      }),
+      el.addEventListener(
+        e,
+        function (event) {
+          rippler(event, el, binding.value)
+        },
+        { passive: true },
+      ),
     )
+
+    let onClick = false
 
     const bg = binding.value || Ripple.color || 'rgba(0, 0, 0, 0.2)'
 
     function rippler(event, el) {
+      if (onClick) {
+        return
+      }
+      onClick = true
       const target = el
       // Get border to avoid offsetting on ripple container position
       const targetBorder = parseInt(
@@ -36,8 +46,8 @@ const Ripple = {
         top = rect.top,
         width = target.offsetWidth,
         height = target.offsetHeight,
-        dx = event.clientX - left,
-        dy = event.clientY - top,
+        dx = (event.clientX || event.touches[0].clientX) - left,
+        dy = (event.clientY || event.touches[0].clientY) - top,
         maxX = Math.max(dx, width - dx),
         maxY = Math.max(dy, height - dy),
         style = window.getComputedStyle(target),
@@ -60,7 +70,7 @@ const Ripple = {
       ripple.style.borderRadius = '50%'
       ripple.style.pointerEvents = 'none'
       ripple.style.position = 'relative'
-      ripple.style.zIndex = style.zIndex
+      ripple.style.zIndex = style.zIndex + 9999
       ripple.style.backgroundColor = bg
 
       //Styles for rippleContainer
@@ -102,6 +112,8 @@ const Ripple = {
 
       rippleContainer.style.direction = 'ltr'
 
+      console.log('start touch')
+
       setTimeout(function () {
         ripple.style.width = radius * 2 + 'px'
         ripple.style.height = radius * 2 + 'px'
@@ -112,15 +124,16 @@ const Ripple = {
       function clearRipple() {
         setTimeout(function () {
           ripple.style.backgroundColor = 'rgba(0, 0, 0, 0)'
+          onClick = false
         }, 250)
 
         // Timeout set to get a smooth removal of the ripple
         setTimeout(function () {
-          rippleContainer.parentNode.removeChild(rippleContainer)
+          rippleContainer.parentNode?.removeChild(rippleContainer)
         }, 850)
 
         props.eventStop.forEach((e) =>
-          el.removeEventListener('mouseup', clearRipple, false),
+          el.removeEventListener(e, clearRipple, false),
         )
 
         // After removing event set position to target to it's original one
@@ -143,7 +156,7 @@ const Ripple = {
         }, props.transition + 250)
       }
 
-      if (props.eventStop.includes(event.type)) {
+      if (props.event.includes(event.type)) {
         props.eventStop.forEach((e) =>
           el.addEventListener(e, clearRipple, false),
         )
