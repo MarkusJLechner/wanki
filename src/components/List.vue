@@ -4,6 +4,7 @@
       v-for="(item, index) in value"
       :key="index"
       v-long-press="() => onLongPress(item)"
+      v-ripple
       class="
         cursor-pointer
         relative

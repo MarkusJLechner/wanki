@@ -1,5 +1,6 @@
 <template>
   <button
+    v-ripple
     type="button"
     class="
       mt-3

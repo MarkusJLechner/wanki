@@ -1,6 +1,6 @@
 const PRESS_TIMEOUT = 300
 
-export const longPress = {
+export default {
   mounted(el, { value }, vnode) {
     if (typeof value !== 'function') {
       console.warn(`Expect a function, got ${value}`)
@@ -10,8 +10,8 @@ export const longPress = {
     let pressTimer = null
 
     const start = (e) => {
-      e.stopPropagation()
-      e.preventDefault()
+      // e.stopPropagation()
+      // e.preventDefault()
       if (e.type === 'click' && e.button !== 0) {
         return
       }
