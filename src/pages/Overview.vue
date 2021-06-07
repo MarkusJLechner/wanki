@@ -20,8 +20,18 @@
 
     <ModalImport v-model="showModalImport" />
 
-    <span v-if="loading" class="p-12">Loading decks...</span>
-    <List v-else-if="decks.length" :value="decks" />
+    <span v-if="loading" class="p-4"
+      >Loading decks <loading-icon class="ml-2" />
+    </span>
+
+    <List v-else-if="decks.length" :value="decks" @long-press="onMenu">
+      <template #suffix-item>
+        <NumberDue :value="0" color="blue" />
+        <NumberDue :value="2" color="red" />
+        <NumberDue :value="2" color="green" />
+      </template>
+    </List>
+
     <span v-else class="p-4 leading-10 block"
       >No decks available. Download
       <a
@@ -44,11 +54,15 @@ import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
 import { database } from 'plugins/storage.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
+import LoadingIcon from '@/components/LoadingIcon.vue'
+import NumberDue from '@/components/NumberDue.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    NumberDue,
+    LoadingIcon,
     ButtonOptions,
     TheHeader,
     List,
@@ -100,6 +114,10 @@ export default {
           break
       }
       console.log(item)
+    },
+
+    onMenu(item) {
+      console.log('menu', item)
     },
 
     onImport() {

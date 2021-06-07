@@ -5,11 +5,13 @@ import './assets/styles/index.css'
 import store from './store'
 
 import List from '@/components/List.vue'
+import { longPress } from '@/plugins/directives.js'
 
 const app = createApp(App)
 app.config.devtools = true
 app.use(router)
 app.use(store)
+app.directive('long-press', longPress)
 
 app.mount('#app')
 

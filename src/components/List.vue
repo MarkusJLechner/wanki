@@ -3,6 +3,7 @@
     <li
       v-for="(item, index) in value"
       :key="index"
+      v-long-press="() => onLongPress(item)"
       class="
         cursor-pointer
         relative
@@ -30,7 +31,9 @@
         v-if="item.type === 'seperator'"
         class="border-1 border-gray-900 dark:border-gray-500 w-full"
       />
-      <slot name="prefix-item" :item="item"></slot>
+
+      <slot name="prefix-item" :item="item" />
+
       <i
         v-if="getIcon(item)"
         class="pr-4"
@@ -48,6 +51,8 @@
       <div v-if="hasBoolean(item)">
         <InputBoolean :model-value="getBoolean(item)" />
       </div>
+
+      <slot name="suffix-item" :item="item" />
 
       <hr
         v-if="!noSeparation && index < value.length - 1"
@@ -112,7 +117,7 @@ export default {
     },
   },
 
-  emits: ['item'],
+  emits: ['item', 'long-press'],
 
   data() {
     return {
@@ -121,6 +126,10 @@ export default {
   },
 
   methods: {
+    onLongPress(item) {
+      this.$emit('long-press', item)
+    },
+
     getIcon(item) {
       return this.callFn(item, 'icon')
     },
