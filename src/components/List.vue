@@ -75,23 +75,19 @@
 </template>
 
 <script>
-import router from 'router'
-import { refstorage } from 'store/globalstate.js'
 import { defineAsyncComponent } from 'vue'
-
+import InputBoolean from 'components/InputBoolean.vue'
+import { refstorage } from 'store/globalstate.js'
 const ModalRadio = defineAsyncComponent(() =>
   import('components/ModalRadio.vue'),
-)
-const InputBoolean = defineAsyncComponent(() =>
-  import('components/InputBoolean.vue'),
 )
 
 export default {
   name: 'List',
 
   components: {
-    ModalRadio,
     InputBoolean,
+    ModalRadio,
   },
 
   props: {
@@ -183,7 +179,7 @@ export default {
       }
 
       if (item.route) {
-        router.push({ path: item.route })
+        this.$router.push({ path: item.route })
       }
 
       if (item.emit) {

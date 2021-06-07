@@ -20,7 +20,7 @@
 
     <ModalImport v-model="showModalImport" />
 
-    <span v-if="loading" class="p-4">Loading decks...</span>
+    <span v-if="loading" class="p-12">Loading decks...</span>
     <List v-else-if="decks.length" :value="decks" />
     <span v-else class="p-4 leading-10 block"
       >No decks available. Download
@@ -37,25 +37,22 @@
 </template>
 
 <script>
-const List = defineAsyncComponent(() => import('components/List.vue'))
-const ButtonOptions = defineAsyncComponent(() =>
-  import('components/ButtonOptions.vue'),
-)
+import List from 'components/List.vue'
 import ModalImport from 'components/ModalImport.vue'
 import TheHeader from 'components/TheHeader.vue'
 import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
 import { database } from 'plugins/storage.js'
-import { defineAsyncComponent } from 'vue'
+import ButtonOptions from 'components/ButtonOptions.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    ButtonOptions,
     TheHeader,
     List,
     ModalImport,
-    ButtonOptions,
     ThemeSwitcher,
     FlexSpacer,
   },

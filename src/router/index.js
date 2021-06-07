@@ -1,5 +1,11 @@
 import { createWebHashHistory, createRouter } from 'vue-router'
 
+if (!import.meta.hot) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+  }
+}
+
 import Overview from 'pages/Overview.vue'
 import Browser from 'pages/Browser.vue'
 import Help from 'pages/Help.vue'

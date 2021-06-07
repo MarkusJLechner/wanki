@@ -36,8 +36,7 @@
 
 <script>
 import ButtonIcon from 'components/ButtonIcon.vue'
-import { defineAsyncComponent } from 'vue'
-const List = defineAsyncComponent(() => import('components/List.vue'))
+import List from 'components/List.vue'
 
 export default {
   components: {
