@@ -5,9 +5,9 @@
     <transition name="fade">
       <div
         v-if="openState"
-        class="bg-black opacity-50 fixed w-full h-screen top-0 left-0"
-        @mousedown.stop="close()"
-        @touchstart.stop="close()"
+        class="bg-black opacity-50 z-10 fixed w-full h-screen top-0 left-0"
+        @mousedown.stop.prevent="close()"
+        @touchstart.stop.prevent="close()"
       ></div>
     </transition>
     <nav

@@ -3,10 +3,10 @@
     <transition name="fade" appear>
       <div
         v-if="menu"
-        class="fixed z-100 inset-0 bg-black bg-opacity-20 transition-opacity"
+        class="fixed z-10 inset-0 bg-black bg-opacity-20 transition-opacity"
         aria-hidden="true"
-        @mousedown.stop="closeMenu()"
-        @touchstart.stop="closeMenu()"
+        @mousedown.stop.prevent="closeMenu()"
+        @touchstart.stop.prevent="closeMenu()"
       ></div>
     </transition>
     <ButtonIcon icon="fas fa-ellipsis-v" @click="openMenu">
