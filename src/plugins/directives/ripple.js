@@ -112,8 +112,6 @@ const Ripple = {
 
       rippleContainer.style.direction = 'ltr'
 
-      console.log('start touch')
-
       setTimeout(function () {
         ripple.style.width = radius * 2 + 'px'
         ripple.style.height = radius * 2 + 'px'

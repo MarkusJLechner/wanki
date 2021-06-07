@@ -1,5 +1,10 @@
 <template>
-  <BaseModal :model-value="modelValue" :title="title" @close="$emit('close')">
+  <BaseModal
+    no-gutters
+    :model-value="modelValue"
+    :title="title"
+    @close="$emit('close')"
+  >
     <InputRadio :items="radioItems" :value="computedValue" @item="onItem" />
   </BaseModal>
 </template>

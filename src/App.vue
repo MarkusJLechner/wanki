@@ -2,10 +2,12 @@
   <main class="dark:bg-gray-600 bg-gray-200 dark:text-white h-screen text-lg">
     <router-view v-slot="{ Component, route }">
       <transition appear :name="route.meta.transition || transitionName">
-        <component
-          :is="Component"
-          class="flex flex-col dark:bg-gray-600 h-screen bg-gray-200"
-        />
+        <keep-alive include="Overview">
+          <component
+            :is="Component"
+            class="flex flex-col dark:bg-gray-600 h-screen bg-gray-200"
+          />
+        </keep-alive>
       </transition>
     </router-view>
   </main>
