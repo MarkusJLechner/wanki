@@ -4,17 +4,16 @@
     :title="modelValue?.text"
     @close="$emit('close')"
   >
-    <div v-if="modelValue">
-      {{ modelValue.data.col.id }}
-      <span class="block" v-html="modelValue.data.col.desc"></span>
-    </div>
+    <slot> </slot>
+    <List dense no-separation :value="value" @item="onClickItem" />
   </BaseModal>
 </template>
 
 <script>
 import BaseModal from '@/components/BaseModal.vue'
+import List from '@/components/List.vue'
 export default {
-  components: { BaseModal },
+  components: { List, BaseModal },
 
   props: {
     modelValue: {

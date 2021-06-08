@@ -52,7 +52,12 @@
     <ModalOptionsDeck
       :model-value="modalOptionsItem"
       @close="modalOptionsItem = null"
-    />
+    >
+      <div v-if="modalOptionsItem">
+        {{ modalOptionsItem.data.col.id }}
+        <span class="block" v-html="modalOptionsItem.data.col.desc"></span>
+      </div>
+    </ModalOptionsDeck>
   </div>
 </template>
 
