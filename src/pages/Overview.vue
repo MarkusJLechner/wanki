@@ -49,15 +49,17 @@
       and import them here
     </span>
 
-    <ModalOptionsDeck
+    <ModalOptions
       :model-value="modalOptionsItem"
+      :items="deckOptions"
       @close="modalOptionsItem = null"
     >
-      <div v-if="modalOptionsItem">
-        {{ modalOptionsItem.data.col.id }}
-        <span class="block" v-html="modalOptionsItem.data.col.desc"></span>
+      <div v-if="modalOptionsItem" class="p-4">
+        ID: {{ modelOptionDeckId }}
+        <span class="block" v-html="modelOptionDeckDesc" />
       </div>
-    </ModalOptionsDeck>
+      <div class="px-2 font-bold">Options:</div>
+    </ModalOptions>
   </div>
 </template>
 
@@ -71,13 +73,13 @@ import { database } from 'plugins/storage.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
-import ModalOptionsDeck from '@/components/ModalOptionsDeck.vue'
+import ModalOptions from '@/components/ModalOptions.vue'
 
 export default {
   name: 'Overview',
 
   components: {
-    ModalOptionsDeck,
+    ModalOptions,
     NumberDue,
     LoadingIcon,
     ButtonOptions,
@@ -94,7 +96,18 @@ export default {
       loading: false,
       showModalImport: false,
       modalOptionsItem: null,
+      deckOptions: [{ text: 'Delete', dispatch: this.onDelete }],
     }
+  },
+
+  computed: {
+    modelOptionDeckId() {
+      return this.modalOptionsItem.data.col.id
+    },
+
+    modelOptionDeckDesc() {
+      return this.modalOptionsItem.data.col.desc
+    },
   },
 
   mounted() {
@@ -143,6 +156,12 @@ export default {
 
     onImport() {
       this.showModalImport = true
+    },
+
+    async onDelete() {
+      const deck = await database.deck
+      await deck.del(this.modelOptionDeckId)
+      this.modalOptionsItem = null
     },
 
     closeImport() {

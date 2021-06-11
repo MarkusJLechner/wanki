@@ -26,7 +26,7 @@
         'py-3 px-4': dense,
         'py-4 px-4': !dense,
       }"
-      @click="onClick(item)"
+      @click.once="onClick(item)"
     >
       <hr
         v-if="item.type === 'seperator'"
@@ -192,8 +192,8 @@ export default {
         this.$router.push({ path: item.route })
       }
 
-      if (item.emit) {
-        this.$emit(item.emit, item)
+      if (item.dispatch) {
+        item.dispatch(item)
       }
     },
   },

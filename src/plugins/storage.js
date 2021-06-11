@@ -25,24 +25,34 @@ export const information = () => {
 }
 
 export const database = (() => {
-  const defaultStore = async (dbName, storeName) => {
+  const defaultStore = async (dbName, storeName, updateEvent) => {
     const dbPromise = await openDB(dbName, 1, {
       upgrade(db, oldVersion, newVersion) {
         db.createObjectStore(storeName, { autoIncrement: true })
       },
     })
 
+    function callUpdate() {
+      return updateEvent && updateEvent()
+    }
+
     async function get(key) {
-      return dbPromise.get(storeName, key)
+      return dbPromise.get(storeName, '' + key)
     }
     async function set(key, val) {
-      return dbPromise.put(storeName, val, key)
+      const result = await dbPromise.put(storeName, val, '' + key)
+      callUpdate()
+      return result
     }
     async function del(key) {
-      return dbPromise.delete(storeName, key)
+      const result = await dbPromise.delete(storeName, '' + key)
+      callUpdate()
+      return result
     }
     async function clear() {
-      return dbPromise.clear(storeName)
+      const result = await dbPromise.clear(storeName)
+      callUpdate()
+      return result
     }
     async function keys() {
       return dbPromise.getAllKeys(storeName)
@@ -68,6 +78,9 @@ export const database = (() => {
   const dbName = 'wanki'
 
   return {
-    deck: defaultStore(dbName, 'decks'),
+    deck: defaultStore(dbName, 'decks', () => {
+      document.dispatchEvent(new Event('page/overview/update'))
+      document.dispatchEvent(new Event('indexeddb/decks/update'))
+    }),
   }
 })()

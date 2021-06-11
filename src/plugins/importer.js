@@ -129,7 +129,4 @@ export const importParsedObject = async (object) => {
     apkg: object,
     col: sqlDeckCol,
   })
-
-  document.dispatchEvent(new Event('page/overview/update'))
-  document.dispatchEvent(new Event('indexeddb/decks/update'))
 }
