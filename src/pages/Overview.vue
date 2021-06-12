@@ -31,9 +31,18 @@
       @long-press="onMenu"
     >
       <template #suffix-item="{ item }">
-        <NumberDue :value="item.data.col.newToday[1]" color="blue" />
-        <NumberDue :value="item.data.col.revToday[1]" color="red" />
-        <NumberDue :value="item.data.col.lrnToday[1]" color="green" />
+        <NumberDue
+          :value="item.tables.col.decks[item.id].newToday[1]"
+          color="blue"
+        />
+        <NumberDue
+          :value="item.tables.col.decks[item.id].revToday[1]"
+          color="red"
+        />
+        <NumberDue
+          :value="item.tables.col.decks[item.id].lrnToday[1]"
+          color="green"
+        />
       </template>
     </List>
 
@@ -86,7 +95,7 @@ import ModalImport from 'components/ModalImport.vue'
 import TheHeader from 'components/TheHeader.vue'
 import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
-import { database } from 'plugins/storage.js'
+import { idb, idbDecks } from '@/plugins/idb.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
@@ -116,7 +125,7 @@ export default {
   data() {
     return {
       decks: [],
-      decksDb: null,
+      idbAllDecks: null,
       loading: false,
       showModalImport: false,
       showModalDelete: false,
@@ -138,11 +147,11 @@ export default {
 
   computed: {
     modelOptionDeckId() {
-      return this.modalOptionsItem.data.col.id
+      return this.modalOptionsItem.id
     },
 
     modelOptionDeckDesc() {
-      return this.modalOptionsItem.data.col.desc
+      return this.modalOptionsItem.desc
     },
 
     modelOptionDeckTitle() {
@@ -151,7 +160,8 @@ export default {
   },
 
   async mounted() {
-    this.decksDb = await database.decks
+    await this.fetchAllDecks()
+
     await this.updateList()
     document.addEventListener('page/overview/update', this.updateList)
   },
@@ -161,23 +171,26 @@ export default {
   },
 
   methods: {
+    async fetchAllDecks() {
+      this.idbAllDecks = await (await idbDecks).all()
+    },
+
     async updateList() {
       this.closeImport()
+
       this.loading = true
 
-      this.decks = (await this.decksDb.all()).map((item) => {
+      await this.fetchAllDecks()
+
+      this.decks = this.idbAllDecks.map((entry) => {
         return {
-          text: item.name,
-          data: {
-            col: item.col,
-            apkg: item.apkg,
-          },
+          text: entry.name,
+          desc: entry.tables.col.decks[entry.id].desc,
+          ...entry,
         }
       })
 
       this.loading = false
-
-      console.log(this.decks)
     },
 
     onClick(item) {
@@ -198,13 +211,14 @@ export default {
     },
 
     async onDelete() {
+      await (await idbDecks).del(this.modelOptionDeckId)
       this.showModalDelete = false
-      await this.decksDb.del(this.modelOptionDeckId)
+
       this.modalOptionsItem = null
     },
 
     async onRename() {
-      const db = await database.sqlLite('decks', this.modelOptionDeckId)
+      const db = await idb.sqlLite('decks', this.modelOptionDeckId)
       console.log(db)
       console.log(this.inputRename)
     },

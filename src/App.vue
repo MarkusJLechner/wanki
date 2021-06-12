@@ -16,7 +16,7 @@
 <script>
 import { watch } from 'vue'
 import { refstorage } from './store/globalstate'
-import { persist } from '@/plugins/storage.js'
+import { persist } from '@/plugins/idb.js'
 
 export default {
   data() {

@@ -1,8 +1,7 @@
 import { unzipSync } from 'fflate'
-import initSqlJs from 'sql.js/dist/sql-asm.js'
-import { database } from '@/plugins/storage.js'
+import { idb } from '@/plugins/idb.js'
 
-export const parseFile = async (file) => {
+export const decompressFile = async (file) => {
   if (!file) {
     throw new Error('No file defined')
   }
@@ -32,31 +31,27 @@ export const parseFile = async (file) => {
     throw new Error('No valid anki file')
   }
 
-  const parsed = {
-    sqllite: null,
-    media: [],
-    mediaMapping: {},
+  const mapped = {
+    collection: null,
+    files: [],
+    media: {},
   }
 
   filesDecompressed.forEach((file) => {
     if (file.type === 'sql') {
-      parsed.sqllite = file.file
+      mapped.collection = file.file
     }
 
     if (file.type === 'mapping') {
-      parsed.mediaMapping = file.file
+      mapped.media = file.file
     }
 
     if (file.type === 'media') {
-      parsed.media[file.filename] = file.file
+      mapped.files[file.filename] = file.file
     }
   })
 
-  return {
-    mediaMapping: parsed.mediaMapping,
-    media: parsed.media,
-    db: parsed.sqllite,
-  }
+  return mapped
 }
 
 export const fun = async (parsedDeck) => {
@@ -77,18 +72,16 @@ export const fun = async (parsedDeck) => {
 export const media = async (parsedDeck) => {
   return async function play(index) {
     if (typeof index === 'string') {
-      index = Object.values(parsedDeck.mediaMapping).findIndex(
-        (a) => a === index,
-      )
+      index = Object.values(parsedDeck.media).findIndex((a) => a === index)
     }
 
-    const uint8 = parsedDeck.media[index]
+    const uint8 = parsedDeck.files[index]
     if (!uint8) {
       throw new Error(
         'Could not find media with index ' +
           index +
           ' in filelength ' +
-          parsedDeck.media.length,
+          parsedDeck.files.length,
       )
     }
 
@@ -99,26 +92,4 @@ export const media = async (parsedDeck) => {
     audio.src = url
     return audio.play()
   }
-}
-
-export const importParsedObject = async (object) => {
-  const db = await database.sqlLite(object.db)
-  const sqlDecks = JSON.parse(
-    db.exec('select decks from col limit 1')[0].values,
-  )
-
-  console.log({ sqlDecks })
-
-  const [sqlDeckId, sqlDeckCol] = Object.entries(sqlDecks).filter(
-    (entry) => entry[1].name !== 'Default',
-  )[0]
-
-  console.log([sqlDeckId, sqlDeckCol])
-  const deck = await database.decks
-  await deck.set(sqlDeckId, {
-    name: sqlDeckCol.name,
-    id: sqlDeckId,
-    col: sqlDeckCol,
-    ...object,
-  })
 }

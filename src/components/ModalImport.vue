@@ -38,12 +38,12 @@
 <script>
 import BaseModal from 'components/BaseModal.vue'
 import { promptFile } from 'plugins/global.js'
-import { importParsedObject, parseFile } from '@/plugins/importer.js'
+import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
-import { database, persist } from '@/plugins/storage.js'
+import { idb, importDeck, persist } from '@/plugins/idb.js'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 
-let parsed = null
+let decompressedFile = null
 
 export default {
   components: { LoadingIcon, InputFile, BaseModal },
@@ -114,11 +114,9 @@ export default {
 
         const file = files.length ? files[0] : await promptFile(this.accept)
 
-        parsed = await parseFile(file)
+        decompressedFile = await decompressFile(file)
 
-        console.log(parsed)
-
-        //const db = await database.sqlLite(parsed.db)
+        //const db = await idb.sqlLite(parsed.db)
         //console.log(db)
         //const res = db.exec('SELECT * FROM notes')
 
@@ -139,15 +137,13 @@ export default {
     },
 
     async onImport() {
-      if (!parsed) {
+      if (!decompressedFile) {
         return
       }
 
-      console.log(parsed)
-
       await persist()
-      const deck = await importParsedObject(parsed)
-      console.log(deck)
+
+      const deck = await importDeck(decompressedFile)
     },
   },
 }
