@@ -2,6 +2,7 @@ export default {
   mounted(el) {
     el = el.querySelector('input')
     el.focus()
-    el.select()
+    // todo add option
+    // el.select()
   },
 }

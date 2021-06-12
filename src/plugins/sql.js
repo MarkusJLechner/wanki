@@ -1,5 +1,5 @@
 import initSqlJs from 'sql.js/dist/sql-asm.js'
-import { idbDecks } from '@/plugins/idb.js'
+import { idbDecks, tableColJsonParse } from '@/plugins/idb.js'
 
 const sqlDbCache = {}
 
@@ -25,8 +25,13 @@ export const initSqlDb = async (uint8Array) => {
   }
 }
 
-export const sqlSelect = (database, query) => {
-  const stmt = database.prepare(query)
+export const sqlPrepare = (database, query, params) => {
+  const stmt = database.prepare(query, params)
   stmt.step()
   return stmt.getAsObject()
+}
+
+export const sqlDeck = async (deckId, query, params) => {
+  const sqlDb = await sqlDbDeck(deckId)
+  return sqlPrepare(sqlDb, query, params)
 }

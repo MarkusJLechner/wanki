@@ -103,6 +103,7 @@ import ModalOptions from '@/components/ModalOptions.vue'
 import ModalDelete from '@/components/ModalDelete.vue'
 import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
+import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 
 export default {
   name: 'Overview',
@@ -218,9 +219,35 @@ export default {
     },
 
     async onRename() {
-      const db = await idb.sqlLite('decks', this.modelOptionDeckId)
-      console.log(db)
+      console.log(sqlDbDeck(this.modelOptionDeckId))
+
+      const decks = JSON.parse(
+        (await sqlDeck(this.modelOptionDeckId, 'select decks from col')).decks,
+      )
+
+      console.log(this.modelOptionDeckId, decks)
+      decks[this.modelOptionDeckId].name = this.inputRename
+
+      const result = await sqlDeck(
+        this.modelOptionDeckId,
+        'UPDATE col SET decks = $id WHERE id = 1',
+        {
+          $id: JSON.stringify(decks),
+        },
+      )
+
+      await (
+        await idbDecks
+      ).update(this.modelOptionDeckId, (result) => {
+        result.name = this.inputRename
+        result.tables.col.decks = decks
+        return result
+      })
+
+      console.log(result)
       console.log(this.inputRename)
+
+      this.showModalRename = false
     },
 
     closeImport() {

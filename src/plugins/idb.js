@@ -1,5 +1,5 @@
 import { openDB } from 'idb/with-async-ittr.js'
-import { initSqlDb, sqlDbDeck, sqlSelect } from '@/plugins/sql.js'
+import { initSqlDb, sqlDbDeck, sqlDeck, sqlPrepare } from '@/plugins/sql.js'
 
 export const persist = () => {
   return navigator.storage.persist().then(function (persistent) {
@@ -106,7 +106,7 @@ export const importDeck = async (decompressedFile) => {
   const sqlDb = await initSqlDb(decompressedFile.collection)
 
   const tableCol = tableColJsonParse(
-    sqlSelect(sqlDb, 'select * from col limit 1'),
+    sqlPrepare(sqlDb, 'select * from col limit 1'),
   )
 
   const [deckId, deckName] = Object.entries(tableCol.decks).filter(
@@ -136,9 +136,8 @@ export const tableColJsonParse = (tableCol) => {
 }
 
 export const updateDeckParsed = async (deckId) => {
-  const sqlDb = await sqlDbDeck(deckId)
   const tableCol = tableColJsonParse(
-    sqlSelect(sqlDb, 'select * from col limit 1'),
+    await sqlDeck(deckId, 'select * from col limit 1'),
   )
 
   await (
