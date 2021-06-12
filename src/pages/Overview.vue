@@ -60,6 +60,23 @@
       </div>
       <div class="px-2 font-bold">Options:</div>
     </ModalOptions>
+
+    <ModalDelete
+      :model-value="showModalDelete"
+      @confirm="onDelete"
+      @close="showModalDelete = false"
+    >
+    </ModalDelete>
+
+    <BaseModal
+      :model-value="showModalRename"
+      confirm="Rename"
+      title="Rename"
+      @confirm="onRename"
+      @close="showModalRename = false"
+    >
+      <input-text-field v-model="inputRename" v-autofocus label="New name" />
+    </BaseModal>
   </div>
 </template>
 
@@ -74,11 +91,17 @@ import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
 import ModalOptions from '@/components/ModalOptions.vue'
+import ModalDelete from '@/components/ModalDelete.vue'
+import BaseModal from '@/components/BaseModal.vue'
+import InputTextField from '@/components/InputTextField.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    InputTextField,
+    BaseModal,
+    ModalDelete,
     ModalOptions,
     NumberDue,
     LoadingIcon,
@@ -93,10 +116,23 @@ export default {
   data() {
     return {
       decks: [],
+      decksDb: null,
       loading: false,
       showModalImport: false,
+      showModalDelete: false,
+      showModalRename: false,
+      inputRename: '',
       modalOptionsItem: null,
-      deckOptions: [{ text: 'Delete', dispatch: this.onDelete }],
+      deckOptions: [
+        {
+          text: 'Rename',
+          dispatch: () => {
+            this.inputRename = this.modelOptionDeckTitle
+            this.showModalRename = true
+          },
+        },
+        { text: 'Delete', dispatch: () => (this.showModalDelete = true) },
+      ],
     }
   },
 
@@ -108,14 +144,19 @@ export default {
     modelOptionDeckDesc() {
       return this.modalOptionsItem.data.col.desc
     },
+
+    modelOptionDeckTitle() {
+      return this.modalOptionsItem.text
+    },
   },
 
-  mounted() {
-    this.updateList()
+  async mounted() {
+    this.decksDb = await database.decks
+    await this.updateList()
     document.addEventListener('page/overview/update', this.updateList)
   },
 
-  unmounted() {
+  beforeUnmount() {
     document.removeEventListener('page/overview/update', this.updateList)
   },
 
@@ -124,9 +165,7 @@ export default {
       this.closeImport()
       this.loading = true
 
-      const deck = await database.deck
-
-      this.decks = (await deck.all()).map((item) => {
+      this.decks = (await this.decksDb.all()).map((item) => {
         return {
           text: item.name,
           data: {
@@ -159,9 +198,15 @@ export default {
     },
 
     async onDelete() {
-      const deck = await database.deck
-      await deck.del(this.modelOptionDeckId)
+      this.showModalDelete = false
+      await this.decksDb.del(this.modelOptionDeckId)
       this.modalOptionsItem = null
+    },
+
+    async onRename() {
+      const db = await database.sqlLite('decks', this.modelOptionDeckId)
+      console.log(db)
+      console.log(this.inputRename)
     },
 
     closeImport() {

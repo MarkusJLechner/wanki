@@ -78,7 +78,7 @@ export const database = (() => {
   const dbName = 'wanki'
 
   return {
-    deck: defaultStore(dbName, 'decks', () => {
+    decks: defaultStore(dbName, 'decks', () => {
       document.dispatchEvent(new Event('page/overview/update'))
       document.dispatchEvent(new Event('indexeddb/decks/update'))
     }),

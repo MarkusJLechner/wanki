@@ -52,19 +52,10 @@ export const parseFile = async (file) => {
     }
   })
 
-  let database = null
-  try {
-    const SQL = await initSqlJs()
-    database = new SQL.Database(parsed.sqllite)
-  } catch (e) {
-    console.log(e)
-    throw new Error('Error while parsing database')
-  }
-
   return {
     mediaMapping: parsed.mediaMapping,
     media: parsed.media,
-    db: database,
+    db: parsed.sqllite,
   }
 }
 
@@ -111,8 +102,9 @@ export const media = async (parsedDeck) => {
 }
 
 export const importParsedObject = async (object) => {
+  const db = await database.sqlLite(object.db)
   const sqlDecks = JSON.parse(
-    object.db.exec('select decks from col limit 1')[0].values,
+    db.exec('select decks from col limit 1')[0].values,
   )
 
   console.log({ sqlDecks })
@@ -122,11 +114,11 @@ export const importParsedObject = async (object) => {
   )[0]
 
   console.log([sqlDeckId, sqlDeckCol])
-  const deck = await database.deck
+  const deck = await database.decks
   await deck.set(sqlDeckId, {
     name: sqlDeckCol.name,
     id: sqlDeckId,
-    apkg: object,
     col: sqlDeckCol,
+    ...object,
   })
 }

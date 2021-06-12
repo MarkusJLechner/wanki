@@ -26,7 +26,7 @@
         'py-3 px-4': dense,
         'py-4 px-4': !dense,
       }"
-      @click.once="onClick(item)"
+      @click.prevent="onClick(item)"
     >
       <hr
         v-if="item.type === 'seperator'"

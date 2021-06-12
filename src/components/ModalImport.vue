@@ -40,7 +40,7 @@ import BaseModal from 'components/BaseModal.vue'
 import { promptFile } from 'plugins/global.js'
 import { importParsedObject, parseFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
-import { persist } from '@/plugins/storage.js'
+import { database, persist } from '@/plugins/storage.js'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 
 let parsed = null
@@ -118,7 +118,9 @@ export default {
 
         console.log(parsed)
 
-        const res = parsed.db.exec('SELECT * FROM notes')
+        //const db = await database.sqlLite(parsed.db)
+        //console.log(db)
+        //const res = db.exec('SELECT * FROM notes')
 
         // parsed.fun({
         //   start: Math.floor(Math.random() * parsed.media.length),
@@ -126,7 +128,7 @@ export default {
         //   time: 700,
         // })
 
-        console.log(res)
+        // console.log(res)
 
         this.currentState = this.state.loaded
       } catch (e) {
