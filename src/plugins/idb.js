@@ -1,5 +1,11 @@
 import { openDB } from 'idb/with-async-ittr.js'
-import { initSqlDb, sqlDbDeck, sqlDeck, sqlPrepare } from '@/plugins/sql.js'
+import {
+  exportSqlDb,
+  initSqlDb,
+  sqlDbDeck,
+  sqlDeck,
+  sqlPrepare,
+} from '@/plugins/sql.js'
 
 export const persist = () => {
   return navigator.storage.persist().then(function (persistent) {
@@ -144,6 +150,17 @@ export const updateDeckParsed = async (deckId) => {
     await idbDecks
   ).update(deckId, (result) => {
     result.tables.col = tableCol
+    return result
+  })
+}
+
+export const saveDirtySql = async (deckId) => {
+  const uint8Array = await exportSqlDb(deckId)
+
+  await (
+    await idbDecks
+  ).update(deckId, (result) => {
+    result.decompressedFile.collection = uint8Array
     return result
   })
 }

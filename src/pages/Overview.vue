@@ -95,7 +95,7 @@ import ModalImport from 'components/ModalImport.vue'
 import TheHeader from 'components/TheHeader.vue'
 import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
-import { idb, idbDecks } from '@/plugins/idb.js'
+import { idb, idbDecks, saveDirtySql } from '@/plugins/idb.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
@@ -104,6 +104,7 @@ import ModalDelete from '@/components/ModalDelete.vue'
 import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
+import { exportDeck } from '@/plugins/exporter.js'
 
 export default {
   name: 'Overview',
@@ -139,6 +140,12 @@ export default {
           dispatch: () => {
             this.inputRename = this.modelOptionDeckTitle
             this.showModalRename = true
+          },
+        },
+        {
+          text: 'Export',
+          dispatch: () => {
+            this.onExport()
           },
         },
         { text: 'Delete', dispatch: () => (this.showModalDelete = true) },
@@ -218,24 +225,37 @@ export default {
       this.modalOptionsItem = null
     },
 
+    async onExport() {
+      console.log('on export')
+      const result = await exportDeck(this.modelOptionDeckId)
+      console.log(result)
+    },
+
     async onRename() {
       console.log(sqlDbDeck(this.modelOptionDeckId))
 
+      console.time('get idb decks')
       const decks = JSON.parse(
         (await sqlDeck(this.modelOptionDeckId, 'select decks from col')).decks,
       )
+      console.timeEnd('get idb decks')
 
       console.log(this.modelOptionDeckId, decks)
       decks[this.modelOptionDeckId].name = this.inputRename
 
+      console.log('update', { decks })
+
+      console.time('update sql collection')
       const result = await sqlDeck(
         this.modelOptionDeckId,
-        'UPDATE col SET decks = $id WHERE id = 1',
+        'UPDATE col SET decks = $decks WHERE id = 1',
         {
-          $id: JSON.stringify(decks),
+          $decks: JSON.stringify(decks),
         },
       )
+      console.timeEnd('update sql collection')
 
+      console.time('update idb deck parsed')
       await (
         await idbDecks
       ).update(this.modelOptionDeckId, (result) => {
@@ -243,8 +263,13 @@ export default {
         result.tables.col.decks = decks
         return result
       })
+      console.timeEnd('update idb deck parsed')
 
-      console.log(result)
+      console.time('save dirty collection to idb')
+      await saveDirtySql(this.modelOptionDeckId)
+      console.timeEnd('save dirty collection to idb')
+
+      console.log({ result })
       console.log(this.inputRename)
 
       this.showModalRename = false

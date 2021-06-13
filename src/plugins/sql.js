@@ -15,6 +15,11 @@ export const sqlDbDeck = async (deckId) => {
   return sqlDbCache[deckId]
 }
 
+export const exportSqlDb = async (deckId) => {
+  const db = await sqlDbDeck(deckId)
+  return db.export()
+}
+
 export const initSqlDb = async (uint8Array) => {
   try {
     const sql = await initSqlJs()
@@ -28,7 +33,9 @@ export const initSqlDb = async (uint8Array) => {
 export const sqlPrepare = (database, query, params) => {
   const stmt = database.prepare(query, params)
   stmt.step()
-  return stmt.getAsObject()
+  const obj = stmt.getAsObject()
+  stmt.free()
+  return obj
 }
 
 export const sqlDeck = async (deckId, query, params) => {
