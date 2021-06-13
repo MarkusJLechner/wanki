@@ -32,6 +32,10 @@ export const exportDeck = async (deckId) => {
       zipSync(decompressedFile, {
         // GZIP-specific: the filename to use when decompressed
         filename,
+        // Higher level means lower performance but better compression
+        // The level ranges from 0 (no compression) to 9 (max compression)
+        // The default level is 6
+        level: 0,
         // GZIP-specific: the modification time. Can be a Date, date string,
         // or Unix timestamp
         mtime: new Date().toISOString(),
@@ -39,10 +43,10 @@ export const exportDeck = async (deckId) => {
     )
   })
 
-  downloadBlob(compressed, filename, 'application/zip')
+  await downloadBlob(compressed, filename, 'application/zip')
 }
 
-export const downloadURL = (data, fileName) => {
+export const downloadURL = async (data, fileName) => {
   const a = document.createElement('a')
   a.href = data
   a.download = fileName
@@ -52,14 +56,19 @@ export const downloadURL = (data, fileName) => {
   a.remove()
 }
 
-export const downloadBlob = (data, fileName, mimeType) => {
+export const downloadBlob = async (data, fileName, mimeType) => {
   const blob = new Blob([data], {
     type: mimeType,
   })
 
   const url = window.URL.createObjectURL(blob)
 
-  downloadURL(url, fileName)
+  await downloadURL(url, fileName)
 
-  setTimeout(() => window.URL.revokeObjectURL(url), 1000)
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url)
+      resolve()
+    }, 500),
+  )
 }

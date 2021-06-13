@@ -1,5 +1,12 @@
 <template>
-  <ul class="w-full flex flex-col text-lg" :class="{ 'py-2': !noGutters }">
+  <ul
+    class="w-full flex flex-col text-lg"
+    :class="{
+      'py-2': !noGutters,
+      'text-gray-600 dark:text-gray-400': isAnyLoading(),
+    }"
+    @[isAnyLoading()].capture.stop.prevent
+  >
     <li
       v-for="(item, index) in value"
       :key="index"
@@ -40,14 +47,20 @@
         class="pr-4"
         :class="{ [getIcon(item)]: getIcon(item) }"
       />
-      <span v-if="getText(item)" class="flex-grow flex flex-col">
-        {{ getText(item) }}
-        <span
-          v-if="getSubText(item)"
-          class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
-          >{{ getSubText(item) }}</span
-        >
-      </span>
+      <div class="flex flex-grow items-center">
+        <span v-if="getText(item)" class="flex flex-col">
+          {{ getText(item) }}
+          <span
+            v-if="getSubText(item)"
+            class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            >{{ getSubText(item) }}</span
+          >
+        </span>
+
+        <div v-if="callFn(item, 'loading')" class="px-2">
+          <i class="text-black dark:text-white fas fa-spinner fa-spin" />
+        </div>
+      </div>
 
       <div v-if="hasBoolean(item)">
         <InputBoolean :model-value="getBoolean(item)" />
@@ -127,7 +140,15 @@ export default {
   },
 
   methods: {
+    isAnyLoading() {
+      return this.value.some((v) => this.callFn(v, 'loading')) ? 'click' : null
+    },
+
     onLongPress(item) {
+      if (this.isAnyLoading()) {
+        return
+      }
+
       this.$emit('long-press', item)
     },
 
@@ -174,6 +195,10 @@ export default {
     },
 
     onClick(item) {
+      if (this.isAnyLoading()) {
+        return
+      }
+
       this.$emit('item', item)
 
       if (item.radio) {

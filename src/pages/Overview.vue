@@ -131,6 +131,7 @@ export default {
       showModalDelete: false,
       showModalRename: false,
       loadingOnRename: false,
+      loadingOnExport: false,
       inputRename: '',
       modalOptionsItem: null,
       deckOptions: [
@@ -143,6 +144,7 @@ export default {
         },
         {
           text: 'Export',
+          loading: () => this.loadingOnExport,
           dispatch: () => {
             this.onExport()
           },
@@ -232,7 +234,9 @@ export default {
     },
 
     async onExport() {
+      this.loadingOnExport = true
       await exportDeck(this.modelOptionDeckId)
+      this.loadingOnExport = false
     },
 
     async onRename() {
