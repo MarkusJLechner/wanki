@@ -3,6 +3,7 @@
     :model-value="modelValue"
     title="Import"
     confirm="Import"
+    :loading="loadingOnImport"
     :disable-confirm="!canImport"
     @update:model-value="$emit('update:model-value', $event)"
     @confirm="onImport"
@@ -40,7 +41,7 @@ import BaseModal from 'components/BaseModal.vue'
 import { promptFile } from 'plugins/global.js'
 import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
-import { idb, importDeck, persist } from '@/plugins/idb.js'
+import { importDeck, persist } from '@/plugins/idb.js'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 
 let decompressedFile = null
@@ -60,9 +61,12 @@ export default {
     },
   },
 
+  emits: ['close'],
+
   data() {
     return {
       error: null,
+      loadingOnImport: false,
       state: {
         init: 'init',
         loading: 'loading',
@@ -104,6 +108,7 @@ export default {
 
   methods: {
     async onInitImport(files) {
+      this.loadingOnImport = true
       this.error = null
       this.files = []
       this.renderingFiles = []
@@ -116,24 +121,14 @@ export default {
 
         decompressedFile = await decompressFile(file)
 
-        //const db = await idb.sqlLite(parsed.db)
-        //console.log(db)
-        //const res = db.exec('SELECT * FROM notes')
-
-        // parsed.fun({
-        //   start: Math.floor(Math.random() * parsed.media.length),
-        //   max: 10,
-        //   time: 700,
-        // })
-
-        // console.log(res)
-
         this.currentState = this.state.loaded
       } catch (e) {
         this.currentState = this.state.error
         console.error(e)
         this.error = e.message
       }
+
+      this.loadingOnImport = false
     },
 
     async onImport() {
@@ -141,9 +136,18 @@ export default {
         return
       }
 
+      this.loadingOnImport = true
+
       await persist()
 
       const deck = await importDeck(decompressedFile)
+
+      this.loadingOnImport = false
+
+      decompressedFile = null
+
+      console.log('close')
+      this.$emit('close')
     },
   },
 }

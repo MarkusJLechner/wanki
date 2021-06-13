@@ -128,8 +128,6 @@ export const importDeck = async (decompressedFile) => {
     },
     decompressedFile: { ...decompressedFile },
   })
-
-  await updateDeckParsed(deckId)
 }
 
 export const tableColJsonParse = (tableCol) => {

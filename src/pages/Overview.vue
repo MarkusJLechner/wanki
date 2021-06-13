@@ -18,7 +18,7 @@
       />
     </TheHeader>
 
-    <ModalImport v-model="showModalImport" />
+    <ModalImport v-model="showModalImport" @close="closeImport" />
 
     <span v-if="loading" class="p-4"
       >Loading decks <loading-icon class="ml-2" />
@@ -103,6 +103,7 @@ import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
+import dexiedb from '@/plugins/dexie.js'
 
 export default {
   name: 'Overview',
@@ -169,6 +170,8 @@ export default {
   },
 
   async mounted() {
+    console.log(dexiedb)
+
     await this.fetchAllDecks()
 
     await this.updateList()
@@ -185,8 +188,6 @@ export default {
     },
 
     async updateList() {
-      this.closeImport()
-
       this.loading = true
 
       await this.fetchAllDecks()
