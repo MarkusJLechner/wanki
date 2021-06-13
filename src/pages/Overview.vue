@@ -31,18 +31,9 @@
       @long-press="onMenu"
     >
       <template #suffix-item="{ item }">
-        <NumberDue
-          :value="item.tables.col.decks[item.id].newToday[1]"
-          color="blue"
-        />
-        <NumberDue
-          :value="item.tables.col.decks[item.id].revToday[1]"
-          color="red"
-        />
-        <NumberDue
-          :value="item.tables.col.decks[item.id].lrnToday[1]"
-          color="green"
-        />
+        <NumberDue :value="item.decks[item.id]?.newToday[1]" color="blue" />
+        <NumberDue :value="item.decks[item.id]?.revToday[1]" color="red" />
+        <NumberDue :value="item.decks[item.id]?.lrnToday[1]" color="green" />
       </template>
     </List>
 
@@ -95,7 +86,7 @@ import ModalImport from 'components/ModalImport.vue'
 import TheHeader from 'components/TheHeader.vue'
 import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
-import { idb, idbDecks, saveDirtySql } from '@/plugins/idb.js'
+import { idbDecks, saveDirtySql } from '@/plugins/idb.js'
 import ButtonOptions from 'components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
@@ -192,11 +183,18 @@ export default {
 
       this.decks = this.idbAllDecks.map((entry) => {
         return {
+          id: entry.id,
           text: entry.name,
           desc: entry.tables.col.decks[entry.id].desc,
-          ...entry,
+          decks: entry.tables.col.decks,
         }
       })
+
+      if (this.modalOptionsItem) {
+        this.modalOptionsItem = this.decks.find(
+          (entry) => entry.id === this.modalOptionsItem.id,
+        )
+      }
 
       this.loading = false
     },
@@ -226,9 +224,7 @@ export default {
     },
 
     async onExport() {
-      console.log('on export')
-      const result = await exportDeck(this.modelOptionDeckId)
-      console.log(result)
+      await exportDeck(this.modelOptionDeckId)
     },
 
     async onRename() {

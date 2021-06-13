@@ -39,7 +39,6 @@ export const exportDeck = async (deckId) => {
     )
   })
 
-  console.log(compressed)
   downloadBlob(compressed, filename, 'application/zip')
 }
 
