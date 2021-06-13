@@ -23,8 +23,11 @@
         focus:shadow-outline
       "
       type="text"
+      :autocomplete="autocomplete"
       placeholder="Username"
       :value="modelValue"
+      :disabled="disabled"
+      @keydown.enter="$emit('enter')"
       @input="$emit('update:modelValue', $event.target.value)"
     />
   </div>
@@ -44,8 +47,18 @@ export default {
       type: String,
       default: '',
     },
+
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+
+    autocomplete: {
+      type: String,
+      default: 'off',
+    },
   },
 
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'enter'],
 }
 </script>

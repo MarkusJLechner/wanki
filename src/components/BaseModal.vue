@@ -76,6 +76,7 @@
             :confirm="confirm"
             :actions="actions"
             :disable-confirm="disableConfirm"
+            :loading="loading"
             @close="onClose"
             @confirm="onConfirm"
             @click:action="onAction"
@@ -94,6 +95,11 @@ export default {
 
   props: {
     modelValue: {
+      type: Boolean,
+      default: false,
+    },
+
+    loading: {
       type: Boolean,
       default: false,
     },
@@ -154,6 +160,10 @@ export default {
     },
 
     onClose() {
+      if (this.loading) {
+        return
+      }
+
       this.$emit('close')
       this.closeModal()
     },

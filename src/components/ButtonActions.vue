@@ -1,14 +1,16 @@
 <template>
   <div class="flex justify-end">
-    <component
-      :is="getComponent(action)"
-      v-for="(action, index) in computedActions"
-      :key="index"
-      :text="action.text"
-      class="transition-opacity duration-200 ease-in-out"
-      :class="{ 'opacity-30': isDisabled(action) }"
-      @click="onClick(action)"
-    />
+    <div v-for="(action, index) in computedActions" :key="index">
+      <component
+        :is="getComponent(action)"
+        v-if="!loading || action.emit === 'confirm'"
+        :text="action.text"
+        :loading="loading && action.emit === 'confirm'"
+        class="transition-opacity duration-200 ease-in-out"
+        :class="{ 'opacity-30': isDisabled(action) }"
+        @click="onClick(action)"
+      />
+    </div>
   </div>
 </template>
 
@@ -26,6 +28,11 @@ export default {
     disableConfirm: {
       type: Boolean,
       default: false,
+    },
+
+    loading: {
+      type: Boolean,
+      default: true,
     },
 
     confirmText: {
@@ -82,8 +89,8 @@ export default {
       switch (action.type) {
         case 'spacer':
           return Spacer
-      default:
-        return Button
+        default:
+          return Button
       }
     },
 

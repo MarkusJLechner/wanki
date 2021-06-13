@@ -72,10 +72,17 @@
       :model-value="showModalRename"
       confirm="Rename"
       title="Rename"
+      :loading="loadingOnRename"
       @confirm="onRename"
       @close="showModalRename = false"
     >
-      <input-text-field v-model="inputRename" v-autofocus label="New name" />
+      <input-text-field
+        v-model="inputRename"
+        v-autofocus
+        :disabled="loadingOnRename"
+        label="New name"
+        @enter="onRename"
+      />
     </BaseModal>
   </div>
 </template>
@@ -123,6 +130,7 @@ export default {
       showModalImport: false,
       showModalDelete: false,
       showModalRename: false,
+      loadingOnRename: false,
       inputRename: '',
       modalOptionsItem: null,
       deckOptions: [
@@ -228,6 +236,8 @@ export default {
     },
 
     async onRename() {
+      this.loadingOnRename = true
+
       console.log(sqlDbDeck(this.modelOptionDeckId))
 
       console.time('get idb decks')
@@ -269,6 +279,8 @@ export default {
       console.log(this.inputRename)
 
       this.showModalRename = false
+
+      this.loadingOnRename = false
     },
 
     closeImport() {
