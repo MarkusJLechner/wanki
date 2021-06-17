@@ -28,6 +28,7 @@
       v-else-if="decks.length"
       no-gutters
       :value="decks"
+      @item="onDeck"
       @long-press="onMenu"
     >
       <template #suffix-item="{ item }">
@@ -217,6 +218,10 @@ export default {
         default:
           break
       }
+    },
+
+    onDeck(item) {
+      console.log(item)
     },
 
     onMenu(item) {

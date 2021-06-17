@@ -36,6 +36,7 @@ export default {
       }
     }
 
+    document.addEventListener('reset-long-press', cancel, { passive: true })
     ;['mousedown', 'touchstart'].forEach((e) => el.addEventListener(e, start))
     ;['click', 'mouseout', 'touchend', 'touchcancel'].forEach((e) =>
       el.addEventListener(e, cancel),
