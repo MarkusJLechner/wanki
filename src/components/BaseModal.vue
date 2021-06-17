@@ -2,7 +2,14 @@
   <transition name="fade" appear>
     <div
       v-if="modelValue"
-      class="fixed z-20 inset-0 bg-black bg-opacity-60 transition-opacity"
+      class="
+        fixed
+        z-20
+        inset-0
+        bg-black bg-opacity-60
+        backdrop-blur-[4px] backdrop-filter
+        transition-opacity
+      "
       aria-hidden="true"
       @click.stop="onClose"
     ></div>

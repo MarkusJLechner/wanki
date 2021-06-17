@@ -5,7 +5,16 @@
     <transition name="fade">
       <div
         v-if="openState"
-        class="bg-black opacity-50 z-10 fixed w-full h-screen top-0 left-0"
+        class="
+          bg-black bg-opacity-40
+          z-10
+          fixed
+          w-full
+          h-screen
+          top-0
+          left-0
+          backdrop-blur-[4px] backdrop-filter
+        "
         @mousedown.stop.prevent="close()"
         @touchstart.stop.prevent="close()"
       ></div>
