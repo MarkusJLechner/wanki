@@ -104,7 +104,7 @@ import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
-import dexiedb from '@/plugins/dexie.js'
+import { Card } from '@/plugins/wankidb/card.js'
 
 export default {
   name: 'Overview',
@@ -171,7 +171,7 @@ export default {
   },
 
   async mounted() {
-    console.log(dexiedb)
+    console.log(new Card())
 
     await this.fetchAllDecks()
 
