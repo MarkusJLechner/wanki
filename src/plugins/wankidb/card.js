@@ -9,89 +9,93 @@ export class Card {
     if (id) {
       this.load(id)
     }
-    this._id = new Date().getTime()
+    this.id = new Date().getTime()
   }
 
   async load(id) {
     const entry = await wankidb.cards.where('id').equals(id).first()
 
-    this._id = entry.id
-    this._nid = entry.nid
-    this._did = entry.did
-    this._ord = entry.ord
-    this._mod = entry.mod
-    this._usn = entry.usn
-    this._type = entry.type
-    this._queue = entry.queue
-    this._due = entry.due
-    this._ivl = entry.ivl
-    this._factor = entry.factor
-    this._reps = entry.reps
-    this._lapses = entry.lapses
-    this._left = entry.left
-    this._odue = entry.odue
-    this._odid = entry.odid
-    this._flags = entry.flags
-    this._data = entry.data
+    this.id = entry.id
+    this.nid = entry.nid
+    this.did = entry.did
+    this.ord = entry.ord
+    this.mod = entry.mod
+    this.usn = entry.usn
+    this.type = entry.type
+    this.queue = entry.queue
+    this.due = entry.due
+    this.ivl = entry.ivl
+    this.factor = entry.factor
+    this.reps = entry.reps
+    this.lapses = entry.lapses
+    this.left = entry.left
+    this.odue = entry.odue
+    this.odid = entry.odid
+    this.flags = entry.flags
+    this.data = entry.data
   }
 
-  _add() {
+  #add() {
     return wankidb.cards.add({
-      id: this._id,
-      nid: this._nid,
-      did: this._did,
-      ord: this._ord,
-      mod: this._mod,
-      usn: this._usn,
-      type: this._type,
-      queue: this._queue,
-      due: this._due,
-      ivl: this._ivl,
-      factor: this._factor,
-      reps: this._reps,
-      lapses: this._lapses,
-      left: this._left,
-      odue: this._odue,
-      odid: this._odid,
-      flags: this._flags,
-      data: this._data,
+      id: this.id,
+      nid: this.nid,
+      did: this.did,
+      ord: this.ord,
+      mod: this.mod,
+      usn: this.usn,
+      type: this.type,
+      queue: this.queue,
+      due: this.due,
+      ivl: this.ivl,
+      factor: this.factor,
+      reps: this.reps,
+      lapses: this.lapses,
+      left: this.left,
+      odue: this.odue,
+      odid: this.odid,
+      flags: this.flags,
+      data: this.data,
     })
   }
 
   save() {
-    if (this.id) {
-      return this._add()
+    if (!this.id) {
+      return this.#add()
     }
 
     return wankidb.cards.put(this)
   }
 
-  get mid() {
-    return this._mid
+  get note() {
+    return wankidb.notes.get({ id: this.nid })
+  }
+
+  get field_field_mid() {
+    return this.mid
   }
 
   /***
    * the epoch milliseconds of when the card was created
    * @returns {number}
    */
-  get id() {
-    return this._id
+  get field_field_id() {
+    return this.id
   }
 
   /***
    * notes.id
    * @returns {number}
    */
-  get nid() {
-    return this._nid
+  get field_field_nid() {
+    return this.nid
   }
 
   /***
    * deck id (available in col table)
    * @returns {number}
    */
-  get did() {
-    return this._did
+  get field_field_did() {
+    return this.did
   }
 
   /***
@@ -100,16 +104,16 @@ export class Card {
    *  for cloze deletions, valid values are from 0 to max cloze index - 1 (they're 0 indexed despite the first being called `c1`)
    * @returns {number}
    */
-  get ord() {
-    return this._ord
+  get field_field_ord() {
+    return this.ord
   }
 
   /***
    * modificaton time as epoch seconds
    * @returns {number}
    */
-  get mod() {
-    return this._mod
+  get field_field_mod() {
+    return this.mod
   }
 
   /***
@@ -118,16 +122,16 @@ export class Card {
    *  usn < server usn indicates changes that need to be pulled from server.
    * @returns {number}
    */
-  get usn() {
-    return this._usn
+  get field_field_usn() {
+    return this.usn
   }
 
   /***
    * 0=new, 1=learning, 2=review, 3=relearning
    * @returns {number}
    */
-  get type() {
-    return this._type
+  get field_field_type() {
+    return this.type
   }
 
   /***
@@ -140,8 +144,8 @@ export class Card {
    *  4=preview
    * @returns {number}
    */
-  get queue() {
-    return this._queue
+  get field_field_queue() {
+    return this.queue
   }
 
   /***
@@ -151,32 +155,32 @@ export class Card {
    *  learning: integer timestamp in second
    * @returns {number}
    */
-  get due() {
-    return this._due
+  get field_field_due() {
+    return this.due
   }
 
   /***
    * interval (used in SRS algorithm). Negative = seconds, positive = days
    * @returns {number}
    */
-  get ivl() {
-    return this._ivl
+  get field_field_ivl() {
+    return this.ivl
   }
 
   /***
    * The ease factor of the card in permille (parts per thousand). If the ease factor is 2500, the card’s interval will be multiplied by 2.5 the next time you press Good.
    * @returns {number}
    */
-  get factor() {
-    return this._factor
+  get field_field_factor() {
+    return this.factor
   }
 
   /***
    * number of reviews
    * @returns {number}
    */
-  get reps() {
-    return this._reps
+  get field_field_reps() {
+    return this.reps
   }
 
   /***
@@ -184,8 +188,8 @@ export class Card {
    *  to "was answered incorrectly" state
    * @returns {number}
    */
-  get lapses() {
-    return this._lapses
+  get field_field_lapses() {
+    return this.lapses
   }
 
   /***
@@ -194,8 +198,8 @@ export class Card {
    *  a the number of reps left today
    * @returns {number}
    */
-  get left() {
-    return this._left
+  get field_field_left() {
+    return this.left
   }
 
   /***
@@ -204,127 +208,32 @@ export class Card {
    * In any other case it's 0.
    * @returns {number}
    */
-  get odue() {
-    return this._odue
+  get field_field_odue() {
+    return this.odue
   }
 
   /***
    * original did: only used when the card is currently in filtered deck
    * @returns {number}
    */
-  get odid() {
-    return this._odid
+  get field_field_odid() {
+    return this.odid
   }
 
   /***
    * an integer. This integer mod 8 represents a "flag", which can be see in browser and while reviewing a note. Red 1, Orange 2, Green 3, Blue 4, no flag: 0. This integer divided by 8 represents currently nothing
    * @returns {number}
    */
-  get flags() {
-    return this._flags
+  get field_field_flags() {
+    return this.flags
   }
 
   /***
    * currently unused
    * @returns {string}
    */
-  get data() {
-    return this._data
-  }
-
-  set mid(value) {
-    this._mid = value
-    return this
-  }
-
-  set id(value) {
-    this._id = value
-    return this
-  }
-
-  set nid(value) {
-    this._nid = value
-    return this
-  }
-
-  set did(value) {
-    this._did = value
-    return this
-  }
-
-  set ord(value) {
-    this._ord = value
-    return this
-  }
-
-  set mod(value) {
-    this._mod = value
-    return this
-  }
-
-  set usn(value) {
-    this._usn = value
-    return this
-  }
-
-  set type(value) {
-    this._type = value
-    return this
-  }
-
-  set queue(value) {
-    this._queue = value
-    return this
-  }
-
-  set due(value) {
-    this._due = value
-    return this
-  }
-
-  set ivl(value) {
-    this._ivl = value
-    return this
-  }
-
-  set factor(value) {
-    this._factor = value
-    return this
-  }
-
-  set reps(value) {
-    this._reps = value
-    return this
-  }
-
-  set lapses(value) {
-    this._lapses = value
-    return this
-  }
-
-  set left(value) {
-    this._left = value
-    return this
-  }
-
-  set odue(value) {
-    this._odue = value
-    return this
-  }
-
-  set odid(value) {
-    this._odid = value
-    return this
-  }
-
-  set flags(value) {
-    this._flags = value
-    return this
-  }
-
-  set data(value) {
-    this._data = value
-    return this
+  get field_field_data() {
+    return this.data
   }
 }
 

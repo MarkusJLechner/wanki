@@ -6,6 +6,7 @@ import {
   sqlDeck,
   sqlPrepare,
 } from '@/plugins/sql.js'
+import { wankidb } from '@/plugins/wankidb/db.js'
 
 export const persist = () => {
   return navigator.storage.persist().then(function (persistent) {
@@ -111,8 +112,23 @@ export const idbDecks = idb.defaultStore(dbName, 'decks', [
 export const importDeck = async (decompressedFile) => {
   const sqlDb = await initSqlDb(decompressedFile.collection)
 
+  const cards = sqlPrepare(sqlDb, 'select * from cards')
+  const col = sqlPrepare(sqlDb, 'select * from col')
+  const graves = sqlPrepare(sqlDb, 'select * from graves')
+  const notes = sqlPrepare(sqlDb, 'select * from notes')
+  const revlog = sqlPrepare(sqlDb, 'select * from revlog')
+
+  wankidb.cards.bulkAdd(cards)
+  wankidb.col.bulkAdd(col)
+  wankidb.notes.bulkAdd(notes)
+  wankidb.graves.bulkAdd(graves)
+  wankidb.revlog.bulkAdd(revlog)
+
+  console.log(decompressedFile)
+  console.log({ cards })
+
   const tableCol = tableColJsonParse(
-    sqlPrepare(sqlDb, 'select * from col limit 1'),
+    sqlPrepare(sqlDb, 'select * from col limit 1')[0],
   )
 
   const [deckId, deckName] = Object.entries(tableCol.decks).filter(

@@ -13,22 +13,22 @@ export class Grave {
   async load(oid) {
     const entry = await wankidb.graves.where('oid').equals(oid).first()
 
-    this._usn = entry.usn
-    this._oid = entry.oid
-    this._type = entry.type
+    this.usn = entry.usn
+    this.oid = entry.oid
+    this.type = entry.type
   }
 
-  _add() {
+  #add() {
     return wankidb.graves.add({
-      usn: this._usn,
-      oid: this._oid,
-      type: this._type,
+      usn: this.usn,
+      oid: this.oid,
+      type: this.type,
     })
   }
 
   save() {
     if (this.oid) {
-      return this._add()
+      return this.#add()
     }
 
     return wankidb.graves.put(this)
@@ -38,39 +38,24 @@ export class Grave {
    * usn should be set to -1,
    * @returns {number}
    */
-  get usn() {
-    return this._usn
+  get field_usn() {
+    return this.usn
   }
 
   /***
    * oid is the original id.
    * @returns {number}
    */
-  get oid() {
-    return this._oid
+  get field_oid() {
+    return this.oid
   }
 
   /***
    * type: 0 for a card, 1 for a note and 2 for a deck
    * @returns {number}
    */
-  get type() {
-    return this._type
-  }
-
-  set usn(value) {
-    this._usn = value
-    return this
-  }
-
-  set oid(value) {
-    this._oid = value
-    return this
-  }
-
-  set type(value) {
-    this._type = value
-    return this
+  get field_type() {
+    return this.type
   }
 }
 

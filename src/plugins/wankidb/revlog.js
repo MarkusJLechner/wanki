@@ -8,40 +8,40 @@ export class Reflog {
     if (id) {
       this.load(id)
     }
-    this._id = new Date().getTime()
+    this.id = new Date().getTime()
   }
 
   async load(id) {
     const entry = await wankidb.revlog.where('id').equals(id).first()
 
-    this._id = entry.id
-    this._cid = entry.cid
-    this._usn = entry.usn
-    this._ease = entry.ease
-    this._ivl = entry.ivl
-    this._lastIvl = entry.lastIvl
-    this._factor = entry.factor
-    this._time = entry.time
-    this._type = entry.type
+    this.id = entry.id
+    this.cid = entry.cid
+    this.usn = entry.usn
+    this.ease = entry.ease
+    this.ivl = entry.ivl
+    this.lastIvl = entry.lastIvl
+    this.factor = entry.factor
+    this.time = entry.time
+    this.type = entry.type
   }
 
-  _add() {
+  #add() {
     return wankidb.revlog.add({
-      id: this._id,
-      cid: this._cid,
-      usn: this._usn,
-      ease: this._ease,
-      ivl: this._ivl,
-      lastIvl: this._lastIvl,
-      factor: this._factor,
-      time: this._time,
-      type: this._type,
+      id: this.id,
+      cid: this.cid,
+      usn: this.usn,
+      ease: this.ease,
+      ivl: this.ivl,
+      lastIvl: this.lastIvl,
+      factor: this.factor,
+      time: this.time,
+      type: this.type,
     })
   }
 
   save() {
-    if (this._id) {
-      return this._add()
+    if (this.id) {
+      return this.#add()
     }
 
     return wankidb.revlog.put(this)
@@ -51,16 +51,16 @@ export class Reflog {
    * epoch-milliseconds timestamp of when you did the review
    * @returns {number}
    */
-  get id() {
-    return this._id
+  get field_id() {
+    return this.id
   }
 
   /***
    * cards.id
    * @returns {*}
    */
-  get cid() {
-    return this._cid
+  get field_cid() {
+    return this.cid
   }
 
   /***
@@ -68,8 +68,8 @@ export class Reflog {
    *   See the description in the cards table for more info
    * @returns {*}
    */
-  get usn() {
-    return this._usn
+  get field_usn() {
+    return this.usn
   }
 
   /***
@@ -78,84 +78,48 @@ export class Reflog {
    * learn/relearn:   1(wrong), 2(ok), 3(easy)
    * @returns {*}
    */
-  get ease() {
-    return this._ease
+  get field_ease() {
+    return this.ease
   }
 
   /***
    * interval (i.e. as in the card table)
    * @returns {*}
    */
-  get ivl() {
-    return this._ivl
+  get field_ivl() {
+    return this.ivl
   }
 
   /***
    * last interval (i.e. the last value of ivl. Note that this value is not necessarily equal to the actual interval between this review and the preceding review)
    * @returns {*}
    */
-  get lastIvl() {
-    return this._lastIvl
+  get field_lastIvl() {
+    return this.lastIvl
   }
 
   /***
    * factor
    * @returns {*}
    */
-  get factor() {
-    return this._factor
+  get field_factor() {
+    return this.factor
   }
 
   /***
    * how many milliseconds your review took, up to 60000 (60s)
    * @returns {*}
    */
-  get time() {
-    return this._time
+  get field_time() {
+    return this.time
   }
 
   /***
    * 0=learn, 1=review, 2=relearn, 3=cram
    * @returns {*}
    */
-  get type() {
-    return this._type
-  }
-
-  set id(value) {
-    this._id = value
-  }
-
-  set cid(value) {
-    this._cid = value
-  }
-
-  set usn(value) {
-    this._usn = value
-  }
-
-  set ease(value) {
-    this._ease = value
-  }
-
-  set ivl(value) {
-    this._ivl = value
-  }
-
-  set lastIvl(value) {
-    this._lastIvl = value
-  }
-
-  set factor(value) {
-    this._factor = value
-  }
-
-  set time(value) {
-    this._time = value
-  }
-
-  set type(value) {
-    this._type = value
+  get field_type() {
+    return this.type
   }
 }
 

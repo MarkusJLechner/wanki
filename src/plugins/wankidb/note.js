@@ -9,44 +9,44 @@ export class Note {
     if (id) {
       this.load(id)
     }
-    this._id = new Date().getTime()
+    this.id = new Date().getTime()
   }
 
   async load(id) {
     const entry = await wankidb.notes.where('id').equals(id).first()
 
-    this._id = entry.id
-    this._guid = entry.guid
-    this._mid = entry.mid
-    this._mod = entry.mod
-    this._usn = entry.usn
-    this._tags = entry.tags
-    this._flds = entry.flds
-    this._sfld = entry.sfld
-    this._csum = entry.csum
-    this._flags = entry.flags
-    this._data = entry.data
+    this.id = entry.id
+    this.guid = entry.guid
+    this.mid = entry.mid
+    this.mod = entry.mod
+    this.usn = entry.usn
+    this.tags = entry.tags
+    this.flds = entry.flds
+    this.sfld = entry.sfld
+    this.csum = entry.csum
+    this.flags = entry.flags
+    this.data = entry.data
   }
 
-  _add() {
+  #add() {
     return wankidb.notes.add({
-      id: this._id,
-      guid: this._guid,
-      mid: this._mid,
-      mod: this._mod,
-      usn: this._usn,
-      tags: this._tags,
-      flds: this._flds,
-      sfld: this._sfld,
-      csum: this._csum,
-      flags: this._flags,
-      data: this._data,
+      id: this.id,
+      guid: this.guid,
+      mid: this.mid,
+      mod: this.mod,
+      usn: this.usn,
+      tags: this.tags,
+      flds: this.flds,
+      sfld: this.sfld,
+      csum: this.csum,
+      flags: this.flags,
+      data: this.data,
     })
   }
 
   save() {
-    if (this._id) {
-      return this._add()
+    if (this.id) {
+      return this.#add()
     }
 
     return wankidb.notes.put(this)
@@ -56,32 +56,32 @@ export class Note {
    * epoch miliseconds of when the note was created
    * @returns {number}
    */
-  get id() {
-    return this._id
+  get field_id() {
+    return this.id
   }
 
   /***
    * globally unique id, almost certainly used for syncing
    * @returns {number}
    */
-  get guid() {
-    return this._guid
+  get field_guid() {
+    return this.guid
   }
 
   /***
    * model id
    * @returns {number}
    */
-  get mid() {
-    return this._mid
+  get field_mid() {
+    return this.mid
   }
 
   /***
    * modification timestamp, epoch seconds
    * @returns {number}
    */
-  get mod() {
-    return this._mod
+  get field_mod() {
+    return this.mod
   }
 
   /***
@@ -89,8 +89,8 @@ export class Note {
    *   See the description in the cards table for more info
    * @returns {number}
    */
-  get usn() {
-    return this._usn
+  get field_usn() {
+    return this.usn
   }
 
   /***
@@ -98,24 +98,24 @@ export class Note {
    *   includes space at the beginning and end, for LIKE "% tag %" queries
    * @returns {string}
    */
-  get tags() {
-    return this._tags
+  get field_tags() {
+    return this.tags
   }
 
   /***
    * the values of the fields in this note. separated by 0x1f (31) character.
    * @returns {number}
    */
-  get flds() {
-    return this._flds
+  get field_flds() {
+    return this.flds
   }
 
   /***
    * sort field: used for quick sorting and duplicate check. The sort field is an integer so that when users are sorting on a field that contains only numbers, they are sorted in numeric instead of lexical order. Text is stored in this integer field.
    * @returns {number}
    */
-  get sfld() {
-    return this._sfld
+  get field_sfld() {
+    return this.sfld
   }
 
   /***
@@ -123,78 +123,78 @@ export class Note {
    *   integer representation of first 8 digits of sha1 hash of the first field
    * @returns {number}
    */
-  get csum() {
-    return this._csum
+  get field_csum() {
+    return this.csum
   }
 
   /***
    * unused
    * @returns {number}
    */
-  get flags() {
-    return this._flags
+  get field_flags() {
+    return this.flags
   }
 
   /***
    * unused
    * @returns {string}
    */
-  get data() {
-    return this._data
+  get field_data() {
+    return this.data
   }
 
   set id(value) {
-    this._id = value
+    this.id = value
     return this
   }
 
   set guid(value) {
-    this._guid = value
+    this.guid = value
     return this
   }
 
   set mid(value) {
-    this._mid = value
+    this.mid = value
     return this
   }
 
   set mod(value) {
-    this._mod = value
+    this.mod = value
     return this
   }
 
   set usn(value) {
-    this._usn = value
+    this.usn = value
     return this
   }
 
   set tags(value) {
-    this._tags = value
+    this.tags = value
     return this
   }
 
   set flds(value) {
-    this._flds = value
+    this.flds = value
     return this
   }
 
   set sfld(value) {
-    this._sfld = value
+    this.sfld = value
     return this
   }
 
   set csum(value) {
-    this._csum = value
+    this.csum = value
     return this
   }
 
   set flags(value) {
-    this._flags = value
+    this.flags = value
     return this
   }
 
   set data(value) {
-    this._data = value
+    this.data = value
     return this
   }
 }

@@ -17,6 +17,7 @@
 import { watch } from 'vue'
 import { refstorage } from './store/globalstate'
 import { persist } from '@/plugins/idb.js'
+import { wankidb } from '@/plugins/wankidb/db.js'
 
 export default {
   data() {
@@ -27,6 +28,7 @@ export default {
 
   mounted() {
     this.initStorage()
+    window.wankidb = wankidb
 
     refstorage.get('darkTheme', true)
 

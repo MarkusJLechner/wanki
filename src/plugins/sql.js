@@ -32,13 +32,15 @@ export const initSqlDb = async (uint8Array) => {
 
 export const sqlPrepare = (database, query, params) => {
   const stmt = database.prepare(query, params)
-  stmt.step()
-  const obj = stmt.getAsObject()
+  const objs = []
+  while (stmt.step()) {
+    objs.push(stmt.getAsObject())
+  }
   stmt.free()
-  return obj
+  return objs
 }
 
 export const sqlDeck = async (deckId, query, params) => {
   const sqlDb = await sqlDbDeck(deckId)
-  return sqlPrepare(sqlDb, query, params)
+  return sqlPrepare(sqlDb, query, params)[0]
 }
