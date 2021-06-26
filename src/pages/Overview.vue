@@ -105,6 +105,7 @@ import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
 import { Card } from '@/plugins/wankidb/Card.js'
+import { Col } from '@/plugins/wankidb/Col.js'
 
 export default {
   name: 'Overview',
@@ -172,6 +173,7 @@ export default {
 
   async mounted() {
     console.log(new Card())
+    console.log(new Col())
 
     await this.fetchAllDecks()
 

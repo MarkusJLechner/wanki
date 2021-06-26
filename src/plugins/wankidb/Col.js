@@ -1,132 +1,71 @@
+import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
+wankidb.col.hook('creating', (primKey, obj) => {
+  const cast = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
+  obj.dconf = cast(obj.dconf)
+  obj.conf = cast(obj.conf)
+  obj.models = cast(obj.models)
+  obj.decks = cast(obj.decks)
+})
 
 /***
  * col contains a single row that holds various information about the collection
  */
-export class Col {
-  constructor({ id } = {}) {
-    if (id) {
-      this.load(id)
-    }
-    this.id = new Date().getTime()
-  }
-
-  async load(id) {
-    const entry = await wankidb.col.where('id').equals(id).first()
-
-    this.id = entry.id
-    this.crt = entry.crt
-    this.mod = entry.mod
-    this.scm = entry.scm
-    this.ver = entry.ver
-    this.dty = entry.dty
-    this.usn = entry.usn
-    this.ls = entry.ls
-    this.conf = entry.conf
-    this.models = entry.models
-    this.decks = entry.decks
-    this.dconf = entry.dconf
-    this.tags = entry.tags
-  }
-
-  #add() {
-    return wankidb.col.add({
-      id: this.id,
-      crt: this.crt,
-      mod: this.mod,
-      scm: this.scm,
-      ver: this.ver,
-      dty: this.dty,
-      usn: this.usn,
-      ls: this.ls,
-      conf: this.conf,
-      models: this.models,
-      decks: this.decks,
-      dconf: this.dconf,
-      tags: this.tags,
-    })
-  }
-
-  save() {
-    if (this.id) {
-      return this.#add()
-    }
-
-    return wankidb.col.put(this)
-  }
-
+export class Col extends BaseTable {
   /***
    * arbitrary number since there is only one row
    * @returns {number}
    */
-  get field_id() {
-    return this.id
-  }
+  id
 
   /***
    * timestamp of the creation date in second. It's correct up to the day. For V1 scheduler, the hour corresponds to starting a new day. By default, new day is 4.
    * @returns {number}
    */
-  get field_crt() {
-    return this.crt
-  }
+  crt
 
   /***
    * last modified in milliseconds
    * @returns {number}
    */
-  get field_mod() {
-    return this.mod
-  }
+  mod
 
   /***
    * schema mod time: time when "schema" was modified.
    * @returns {number}
    */
-  get field_scm() {
-    return this.scm
-  }
+  scm
 
   /***
    * version
    * @returns {number}
    */
-  get field_ver() {
-    return this.ver
-  }
+  ver
 
   /***
    * dirty: unused, set to 0
    * @returns {number}
    */
-  get field_dty() {
-    return this.dty
-  }
+  dty
 
   /***
    * update sequence number: used for finding diffs when syncing.
    *   See usn in cards table for more details.
    * @returns {number}
    */
-  get field_usn() {
-    return this.usn
-  }
+  usn
 
   /***
    * "last sync time"
    * @returns {number}
    */
-  get field_ls() {
-    return this.ls
-  }
+  ls
 
   /***
    * json object containing configuration options that are synced. Described below in "configuration JSONObjects"
    * @returns {json}
    */
-  get field_conf() {
-    return this.conf
-  }
+  conf
 
   /***
    * json object of json object(s) representing the models (aka Note types)
@@ -134,9 +73,7 @@ export class Col {
    * values of this object are other json objects of the form described below in "Models JSONObjects"
    * @returns {json}
    */
-  get field_models() {
-    return this.models
-  }
+  models
 
   /***
    * json object of json object(s) representing the deck(s)
@@ -144,9 +81,7 @@ export class Col {
    * values of this object are other json objects of the form described below in "Decks JSONObjects"
    * @returns {json}
    */
-  get field_decks() {
-    return this.decks
-  }
+  decks
 
   /***
    * json object of json object(s) representing the options group(s) for decks
@@ -154,17 +89,72 @@ export class Col {
    * values of this object are other json objects of the form described below in "DConf JSONObjects"
    * @returns {json}
    */
-  get field_dconf() {
-    return this.dconf
-  }
+  dconf
 
   /***
    * a cache of tags used in the collection (This list is displayed in the browser. Potentially at other place)
    * @returns {string}
    */
-  get field_tags() {
-    return this.tags
+  tags
+
+  constructor(load) {
+    super(
+      'id',
+      'col',
+      [
+        'id',
+        'crt',
+        'mod',
+        'scm',
+        'ver',
+        'dty',
+        'usn',
+        'ls',
+        'conf',
+        'models',
+        'decks',
+        'dconf',
+        'tags',
+      ],
+      load,
+    )
+  }
+
+  get parsed_dconf() {
+    return JSON.parse(this.dconf)
+  }
+
+  get parsed_conf() {
+    return JSON.parse(this.conf)
+  }
+
+  get parsed_models() {
+    return JSON.parse(this.models)
+  }
+
+  get parsed_decks() {
+    return JSON.parse(this.decks)
+  }
+
+  set parsed_dconf(value) {
+    this.dconf = JSON.stringify(value)
+    return this
+  }
+
+  set parsed_conf(value) {
+    this.conf = JSON.stringify(value)
+    return this
+  }
+
+  set parsed_models(value) {
+    this.models = JSON.stringify(value)
+    return this
+  }
+
+  set parsed_decks(value) {
+    this.decks = JSON.stringify(value)
+    return this
   }
 }
-
-wankidb.col.mapToClass(Col)
+if (!window.wanki) window.wanki = {}
+window.wanki.Col = Col

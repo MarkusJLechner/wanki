@@ -4,14 +4,17 @@ export class BaseTable {
   idKey
   tableName
   tableColumns
+  loadPromise
 
   constructor(idKey, tableName, tableColumns, load) {
     this.idKey = idKey
     this.tableName = tableName
     this.tableColumns = tableColumns
     if (load) {
-      this.load(load).then((obj) => console.log('loaded card', obj))
+      this.loadPromise = this.load(load)
     }
+
+    return this
   }
 
   async load(get) {
@@ -26,16 +29,15 @@ export class BaseTable {
     return this
   }
 
-  #add() {
-    wankidb[this.tableName].add(this)
-    return this
+  getObj() {
+    return this.tableColumns.reduce((acc, curr) => {
+      acc[curr] = this[curr]
+      return acc
+    }, {})
   }
 
   save() {
-    if (!this[this.idKey]) {
-      return this.#add()
-    }
-    wankidb[this.tableName].put(this)
+    wankidb[this.tableName].put(this.getObj())
     return this
   }
 }

@@ -148,5 +148,5 @@ export class Card extends BaseTable {
     return wankidb.notes.get({ id: this.nid })
   }
 }
-
-window.Card = Card
+if (!window.wanki) window.wanki = {}
+window.wanki.Card = Card
