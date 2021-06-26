@@ -99,7 +99,6 @@ export class Col extends BaseTable {
 
   constructor(load) {
     super(
-      'id',
       'col',
       [
         'id',
@@ -119,42 +118,4 @@ export class Col extends BaseTable {
       load,
     )
   }
-
-  get parsed_dconf() {
-    return JSON.parse(this.dconf)
-  }
-
-  get parsed_conf() {
-    return JSON.parse(this.conf)
-  }
-
-  get parsed_models() {
-    return JSON.parse(this.models)
-  }
-
-  get parsed_decks() {
-    return JSON.parse(this.decks)
-  }
-
-  set parsed_dconf(value) {
-    this.dconf = JSON.stringify(value)
-    return this
-  }
-
-  set parsed_conf(value) {
-    this.conf = JSON.stringify(value)
-    return this
-  }
-
-  set parsed_models(value) {
-    this.models = JSON.stringify(value)
-    return this
-  }
-
-  set parsed_decks(value) {
-    this.decks = JSON.stringify(value)
-    return this
-  }
 }
-if (!window.wanki) window.wanki = {}
-window.wanki.Col = Col

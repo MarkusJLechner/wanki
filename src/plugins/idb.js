@@ -118,11 +118,14 @@ export const importDeck = async (decompressedFile) => {
   const notes = sqlPrepare(sqlDb, 'select * from notes')
   const revlog = sqlPrepare(sqlDb, 'select * from revlog')
 
-  wankidb.cards.bulkAdd(cards)
-  wankidb.col.bulkAdd(col)
-  wankidb.notes.bulkAdd(notes)
-  wankidb.graves.bulkAdd(graves)
-  wankidb.revlog.bulkAdd(revlog)
+  console.log(sqlDb)
+  console.log('do it', col)
+
+  wankidb.cards.bulkPut(cards)
+  wankidb.col.bulkAdd(col).catch((e) => console.error(e))
+  wankidb.notes.bulkPut(notes)
+  wankidb.graves.bulkPut(graves)
+  wankidb.revlog.bulkPut(revlog)
 
   console.log(decompressedFile)
   console.log({ cards })

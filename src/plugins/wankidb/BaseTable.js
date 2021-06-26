@@ -1,13 +1,11 @@
 import { wankidb } from '@/plugins/wankidb/db.js'
 
 export class BaseTable {
-  idKey
   tableName
   tableColumns
   loadPromise
 
-  constructor(idKey, tableName, tableColumns, load) {
-    this.idKey = idKey
+  constructor(tableName, tableColumns, load) {
     this.tableName = tableName
     this.tableColumns = tableColumns
     if (load) {

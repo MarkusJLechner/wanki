@@ -20,7 +20,7 @@ export const decompressFile = async (file) => {
       type = 'mapping'
       value = JSON.parse(new TextDecoder().decode(value))
     }
-    if (key === 'collection.anki2') {
+    if (key === 'collection.anki2' || key === 'collection.anki21') {
       valid = true
       type = 'sql'
     }

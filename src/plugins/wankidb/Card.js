@@ -118,7 +118,6 @@ export class Card extends BaseTable {
 
   constructor(load) {
     super(
-      'id',
       'cards',
       [
         'id',
@@ -148,5 +147,3 @@ export class Card extends BaseTable {
     return wankidb.notes.get({ id: this.nid })
   }
 }
-if (!window.wanki) window.wanki = {}
-window.wanki.Card = Card
