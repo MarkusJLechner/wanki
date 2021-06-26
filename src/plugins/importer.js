@@ -33,9 +33,11 @@ export const decompressFile = async (file) => {
 
   const mapped = {
     collection: null,
-    files: [],
     media: {},
   }
+
+  let files = []
+  let media = []
 
   filesDecompressed.forEach((file) => {
     if (file.type === 'sql') {
@@ -43,12 +45,16 @@ export const decompressFile = async (file) => {
     }
 
     if (file.type === 'mapping') {
-      mapped.media = file.file
+      media = file.file
     }
 
     if (file.type === 'media') {
-      mapped.files[file.filename] = file.file
+      files[file.filename] = file.file
     }
+  })
+
+  mapped.media = Object.values(media).map((m, index) => {
+    return { name: m, file: files[index] }
   })
 
   return mapped

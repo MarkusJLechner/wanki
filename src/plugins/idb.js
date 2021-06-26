@@ -113,22 +113,35 @@ export const importDeck = async (decompressedFile) => {
   const sqlDb = await initSqlDb(decompressedFile.collection)
 
   const cards = sqlPrepare(sqlDb, 'select * from cards')
-  const col = sqlPrepare(sqlDb, 'select * from col')
+  const col = sqlPrepare(sqlDb, 'select * from col limit 1')[0]
   const graves = sqlPrepare(sqlDb, 'select * from graves')
   const notes = sqlPrepare(sqlDb, 'select * from notes')
   const revlog = sqlPrepare(sqlDb, 'select * from revlog')
 
-  console.log(sqlDb)
-  console.log('do it', col)
+  const cast = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
+  const models = Object.values(cast(col.models) || {})
+  const decks = Object.values(cast(col.decks) || {})
+  const dconf = Object.values(cast(col.dconf) || {})
+  const tags = Object.values(cast(col.tags) || {})
+
+  delete col.models
+  delete col.decks
+  delete col.dconf
+  delete col.tags
+
+  console.log({ decompressedFile })
+  console.log({ tags })
 
   wankidb.cards.bulkPut(cards)
-  wankidb.col.bulkAdd(col).catch((e) => console.error(e))
+  wankidb.col.put(col)
   wankidb.notes.bulkPut(notes)
   wankidb.graves.bulkPut(graves)
   wankidb.revlog.bulkPut(revlog)
-
-  console.log(decompressedFile)
-  console.log({ cards })
+  wankidb.models.bulkPut(models)
+  wankidb.decks.bulkPut(decks)
+  wankidb.dconf.bulkPut(dconf)
+  wankidb.tags.bulkPut(tags)
+  wankidb.media.bulkPut(decompressedFile.media)
 
   const tableCol = tableColJsonParse(
     sqlPrepare(sqlDb, 'select * from col limit 1')[0],

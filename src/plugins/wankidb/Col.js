@@ -2,10 +2,10 @@ import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 wankidb.col.hook('creating', (primKey, obj) => {
   const cast = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
-  obj.dconf = cast(obj.dconf)
   obj.conf = cast(obj.conf)
-  obj.models = cast(obj.models)
-  obj.decks = cast(obj.decks)
+  // obj.dconf = cast(obj.dconf)
+  // obj.models = cast(obj.models)
+  // obj.decks = cast(obj.decks)
 })
 
 /***
