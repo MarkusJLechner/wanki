@@ -104,7 +104,7 @@ import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
-import { Card } from '@/plugins/wankidb/card.js'
+import { Card } from '@/plugins/wankidb/Card.js'
 
 export default {
   name: 'Overview',
