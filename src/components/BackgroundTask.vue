@@ -23,7 +23,7 @@
       :class="{ 'text-yellow-200': task.color === 'yellow' }"
     >
       {{ task.text }}
-      <loading-icon v-if="task.loading" class="ml-1" />
+      <LoadingIcon v-if="task.loading" class="ml-1" />
     </div>
   </div>
 </template>

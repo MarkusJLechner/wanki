@@ -18,73 +18,75 @@
       />
     </TheHeader>
 
-    <ModalImport v-model="showModalImport" @close="closeImport" />
+    <MainContent>
+      <ModalImport v-model="showModalImport" @close="closeImport" />
 
-    <span v-if="loading" class="p-4"
-      >Loading decks <loading-icon class="ml-2" />
-    </span>
+      <span v-if="loading" class="p-4"
+        >Loading decks <LoadingIcon class="ml-2" />
+      </span>
 
-    <List
-      v-else-if="decks.length"
-      no-gutters
-      :value="decks"
-      @item="onDeck"
-      @long-press="onMenu"
-    >
-      <template #suffix-item="{ item }">
-        <NumberDue :value="item.decks[item.id]?.newToday[1]" color="blue" />
-        <NumberDue :value="item.decks[item.id]?.revToday[1]" color="red" />
-        <NumberDue :value="item.decks[item.id]?.lrnToday[1]" color="green" />
-      </template>
-    </List>
-
-    <span v-else class="p-4 leading-10 block"
-      >No decks available. Download
-      <a
-        class="text-blue-700 dark:text-blue-300"
-        target="_blank"
-        href="https://ankiweb.net/shared/decks/"
+      <List
+        v-else-if="decks.length"
+        no-gutters
+        :value="decks"
+        @item="onDeck"
+        @long-press="onMenu"
       >
-        shared decks here
-      </a>
-      and import them here
-    </span>
+        <template #suffix-item="{ item }">
+          <NumberDue :value="item.newToday[1]" color="blue" />
+          <NumberDue :value="item.revToday[1]" color="red" />
+          <NumberDue :value="item.lrnToday[1]" color="green" />
+        </template>
+      </List>
 
-    <ModalOptions
-      :model-value="modalOptionsItem"
-      :items="deckOptions"
-      @close="modalOptionsItem = null"
-    >
-      <div v-if="modalOptionsItem" class="p-4">
-        ID: {{ modelOptionDeckId }}
-        <span class="block" v-html="modelOptionDeckDesc" />
-      </div>
-      <div class="px-2 font-bold">Options:</div>
-    </ModalOptions>
+      <span v-else class="p-4 leading-10 block"
+        >No decks available. Download
+        <a
+          class="text-blue-700 dark:text-blue-300"
+          target="_blank"
+          href="https://ankiweb.net/shared/decks/"
+        >
+          shared decks here
+        </a>
+        and import them here
+      </span>
 
-    <ModalDelete
-      :model-value="showModalDelete"
-      @confirm="onDelete"
-      @close="showModalDelete = false"
-    >
-    </ModalDelete>
+      <ModalOptions
+        :model-value="modalOptionsItem"
+        :items="deckOptions"
+        @close="modalOptionsItem = null"
+      >
+        <div v-if="modalOptionsItem" class="p-4">
+          ID: {{ modelOptionDeckId }}
+          <span class="block" v-html="modelOptionDeckDesc" />
+        </div>
+        <div class="px-2 font-bold">Options:</div>
+      </ModalOptions>
 
-    <BaseModal
-      :model-value="showModalRename"
-      confirm="Rename"
-      title="Rename"
-      :loading="loadingOnRename"
-      @confirm="onRename"
-      @close="showModalRename = false"
-    >
-      <input-text-field
-        v-model="inputRename"
-        v-autofocus
-        :disabled="loadingOnRename"
-        label="New name"
-        @enter="onRename"
-      />
-    </BaseModal>
+      <ModalDelete
+        :model-value="showModalDelete"
+        @confirm="onDelete"
+        @close="showModalDelete = false"
+      >
+      </ModalDelete>
+
+      <BaseModal
+        :model-value="showModalRename"
+        confirm="Rename"
+        title="Rename"
+        :loading="loadingOnRename"
+        @confirm="onRename"
+        @close="showModalRename = false"
+      >
+        <input-text-field
+          v-model="inputRename"
+          v-autofocus
+          :disabled="loadingOnRename"
+          label="New name"
+          @enter="onRename"
+        />
+      </BaseModal>
+    </MainContent>
   </div>
 </template>
 
@@ -104,11 +106,13 @@ import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
+import MainContent from '@/components/MainContent.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    MainContent,
     InputTextField,
     BaseModal,
     ModalDelete,
@@ -170,9 +174,12 @@ export default {
   },
 
   async mounted() {
-    await this.fetchAllDecks()
+    // await this.fetchAllDecks()
 
-    await this.updateList()
+    // await this.updateList()
+
+    this.updateDeckList()
+
     document.addEventListener('page/overview/update', this.updateList)
   },
 
@@ -181,6 +188,17 @@ export default {
   },
 
   methods: {
+    async updateDeckList() {
+      const decks = await wankidb.decks.toArray()
+      console.log(decks)
+      this.decks = decks.map((deck) => {
+        return {
+          text: deck.name,
+          ...deck,
+        }
+      })
+    },
+
     async fetchAllDecks() {
       this.idbAllDecks = await (await idbDecks).all()
     },

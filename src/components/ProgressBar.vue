@@ -20,7 +20,7 @@
           }"
         >
           {{ label }}
-          <loading-icon v-if="inProgress" class="mx-1" />
+          <LoadingIcon v-if="inProgress" class="mx-1" />
         </span>
       </div>
       <div class="text-right">
@@ -75,7 +75,7 @@
         }"
       >
         {{ task }}
-        <loading-icon v-if="inProgress" class="mx-1" />
+        <LoadingIcon v-if="inProgress" class="mx-1" />
       </span>
     </div>
   </div>

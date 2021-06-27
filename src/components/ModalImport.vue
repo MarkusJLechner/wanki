@@ -17,10 +17,10 @@
     </span>
 
     <div v-if="!progress.total">
-      <input-file :accept="accept" class="my-2" @select="onInitImport" />
+      <InputFile :accept="accept" class="my-2" @select="onInitImport" />
 
       <span class="text-right block text-sm" @click="onInitImport">
-        <loading-icon v-if="currentState === state.loading" />
+        <LoadingIcon v-if="currentState === state.loading" />
         {{ getStateText }}
       </span>
       <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
@@ -34,7 +34,7 @@
       </ul>
     </div>
 
-    <progress-bar
+    <ProgressBar
       v-else
       class="mt-2"
       :label="progress.label"
