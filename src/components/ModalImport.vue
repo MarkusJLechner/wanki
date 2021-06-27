@@ -38,7 +38,7 @@
 
 <script>
 import BaseModal from 'components/BaseModal.vue'
-import { promptFile } from 'plugins/global.js'
+import { promiseProgress, promptFile } from 'plugins/global.js'
 import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
 import { importDeck, persist } from '@/plugins/idb.js'
@@ -140,7 +140,14 @@ export default {
 
       await persist()
 
-      const deck = await importDeck(decompressedFile)
+      await promiseProgress(
+        importDeck(decompressedFile),
+        ({ percent, payload }) => {
+          console.log(percent, payload)
+        },
+      ).then(() => {
+        console.log('complete')
+      })
 
       this.loadingOnImport = false
 

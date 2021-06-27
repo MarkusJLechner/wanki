@@ -7,6 +7,9 @@ self.onmessage = async (event) => {
   await wankidb.open()
   await wankidb[table]
     .bulkPut(data)
+    .catch((e) => {
+      self.postMessage({ error: e.message })
+    })
     .finally(() => console.timeEnd('- ' + table))
 
   self.postMessage(true)

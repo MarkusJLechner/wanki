@@ -133,25 +133,26 @@ export const importDeck = async (decompressedFile) => {
   delete col[0].tags
 
   const workerList = {}
+  const workerPromises = []
 
   const work = ({ table, data }) => {
-    const worka = new Worker()
-    workerList[table] = false
-    worka.postMessage({
-      table,
-      data,
-    })
-    worka.onmessage = function () {
-      workerList[table] = true
-      console.log(workerList)
-      const values = Object.values(workerList)
-      const finishedLength = values.filter(Boolean).length
-      const totalLength = values.length
-      console.log((finishedLength / 100) * totalLength)
-      if (values.every(Boolean)) {
-        console.log('finished import')
-      }
-    }
+    workerPromises.push(
+      new Promise((resolve, reject) => {
+        const worka = new Worker()
+        workerList[table] = false
+        worka.onerror = function (e) {
+          reject(e)
+        }
+        worka.postMessage({
+          table,
+          data,
+        })
+        worka.onmessage = function () {
+          workerList[table] = true
+          resolve(workerList)
+        }
+      }),
+    )
   }
   work({
     table: 'notes',
@@ -194,23 +195,7 @@ export const importDeck = async (decompressedFile) => {
     data: col,
   })
 
-  console.time('obsolete')
-  // const tableCol = tableColJsonParse(
-  //   sqlPrepare(sqlDb, 'select * from col limit 1')[0],
-  // )
-  // const [deckId, deckName] = Object.entries(tableCol.decks).filter(
-  //   (entry) => entry[1].name !== 'Default',
-  // )[0]
-  // const deck = await idbDecks
-  // await deck.set(deckId, {
-  //   id: deckId,
-  //   name: deckName.name,
-  //   tables: {
-  //     col: tableCol,
-  //   },
-  // })
-
-  console.timeEnd('obsolete')
+  return workerPromises
 }
 
 export const tableColJsonParse = (tableCol) => {
