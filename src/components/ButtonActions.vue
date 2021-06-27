@@ -48,7 +48,6 @@ export default {
     actions: {
       type: Array,
       default: (props) => {
-        console.log(props)
         return [
           {
             type: 'spacer',

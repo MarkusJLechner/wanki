@@ -47,7 +47,12 @@
 
 <script>
 import BaseModal from 'components/BaseModal.vue'
-import { promiseProgress, promptFile } from 'plugins/global.js'
+import {
+  addTask,
+  finishTask,
+  promiseProgress,
+  promptFile,
+} from 'plugins/global.js'
 import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
 import { importDeck, persist } from '@/plugins/idb.js'
@@ -154,6 +159,13 @@ export default {
       try {
         this.currentState = this.state.loading
 
+        const taskId = addTask({
+          id: 'import-progress',
+          text: 'Import in progress',
+          color: 'yellow',
+          loading: true,
+        })
+
         this.progress.label = 'Open file'
         this.progress.tasks = ['Move to memory']
         this.progress.total = 1
@@ -172,9 +184,7 @@ export default {
         decompressedFile = await promise
         worker.removeEventListener('message', workListener)
 
-        this.currentState = this.state.loaded
-
-        this.onImport()
+        this.onImport(taskId)
       } catch (e) {
         this.currentState = this.state.error
         console.error(e)
@@ -182,7 +192,7 @@ export default {
       }
     },
 
-    async onImport() {
+    async onImport(taskId) {
       if (!decompressedFile) {
         return
       }
@@ -202,6 +212,8 @@ export default {
       }).then(() => {
         console.log('complete')
       })
+
+      finishTask(taskId)
 
       this.loadingOnImport = false
 

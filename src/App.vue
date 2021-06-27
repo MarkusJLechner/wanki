@@ -10,6 +10,7 @@
         </keep-alive>
       </transition>
     </router-view>
+    <background-task />
   </main>
 </template>
 
@@ -18,8 +19,10 @@ import { watch } from 'vue'
 import { refstorage } from './store/globalstate'
 import { persist } from '@/plugins/idb.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
+import BackgroundTask from '@/components/BackgroundTask.vue'
 
 export default {
+  components: { BackgroundTask },
   data() {
     return {
       transitionName: 'fade',

@@ -54,3 +54,17 @@ export function deferPromise(obj = {}) {
 
   return obj
 }
+
+export function addTask(task) {
+  const unique = Math.floor(Math.random() * 6)
+  document.dispatchEvent(
+    new CustomEvent('background/task', { detail: { ...task, unique } }),
+  )
+  return unique
+}
+
+export function finishTask(id) {
+  document.dispatchEvent(
+    new CustomEvent('background/task', { detail: { id, remove: true } }),
+  )
+}
