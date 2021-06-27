@@ -6,6 +6,9 @@ import {
   sqlDeck,
   sqlPrepare,
 } from '@/plugins/sql.js'
+
+import Worker from '@/plugins/wankidb/worker.js?worker'
+
 import { wankidb } from '@/plugins/wankidb/db.js'
 
 export const persist = () => {
@@ -112,54 +115,102 @@ export const idbDecks = idb.defaultStore(dbName, 'decks', [
 export const importDeck = async (decompressedFile) => {
   const sqlDb = await initSqlDb(decompressedFile.collection)
 
-  const cards = sqlPrepare(sqlDb, 'select * from cards')
-  const col = sqlPrepare(sqlDb, 'select * from col limit 1')[0]
   const graves = sqlPrepare(sqlDb, 'select * from graves')
   const notes = sqlPrepare(sqlDb, 'select * from notes')
   const revlog = sqlPrepare(sqlDb, 'select * from revlog')
+  const cards = sqlPrepare(sqlDb, 'select * from cards')
+  const col = sqlPrepare(sqlDb, 'select * from col limit 1')
 
   const cast = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
-  const models = Object.values(cast(col.models) || {})
-  const decks = Object.values(cast(col.decks) || {})
-  const dconf = Object.values(cast(col.dconf) || {})
-  const tags = Object.values(cast(col.tags) || {})
+  const models = Object.values(cast(col[0].models) || {})
+  const decks = Object.values(cast(col[0].decks) || {})
+  const dconf = Object.values(cast(col[0].dconf) || {})
+  const tags = Object.values(cast(col[0].tags) || {})
 
-  delete col.models
-  delete col.decks
-  delete col.dconf
-  delete col.tags
+  delete col[0].models
+  delete col[0].decks
+  delete col[0].dconf
+  delete col[0].tags
 
-  console.log({ decompressedFile })
-  console.log({ tags })
+  const workerList = {}
 
-  wankidb.cards.bulkPut(cards)
-  wankidb.col.put(col)
-  wankidb.notes.bulkPut(notes)
-  wankidb.graves.bulkPut(graves)
-  wankidb.revlog.bulkPut(revlog)
-  wankidb.models.bulkPut(models)
-  wankidb.decks.bulkPut(decks)
-  wankidb.dconf.bulkPut(dconf)
-  wankidb.tags.bulkPut(tags)
-  wankidb.media.bulkPut(decompressedFile.media)
-
-  const tableCol = tableColJsonParse(
-    sqlPrepare(sqlDb, 'select * from col limit 1')[0],
-  )
-
-  const [deckId, deckName] = Object.entries(tableCol.decks).filter(
-    (entry) => entry[1].name !== 'Default',
-  )[0]
-
-  const deck = await idbDecks
-  await deck.set(deckId, {
-    id: deckId,
-    name: deckName.name,
-    tables: {
-      col: tableCol,
-    },
-    decompressedFile: { ...decompressedFile },
+  const work = ({ table, data }) => {
+    const worka = new Worker()
+    workerList[table] = false
+    worka.postMessage({
+      table,
+      data,
+    })
+    worka.onmessage = function () {
+      workerList[table] = true
+      console.log(workerList)
+      const values = Object.values(workerList)
+      const finishedLength = values.filter(Boolean).length
+      const totalLength = values.length
+      console.log((finishedLength / 100) * totalLength)
+      if (values.every(Boolean)) {
+        console.log('finished import')
+      }
+    }
+  }
+  work({
+    table: 'notes',
+    data: notes,
   })
+  work({
+    table: 'graves',
+    data: graves,
+  })
+  work({
+    table: 'revlog',
+    data: revlog,
+  })
+  work({
+    table: 'models',
+    data: models,
+  })
+  work({
+    table: 'decks',
+    data: decks,
+  })
+  work({
+    table: 'dconf',
+    data: dconf,
+  })
+  work({
+    table: 'tags',
+    data: tags,
+  })
+  work({
+    table: 'media',
+    data: decompressedFile.media,
+  })
+  work({
+    table: 'cards',
+    data: cards,
+  })
+  work({
+    table: 'col',
+    data: col,
+  })
+
+  console.time('obsolete')
+  // const tableCol = tableColJsonParse(
+  //   sqlPrepare(sqlDb, 'select * from col limit 1')[0],
+  // )
+  // const [deckId, deckName] = Object.entries(tableCol.decks).filter(
+  //   (entry) => entry[1].name !== 'Default',
+  // )[0]
+  // const deck = await idbDecks
+  // await deck.set(deckId, {
+  //   id: deckId,
+  //   name: deckName.name,
+  //   tables: {
+  //     col: tableCol,
+  //   },
+  // })
+
+  console.timeEnd('obsolete')
 }
 
 export const tableColJsonParse = (tableCol) => {
