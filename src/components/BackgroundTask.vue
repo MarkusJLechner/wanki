@@ -51,9 +51,12 @@ export default {
     updateTask(event) {
       const task = event.detail
       if (task.remove) {
-        this.tasks = this.tasks.filter(
-          (t) => t.id !== task.id && t.unique !== task.unique,
-        )
+        this.tasks = this.tasks.filter((t) => {
+          if (task.unique) {
+            return t.unique !== task.unique
+          }
+          return t.id !== task.id
+        })
         return
       }
 
