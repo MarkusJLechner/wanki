@@ -2,11 +2,9 @@
   <BaseModal
     :model-value="modelValue"
     title="Import"
-    confirm="Import"
-    :loading="loadingOnImport"
-    :disable-confirm="!canImport"
+    :cancel-text="cancelText"
     @update:model-value="$emit('update:model-value', $event)"
-    @confirm="onImport"
+    @close="onClose()"
   >
     <span class="block">
       Select an <code>.apkg</code> file. Download
@@ -18,24 +16,28 @@
       >
     </span>
 
-    <input-file :accept="accept" class="my-2" @select="onInitImport" />
+    <div v-if="!progress.total">
+      <input-file :accept="accept" class="my-2" @select="onInitImport" />
 
-    <span class="text-right block text-sm" @click="onInitImport">
-      <loading-icon v-if="currentState === state.loading" />
-      {{ getStateText }}
-    </span>
-    <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
-      ERROR: {{ error }}
+      <span class="text-right block text-sm" @click="onInitImport">
+        <loading-icon v-if="currentState === state.loading" />
+        {{ getStateText }}
+      </span>
+      <div v-if="error" class="mt-2 text-sm text-red-700 dark:text-red-200">
+        ERROR: {{ error }}
+      </div>
+
+      <ul v-else>
+        <li v-for="(file, index) in renderingFiles" :key="index">
+          {{ file.text }}
+        </li>
+      </ul>
     </div>
 
-    <ul v-else>
-      <li v-for="(file, index) in renderingFiles" :key="index">
-        {{ file.text }}
-      </li>
-    </ul>
-
     <progress-bar
-      v-if="progress.total > 0"
+      v-else
+      class="mt-2"
+      :label="progress.label"
       :value="progress.value"
       :total="progress.total"
       :tasks="progress.tasks"
@@ -69,11 +71,12 @@ export default {
     },
   },
 
-  emits: ['close'],
+  emits: ['close', 'update:model-value'],
 
   data() {
     return {
       progress: {
+        label: 'In Progress',
         value: 0,
         total: 0,
         tasks: [],
@@ -95,8 +98,12 @@ export default {
   },
 
   computed: {
-    canImport() {
-      return this.currentState === this.state.loaded
+    cancelText() {
+      return this.canClose ? 'Close' : 'Do in Background'
+    },
+
+    canClose() {
+      return this.currentState === this.state.init
     },
 
     getStateText() {
@@ -132,6 +139,11 @@ export default {
   },
 
   methods: {
+    onClose() {
+      console.log('close')
+      this.$emit('close')
+    },
+
     async onInitImport(files) {
       this.loadingOnImport = true
       this.error = null
@@ -142,18 +154,32 @@ export default {
       try {
         this.currentState = this.state.loading
 
+        this.progress.label = 'Open file'
+        this.progress.tasks = ['Move to memory']
+        this.progress.total = 1
+
         const file = files.length ? files[0] : await promptFile(this.accept)
 
-        decompressedFile = await decompressFile(file)
+        this.progress.label = 'Decompressing'
+        const { promise, worker } = decompressFile(file)
+        const workListener = (event) => {
+          console.log(event.data[0])
+          this.progress.value = 3 - event.data[0].length
+          this.progress.total = 3
+          this.progress.tasks = event.data[0]
+        }
+        worker.addEventListener('message', workListener)
+        decompressedFile = await promise
+        worker.removeEventListener('message', workListener)
 
         this.currentState = this.state.loaded
+
+        this.onImport()
       } catch (e) {
         this.currentState = this.state.error
         console.error(e)
         this.error = e.message
       }
-
-      this.loadingOnImport = false
     },
 
     async onImport() {
@@ -161,10 +187,9 @@ export default {
         return
       }
 
-      this.loadingOnImport = true
-
       await persist()
 
+      this.progress.label = 'Importing'
       const progress = await importDeck(decompressedFile)
       await promiseProgress(progress, ({ percent, total, value, payload }) => {
         this.progress.value = value
@@ -182,8 +207,9 @@ export default {
 
       decompressedFile = null
 
-      console.log('close')
-      this.$emit('close')
+      this.onClose()
+
+      this.currentState = this.state.init
     },
   },
 }

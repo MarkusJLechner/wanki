@@ -43,3 +43,14 @@ export function promiseProgress(proms, progressCallback) {
   }
   return Promise.all(proms)
 }
+
+export function deferPromise(obj = {}) {
+  obj.resolve = () => {}
+  obj.reject = () => {}
+  obj.promise = new Promise((resolve, reject) => {
+    obj.resolve = resolve
+    obj.reject = reject
+  })
+
+  return obj
+}

@@ -83,6 +83,7 @@
             :confirm="confirm"
             :actions="actions"
             :disable-confirm="disableConfirm"
+            :cancel-text="cancelText"
             :loading="loading"
             @close="onClose"
             @confirm="onConfirm"
@@ -114,6 +115,11 @@ export default {
     title: {
       type: String,
       default: '',
+    },
+
+    cancelText: {
+      type: [String, Function],
+      default: undefined,
     },
 
     noGutters: {

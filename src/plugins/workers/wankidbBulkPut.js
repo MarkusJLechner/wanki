@@ -1,4 +1,4 @@
-import { wankidb } from './db'
+import { wankidb } from '@/plugins/wankidb/db'
 
 self.onmessage = async (event) => {
   const { table, data } = event.data

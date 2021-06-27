@@ -1,69 +1,22 @@
-import { unzipSync } from 'fflate'
-import { idb } from '@/plugins/idb.js'
+import WorkerDecompressFile from '@/plugins/workers/decompressFile.js?worker'
 
-export const decompressFile = async (file) => {
-  if (!file) {
-    throw new Error('No file defined')
-  }
+export const decompressFile = (file) => {
+  const workerDecompress = new WorkerDecompressFile()
+  const promise = new Promise((resolve, reject) => {
+    workerDecompress.onmessage = (event) => {
+      const decompressedfile = event.data[1]
+      if (decompressedfile) {
+        resolve(decompressedfile)
+      }
+    }
 
-  const fileBuffer = await file.arrayBuffer()
-
-  console.time('decompress')
-  const decompressed = await new Promise((resolve) => {
-    resolve(unzipSync(new Uint8Array(fileBuffer)))
+    workerDecompress.onerror = (e) => reject(e)
   })
-  console.timeEnd('decompress')
-
-  console.time('parse')
-  let valid = false
-  const filesDecompressed = Object.keys(decompressed).map((key) => {
-    let value = decompressed[key]
-    let type = 'media'
-    if (key === 'media') {
-      type = 'mapping'
-      value = JSON.parse(new TextDecoder().decode(value))
-    }
-    if (key === 'collection.anki2' || key === 'collection.anki21') {
-      valid = true
-      type = 'sql'
-    }
-    return { filename: key, file: value, type: type }
-  })
-  console.timeEnd('parse')
-
-  if (!valid) {
-    throw new Error('No valid anki file')
-  }
-
-  const mapped = {
-    collection: null,
-    media: {},
-  }
-
-  let files = []
-  let media = []
-
-  console.time('map')
-  filesDecompressed.forEach((file) => {
-    if (file.type === 'sql') {
-      mapped.collection = file.file
-    }
-
-    if (file.type === 'mapping') {
-      media = file.file
-    }
-
-    if (file.type === 'media') {
-      files[file.filename] = file.file
-    }
-  })
-  console.timeEnd('map')
-
-  mapped.media = Object.values(media).map((m, index) => {
-    return { name: m, file: files[index] }
+  workerDecompress.postMessage({
+    file,
   })
 
-  return mapped
+  return { promise, worker: workerDecompress }
 }
 
 export const fun = async (parsedDeck) => {

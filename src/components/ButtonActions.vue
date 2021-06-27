@@ -3,8 +3,8 @@
     <div v-for="(action, index) in computedActions" :key="index">
       <component
         :is="getComponent(action)"
-        v-if="!loading || action.emit === 'confirm'"
-        :text="action.text"
+        v-if="canAction(action)"
+        :text="getValue(action.text)"
         :loading="loading && action.emit === 'confirm'"
         class="transition-opacity duration-200 ease-in-out"
         :class="{ 'opacity-30': isDisabled(action) }"
@@ -41,21 +41,24 @@ export default {
     },
 
     cancelText: {
-      type: String,
+      type: [String, Function],
       default: 'Cancel',
     },
 
     actions: {
       type: Array,
-      default: () => [
-        {
-          type: 'spacer',
-        },
-        {
-          text: 'Close',
-          emit: 'close',
-        },
-      ],
+      default: (props) => {
+        console.log(props)
+        return [
+          {
+            type: 'spacer',
+          },
+          {
+            text: () => props.cancelText,
+            emit: 'close',
+          },
+        ]
+      },
     },
   },
 
@@ -85,6 +88,26 @@ export default {
   },
 
   methods: {
+    canAction(action) {
+      if (this.loading && this.confirm) {
+        return action.emit === 'confirm'
+      }
+
+      if (this.loading && !this.confirm) {
+        return action.emit === 'close'
+      }
+
+      return true
+    },
+
+    getValue(obj) {
+      if (typeof obj === 'function') {
+        return obj()
+      }
+
+      return obj
+    },
+
     getComponent(action) {
       switch (action.type) {
         case 'spacer':
