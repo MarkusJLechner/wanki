@@ -8,10 +8,13 @@ export const decompressFile = async (file) => {
 
   const fileBuffer = await file.arrayBuffer()
 
+  console.time('decompress')
   const decompressed = await new Promise((resolve) => {
     resolve(unzipSync(new Uint8Array(fileBuffer)))
   })
+  console.timeEnd('decompress')
 
+  console.time('parse')
   let valid = false
   const filesDecompressed = Object.keys(decompressed).map((key) => {
     let value = decompressed[key]
@@ -26,6 +29,7 @@ export const decompressFile = async (file) => {
     }
     return { filename: key, file: value, type: type }
   })
+  console.timeEnd('parse')
 
   if (!valid) {
     throw new Error('No valid anki file')
@@ -39,6 +43,7 @@ export const decompressFile = async (file) => {
   let files = []
   let media = []
 
+  console.time('map')
   filesDecompressed.forEach((file) => {
     if (file.type === 'sql') {
       mapped.collection = file.file
@@ -52,6 +57,7 @@ export const decompressFile = async (file) => {
       files[file.filename] = file.file
     }
   })
+  console.timeEnd('map')
 
   mapped.media = Object.values(media).map((m, index) => {
     return { name: m, file: files[index] }
