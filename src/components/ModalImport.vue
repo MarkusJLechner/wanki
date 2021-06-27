@@ -134,6 +134,11 @@ export default {
   watch: {
     modelValue(newValue) {
       if (newValue) {
+        this.currentState = this.state.init
+        this.error = null
+        this.files = []
+        this.renderingFiles = []
+        decompressedFile = null
         this.progress = {
           value: 0,
           total: 0,
