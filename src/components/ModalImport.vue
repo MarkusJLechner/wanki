@@ -33,6 +33,13 @@
         {{ file.text }}
       </li>
     </ul>
+
+    <progress-bar
+      v-if="progress.total > 0"
+      :value="progress.value"
+      :total="progress.total"
+      :tasks="progress.tasks"
+    />
   </BaseModal>
 </template>
 
@@ -43,11 +50,12 @@ import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
 import { importDeck, persist } from '@/plugins/idb.js'
 import LoadingIcon from '@/components/LoadingIcon.vue'
+import ProgressBar from '@/components/ProgressBar.vue'
 
 let decompressedFile = null
 
 export default {
-  components: { LoadingIcon, InputFile, BaseModal },
+  components: { ProgressBar, LoadingIcon, InputFile, BaseModal },
 
   props: {
     accept: {
@@ -65,6 +73,11 @@ export default {
 
   data() {
     return {
+      progress: {
+        value: 0,
+        total: 0,
+        tasks: [],
+      },
       error: null,
       loadingOnImport: false,
       state: {
@@ -106,6 +119,18 @@ export default {
     },
   },
 
+  watch: {
+    modelValue(newValue) {
+      if (newValue) {
+        this.progress = {
+          value: 0,
+          total: 0,
+          tasks: [],
+        }
+      }
+    },
+  },
+
   methods: {
     async onInitImport(files) {
       this.loadingOnImport = true
@@ -140,12 +165,16 @@ export default {
 
       await persist()
 
-      await promiseProgress(
-        importDeck(decompressedFile),
-        ({ percent, payload }) => {
-          console.log(percent, payload)
-        },
-      ).then(() => {
+      const progress = await importDeck(decompressedFile)
+      await promiseProgress(progress, ({ percent, total, value, payload }) => {
+        this.progress.value = value
+        this.progress.total = total
+        if (payload) {
+          this.progress.tasks = Object.entries(payload)
+            .filter((e) => !e[1])
+            .map((e) => e[0])
+        }
+      }).then(() => {
         console.log('complete')
       })
 

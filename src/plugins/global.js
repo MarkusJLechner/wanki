@@ -33,12 +33,12 @@ export function promptFile(accept, multiple = false) {
 export function promiseProgress(proms, progressCallback) {
   let d = 0
   const l = proms.length
-  progressCallback({ percent: 0, total: l, curr: 0, payload: null })
+  progressCallback({ percent: 0, total: l, value: 0, payload: null })
   for (const p of proms) {
     p.then((pl) => {
       d++
       const percent = (d * 100) / proms.length
-      progressCallback({ percent, total: l, curr: d, payload: pl })
+      progressCallback({ percent, total: l, value: d, payload: pl })
     })
   }
   return Promise.all(proms)
