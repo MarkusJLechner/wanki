@@ -226,6 +226,8 @@ export default {
 
       this.onClose()
 
+      document.dispatchEvent(new Event('page/overview/update'))
+
       this.currentState = this.state.init
     },
   },

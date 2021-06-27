@@ -33,9 +33,9 @@
         @long-press="onMenu"
       >
         <template #suffix-item="{ item }">
-          <NumberDue :value="item.newToday[1]" color="blue" />
-          <NumberDue :value="item.revToday[1]" color="red" />
-          <NumberDue :value="item.lrnToday[1]" color="green" />
+          <NumberDue :value="item.newToday?.[1]" color="blue" />
+          <NumberDue :value="item.revToday?.[1]" color="red" />
+          <NumberDue :value="item.lrnToday?.[1]" color="green" />
         </template>
       </List>
 
@@ -179,18 +179,36 @@ export default {
     // await this.updateList()
 
     this.updateDeckList()
+    const vm = this
+    wankidb.decks.hook('creating', function () {
+      console.log('creating')
+      this.onsuccess = function () {
+        vm.updateDeckList()
+      }
+    })
+    wankidb.decks.hook('deleting', function () {
+      console.log('deleting')
+      this.onsuccess = function () {
+        vm.updateDeckList()
+      }
+    })
+    wankidb.decks.hook('updating', function () {
+      console.log('updating')
+      this.onsuccess = function () {
+        vm.updateDeckList()
+      }
+    })
 
-    document.addEventListener('page/overview/update', this.updateList)
+    document.addEventListener('page/overview/update', this.updateDeckList)
   },
 
   beforeUnmount() {
-    document.removeEventListener('page/overview/update', this.updateList)
+    document.removeEventListener('page/overview/update', this.updateDeckList)
   },
 
   methods: {
     async updateDeckList() {
       const decks = await wankidb.decks.toArray()
-      console.log(decks)
       this.decks = decks.map((deck) => {
         return {
           text: deck.name,
@@ -248,7 +266,8 @@ export default {
     },
 
     async onDelete() {
-      await (await idbDecks).del(this.modelOptionDeckId)
+      await wankidb.decks.delete(this.modelOptionDeckId)
+      // await (await idbDecks).del(this.modelOptionDeckId)
       this.showModalDelete = false
 
       this.modalOptionsItem = null
