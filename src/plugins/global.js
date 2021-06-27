@@ -65,6 +65,8 @@ export function addTask(task) {
 
 export function finishTask(id) {
   document.dispatchEvent(
-    new CustomEvent('background/task', { detail: { id, remove: true } }),
+    new CustomEvent('background/task', {
+      detail: { id, unique: id, remove: true },
+    }),
   )
 }
