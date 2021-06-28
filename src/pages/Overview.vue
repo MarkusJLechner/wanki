@@ -2,6 +2,7 @@
   <div @dragover="onImport">
     <TheHeader title="Overview">
       <FlexSpacer />
+      <ButtonIconReload />
       <ThemeSwitcher />
       <ButtonOptions
         :value="[
@@ -18,7 +19,7 @@
       />
     </TheHeader>
 
-    <MainContent>
+    <MainContent :pull-to-refresh="() => pullToRefresh()">
       <ModalImport v-model="showModalImport" @close="closeImport" />
 
       <span v-if="loading" class="p-4"
@@ -107,11 +108,13 @@ import InputTextField from '@/components/InputTextField.vue'
 import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
 import MainContent from '@/components/MainContent.vue'
+import ButtonIconReload from '@/components/ButtonIconReload.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    ButtonIconReload,
     MainContent,
     InputTextField,
     BaseModal,
@@ -207,6 +210,11 @@ export default {
   },
 
   methods: {
+    pullToRefresh() {
+      console.log('refresh list')
+      this.updateDeckList()
+    },
+
     async updateDeckList() {
       const decks = await wankidb.decks.toArray()
       this.decks = decks.map((deck) => {

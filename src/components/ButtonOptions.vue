@@ -3,7 +3,14 @@
     <transition name="fade" appear>
       <div
         v-if="menu"
-        class="fixed z-10 inset-0 bg-black bg-opacity-20 transition-opacity"
+        class="
+          fixed
+          z-10
+          inset-0
+          bg-black bg-black bg-opacity-30
+          backdrop-blur-[4px] backdrop-filter
+          transition-opacity
+        "
         aria-hidden="true"
         @mousedown.stop.prevent="closeMenu()"
         @touchstart.stop.prevent="closeMenu()"

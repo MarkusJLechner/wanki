@@ -1,7 +1,9 @@
 import Dexie from 'dexie'
 
+export const databaseName = 'wankidb'
+
 export const wankidb = (() => {
-  const db = new Dexie('wankidb')
+  const db = new Dexie(databaseName)
   db.version(1).stores({
     cards:
       'id,nid,did,ord,mod,usn,type,queue,due,ivl,factor,reps,lapses,left,odue,odid,flags,data',
@@ -21,3 +23,7 @@ export const wankidb = (() => {
   db.open()
   return db
 })()
+
+export const wipeDatabase = () => {
+  return Dexie.delete(databaseName)
+}

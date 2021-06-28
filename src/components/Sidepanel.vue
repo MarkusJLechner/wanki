@@ -62,6 +62,7 @@ export default {
 
   data() {
     return {
+      slideXPosition: 42,
       openState: false,
       touch: {
         threshold: 50,
@@ -107,6 +108,7 @@ export default {
       if (!this.touch.init) {
         return
       }
+      // todo remove me
       const { clientX, clientY } = this.getClientPos(event)
       this.touch.clientX = clientX
       this.touch.clientY = clientY
@@ -138,7 +140,7 @@ export default {
 
     onTouchdown(event) {
       const { clientX, clientY } = this.getClientPos(event)
-      this.touch.init = clientX < 32
+      this.touch.init = clientX < this.slideXPosition
       this.touch.onSlide = false
       const { width: screenWidth, height: screenHeight } = window.screen
 

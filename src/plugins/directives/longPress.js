@@ -1,4 +1,4 @@
-const PRESS_TIMEOUT = 300
+const PRESS_TIMEOUT = 500
 
 export default {
   mounted(el, { value }, vnode) {
@@ -14,6 +14,7 @@ export default {
     let iy = 0
     let dx = 0
     let dy = 0
+    let thresholdMove = 10
 
     const start = (e) => {
       ix = e.clientX || e.touches[0].clientX
@@ -26,7 +27,10 @@ export default {
 
       if (pressTimer === null) {
         pressTimer = setTimeout(() => {
-          if (Math.abs(ix - dx) > 30 || Math.abs(iy - dy) > 30) {
+          if (
+            Math.abs(ix - dx) > thresholdMove ||
+            Math.abs(iy - dy) > thresholdMove
+          ) {
             clearTimeout(pressTimer)
             pressTimer = null
             return
@@ -57,7 +61,9 @@ export default {
 
     document.addEventListener('reset-long-press', cancel, { passive: true })
     ;['mousedown', 'touchstart'].forEach((e) => el.addEventListener(e, start))
-    ;['mousemove', 'touchmove'].forEach((e) => el.addEventListener(e, move))
+    ;['mousemove', 'touchmove'].forEach((e) =>
+      el.addEventListener(e, move, { passive: true }),
+    )
     ;['click', 'mouseout', 'touchend', 'touchcancel'].forEach((e) =>
       el.addEventListener(e, cancel),
     )

@@ -16,20 +16,43 @@ const Ripple = {
 
     setProps(Object.keys(binding.modifiers), props)
     props.event.forEach((e) =>
-      el.addEventListener(
-        e,
-        function (event) {
-          rippler(event, el, binding.value)
-        },
-        { passive: true },
-      ),
+      el.addEventListener(e, function (event) {
+        rippler(event, el, binding.value)
+      }),
     )
 
     let onClick = false
 
     const bg = binding.value || Ripple.color || 'rgba(0, 0, 0, 0.2)'
 
+    let initx = 0
+    let inity = 0
+    let destx = 0
+    let desty = 0
+    let thresholdMove = 10
+
+    const move = (e) => {
+      destx = e.clientX || e.touches[0].clientX
+      desty = e.clientY || e.touches[0].clientY
+      if (
+        Math.abs(initx - destx) > thresholdMove ||
+        Math.abs(inity - desty) > thresholdMove
+      ) {
+        document
+          .querySelectorAll('.ripple')
+          .forEach((e) => (e.style.backgroundColor = 'rgba(0, 0, 0, 0)'))
+      }
+    }
+    ;['mousemove', 'touchmove'].forEach((e) =>
+      el.addEventListener(e, move, { passive: true }),
+    )
+
     function rippler(event, el) {
+      initx = event.clientX || event.touches[0].clientX
+      inity = event.clientY || event.touches[0].clientY
+      destx = initx
+      desty = inity
+
       if (onClick) {
         return
       }

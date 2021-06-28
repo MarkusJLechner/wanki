@@ -28,6 +28,7 @@
 import { refstorage } from 'store/globalstate'
 import ButtonIcon from 'components/ButtonIcon.vue'
 import Sidepanel from '@/components/Sidepanel.vue'
+import { wipeDatabase } from '@/plugins/wankidb/db.js'
 
 export default {
   components: { Sidepanel, ButtonIcon },
@@ -42,10 +43,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
 
-    sidepanel: {
-      type: Array,
-      default: () => [
+  data() {
+    return {
+      sidepanel: [
         {
           type: 'block',
           class: 'w-full h-14 mb-2',
@@ -66,13 +68,28 @@ export default {
         { icon: 'fas fa-cog', text: 'Settings', route: '/settings/overview' },
         { icon: 'fas fa-question-circle', text: 'Help', route: 'help' },
         { icon: 'fas fa-life-ring', text: 'Support Wanki', route: 'support' },
+        {
+          icon: 'fas fa-redo-alt',
+          text: 'Reload from Server',
+          dispatch: () => location.reload(true),
+        },
+        {
+          icon: 'fas fa-fire-alt',
+          text: 'Wipe Database',
+          dispatch: () => this.wipeDatabase(),
+        },
       ],
-    },
+    }
   },
 
   methods: {
     onBackButton() {
       this.$router.back()
+    },
+
+    async wipeDatabase() {
+      await wipeDatabase()
+      location.reload(true)
     },
   },
 }
