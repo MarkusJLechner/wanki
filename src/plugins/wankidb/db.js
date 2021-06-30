@@ -1,4 +1,7 @@
 import Dexie from 'dexie'
+import 'dexie-observable'
+import 'dexie-syncable'
+import './dbSync.js'
 
 export const databaseName = 'wankidb'
 
@@ -23,6 +26,19 @@ export const wankidb = (() => {
   db.open()
   return db
 })()
+
+wankidb.open().then(() => {
+  wankidb.syncable.connect('websocket', 'ws://localhost:3344')
+  wankidb.syncable.on('statusChanged', function (newStatus, url) {
+    try {
+      const status = Dexie.Syncable.StatusTexts[newStatus]
+      console.log('Sync Status changed: ' + status)
+    } catch (e) {
+      console.log('status error')
+    }
+  })
+  console.log('wankidb ws connect')
+})
 
 export const wipeDatabase = () => {
   return Dexie.delete(databaseName)

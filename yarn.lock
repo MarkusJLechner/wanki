@@ -804,6 +804,16 @@ detective@^5.2.0:
     defined "^1.0.0"
     minimist "^1.1.1"
 
+dexie-observable@^3.0.0-beta.11:
+  version "3.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/dexie-observable/-/dexie-observable-3.0.0-beta.11.tgz#2ab39e81f0fd2a8a040e014279d07b4c13c9100f"
+  integrity sha512-mKwSYy54Kj73Njp3Rs+GoldLxyDJK1LF7niBkZxSenGAlBCXB5RxafH2Mg6Ay0B1pLlDYvJCWH31s88/Uz0WSg==
+
+dexie-syncable@^3.0.0-beta.10:
+  version "3.0.0-beta.10"
+  resolved "https://registry.yarnpkg.com/dexie-syncable/-/dexie-syncable-3.0.0-beta.10.tgz#ecd1405ffd1dbe1cfc750c0c1ad1d719dda54bfe"
+  integrity sha512-Gx7GF4uNFLVYye/qLqzMcH1rzdy2D55YqzH6rGDwthIPNLJW9DYYbLWGUJZ6Oa58zahDrbCnaM0nZdf4M8Ph/g==
+
 dexie@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3.tgz#ede63849dfe5f07e13e99bb72a040e8ac1d29dab"

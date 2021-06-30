@@ -1,0 +1,14 @@
+{
+  "name": "wankiserver",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node ."
+  },
+  "dependencies": {
+    "nodejs-websocket": "^1.7.2",
+    "sqlite3": "^5.0.2"
+  }
+}

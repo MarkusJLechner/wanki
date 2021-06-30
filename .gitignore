@@ -3,5 +3,6 @@ node_modules
 dist
 dist-ssr
 *.local
+*.sqllite3
 .idea
 collection.anki2
