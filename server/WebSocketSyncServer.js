@@ -14,26 +14,41 @@
  applied after client changes.
  */
 import ws from 'nodejs-websocket' // This will work also in browser if "websocketserver-shim.js" is included.
-import fs from 'fs'
 import sqlite3 from 'sqlite3'
+import util from 'util'
 const sqlite3Verbose = sqlite3.verbose()
 let db
+let sqldb
 
 function createDb() {
   console.log('createDb database')
-  db = new sqlite3Verbose.Database('db.sqlite3', createTable)
-  db.on('error', function (error) {
+  sqldb = new sqlite3Verbose.Database('db.sqlite3', createTable)
+  sqldb.run = util.promisify(sqldb.run)
+  sqldb.get = util.promisify(sqldb.get)
+  sqldb.all = util.promisify(sqldb.all)
+  sqldb.on('error', function (error) {
     console.log('Getting an error : ', error)
   })
 }
 function createTable() {
-  db.run('CREATE TABLE IF NOT EXISTS tables (decks TEXT)')
-  db.run(
-    'CREATE TABLE IF NOT EXISTS changes (rev TEXT, source TEXT, type TEXT, `table` TEXT, key TEXT, obj TEXT)',
+  sqldb.run('CREATE TABLE IF NOT EXISTS tables (decks TEXT)')
+  sqldb.run(
+    'CREATE TABLE IF NOT EXISTS changes (rev INTEGER, source INTEGER, type INTEGER, `table` TEXT, key INTEGER, obj TEXT, mods TEXT)',
   )
-  db.run('CREATE TABLE IF NOT EXISTS uncommittedChanges (info TEXT)')
-  db.run('CREATE TABLE IF NOT EXISTS revision (info TEXT)')
-  db.run('CREATE TABLE IF NOT EXISTS subscribers (info TEXT)')
+  sqldb.run('CREATE TABLE IF NOT EXISTS uncommittedChanges (info TEXT)')
+  sqldb.run('CREATE TABLE IF NOT EXISTS revision (info TEXT)')
+  sqldb.run('CREATE TABLE IF NOT EXISTS subscribers (info TEXT)')
+}
+
+function dbEach(tablename) {
+  return new Promise((resolve, reject) => {
+    sqldb.each(`select * from ${tablename}`, (err, row) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(row)
+    })
+  })
 }
 
 function dbInsert(tablename, values) {
@@ -43,8 +58,7 @@ function dbInsert(tablename, values) {
   const placeholders = Object.keys(values).fill('?').join(', ')
   const sql =
     'INSERT INTO ' + tablename + ' (' + cols + ') VALUES (' + placeholders + ')'
-  console.log('query', sql)
-  db.run(
+  sqldb.run(
     sql,
     Object.values(values).map((v) => JSON.stringify(v)),
   )
@@ -56,7 +70,7 @@ const CREATE = 1
 const UPDATE = 2
 const DELETE = 3
 
-function SyncServer(port) {
+async function SyncServer(port) {
   // This sample sync server works against a RAM database - an object of tables + an array of changes to the database
 
   // ----------------------------------------------------------------------------
@@ -68,7 +82,7 @@ function SyncServer(port) {
   //
   //
   // ----------------------------------------------------------------------------
-  createDb()
+  await createDb()
 
   const db = {
     tables: {}, // Tables: Each key is a table and its value is another object where each key is the primary key and value is the record / object that is stored in ram.
@@ -93,7 +107,6 @@ function SyncServer(port) {
       }
       db.changes.push(entry)
 
-      console.log(entry)
       dbInsert('changes', entry)
 
       db.trigger()
@@ -103,14 +116,16 @@ function SyncServer(port) {
         const obj = db.tables[table][key]
         if (obj) {
           applyModifications(obj, modifications)
-          db.changes.push({
+          const entry = {
             rev: ++db.revision,
             source: clientIdentity,
             type: UPDATE,
             table,
             key,
             mods: modifications,
-          })
+          }
+          db.changes.push(entry)
+          dbInsert('changes', entry)
           db.trigger()
         }
       }
@@ -119,13 +134,15 @@ function SyncServer(port) {
       if (db.tables[table]) {
         if (db.tables[table][key]) {
           delete db.tables[table][key]
-          db.changes.push({
+          const entry = {
             rev: ++db.revision,
             source: clientIdentity,
             type: DELETE,
             table,
             key,
-          })
+          }
+          db.changes.push(entry)
+          dbInsert('changes', entry)
           db.trigger()
         }
       }
@@ -170,9 +187,10 @@ function SyncServer(port) {
 
         let syncedRevision = 0 // Used when sending changes to client. Only send changes above syncedRevision since client is already in sync with syncedRevision.
 
-        function sendAnyChanges() {
+        async function sendAnyChanges() {
           // Get all changes after syncedRevision that was not performed by the client we're talkin' to.
-          const changes = db.changes.filter(
+          const dbChanges = await sqldb.all('select * from changes')
+          const changes = dbChanges.filter(
             ({ rev, source }) =>
               rev > syncedRevision && source !== conn.clientIdentity,
           )
@@ -200,7 +218,7 @@ function SyncServer(port) {
         conn.on('text', (message) => {
           const request = JSON.parse(message)
           const type = request.type
-          if (type == 'clientIdentity') {
+          if (type === 'clientIdentity') {
             // Client Hello: Client says "Hello, My name is <clientIdentity>!" or "Hello, I'm newborn. Please give me a name!"
             // Client identity is used for the following purpose:
             //  * When client sends its changes, register the changes into server database and mark each change with the clientIdentity.
@@ -222,14 +240,14 @@ function SyncServer(port) {
                 }),
               )
             }
-          } else if (type == 'subscribe') {
+          } else if (type === 'subscribe') {
             // Client wants to subscribe to server changes happened or happening after given syncedRevision
             syncedRevision = request.syncedRevision || 0
             // Send any changes we have currently:
             sendAnyChanges()
             // Start subscribing for additional changes:
             db.subscribe(sendAnyChanges)
-          } else if (type == 'changes') {
+          } else if (type === 'changes') {
             // Client sends its changes to us.
             const requestId = request.requestId
             try {
@@ -300,7 +318,6 @@ function SyncServer(port) {
                 resolved.forEach((change) => {
                   switch (change.type) {
                     case CREATE:
-                      console.log('on create')
                       db.create(
                         change.table,
                         change.key,
@@ -309,7 +326,6 @@ function SyncServer(port) {
                       )
                       break
                     case UPDATE:
-                      console.log('on update')
                       db.update(
                         change.table,
                         change.key,
@@ -318,7 +334,6 @@ function SyncServer(port) {
                       )
                       break
                     case DELETE:
-                      console.log('on delete')
                       db.delete(change.table, change.key, conn.clientIdentity)
                       break
                   }
@@ -414,7 +429,7 @@ function resolveConflicts(clientChanges, serverChangeSet) {
     if (!serverChange) {
       // No server change on same object. Totally conflict free!
       resolved.push(clientChange)
-    } else if (serverChange.type == UPDATE) {
+    } else if (serverChange.type === UPDATE) {
       // Server change overlaps. Only if server change is not CREATE or DELETE, we should consider merging in the client change.
       switch (clientChange.type) {
         case CREATE:
@@ -429,7 +444,7 @@ function resolveConflicts(clientChanges, serverChangeSet) {
             delete clientChange.mods[keyPath]
             // Also, remote all changes to nestled objects under this keyPath from the client change:
             Object.keys(clientChange.mods).forEach((clientKeyPath) => {
-              if (clientKeyPath.indexOf(`${keyPath}.`) == 0) {
+              if (clientKeyPath.indexOf(`${keyPath}.`) === 0) {
                 delete clientChange.mods[clientKeyPath]
               }
             })
