@@ -1,20 +1,35 @@
 <template>
-  <div class="refresher z-50">
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-  </div>
+  <div class="flex-grow flex overflow-y-auto">
+    <div
+      class="
+        pulldown-element
+        rounded-full
+        p-2
+        bg-white
+        mt-3
+        shadow-lg
+        pointer-events-none
+        absolute
+        inline-flex
+        justify-center
+        items-center
+        z-10
+      "
+    >
+      <LoadingLogo />
+    </div>
 
-  <div id="main-content" class="flex-grow overflow-y-auto">
-    <slot />
+    <div class="refresh-content flex-grow">
+      <slot />
+    </div>
   </div>
 </template>
 
 <script>
+import LoadingLogo from '@/components/LoadingLogo.vue'
 export default {
   name: 'MainContent',
-
+  components: { LoadingLogo },
   props: {
     pullToRefresh: {
       type: Function,
@@ -34,7 +49,7 @@ export default {
       let _startY
       let okPull = false
 
-      const container = document.querySelector('#main-content')
+      const container = document.querySelector('.refresh-content')
       container.addEventListener(
         'touchstart',
         (e) => {
@@ -51,126 +66,83 @@ export default {
             return
           }
 
-          const y = e.touches[0].pageY
-          // Activate custom pull-to-refresh effects when at the top of the container
-          // and user is scrolling up.
+          const pullOverY = 84
+          const y = e.touches[0].pageY - pullOverY
           if (
+            okPull &&
             document.scrollingElement.scrollTop === 0 &&
             y > _startY &&
             !document.body.classList.contains('refreshing')
           ) {
-            console.log('refresh')
-            this.simulateRefreshAction()
-            this.pullToRefresh()
+            this.callPullToRefresh()
+            okPull = false
           }
         },
         { passive: true },
       )
     },
 
-    async simulateRefreshAction() {
+    async callPullToRefresh() {
       const sleep = (timeout) =>
         new Promise((resolve) => setTimeout(resolve, timeout))
 
-      const transitionEnd = function (propertyName, node) {
-        return new Promise((resolve) => {
-          function callback(e) {
-            e.stopPropagation()
-            if (e.propertyName === propertyName) {
-              node.removeEventListener('transitionend', callback)
-              resolve(e)
-            }
-          }
-          node.addEventListener('transitionend', callback)
-        })
-      }
+      const pulldownElement = document.querySelector('.pulldown-element')
+      const refreshContent = document.querySelector('.refresh-content')
+      refreshContent.classList.add('refresh-active')
+      pulldownElement.classList.add('visible')
+      let pullElementAnimation = pulldownElement.animate(
+        [
+          { transform: 'translate3d(0, -6rem, 0) scaleX(-0.5) scaleY(0)' },
+          { transform: 'translate3d(0, 0, 0) scaleX(1) scaleY(1)' },
+        ],
+        {
+          duration: 120,
+          iterations: 1,
+        },
+      )
 
-      const refresher = document.querySelector('.refresher')
+      // run task
+      await this.pullToRefresh()
+      await sleep(300)
 
-      document.body.classList.add('refreshing')
-      await sleep(2000)
+      await pullElementAnimation.finished
 
-      refresher.classList.add('shrink')
-      await transitionEnd('transform', refresher)
-      refresher.classList.add('done')
+      pullElementAnimation = pulldownElement.animate(
+        [
+          { transform: 'translate3d(0, 0, 0) scaleX(1) scaleY(1)' },
+          { transform: 'translate3d(0, 0, 0) scaleX(0) scaleY(0)' },
+        ],
+        {
+          duration: 100,
+          iterations: 1,
+        },
+      )
 
-      refresher.classList.remove('shrink')
-      document.body.classList.remove('refreshing')
-      await sleep(0) // let new styles settle.
-      refresher.classList.remove('done')
+      await pullElementAnimation.finished
+      refreshContent.classList.remove('refresh-active')
+      pulldownElement.classList.remove('visible')
     },
   },
 }
 </script>
 
 <style scoped>
-body.refreshing #main-content,
-body.refreshing header {
-  filter: blur(1px);
-  touch-action: none; /* prevent scrolling */
+.refresh-content.refresh-active {
+  filter: blur(2px);
+  touch-action: none;
 }
-body.refreshing .refresher {
-  transform: translate3d(0, 150%, 0) scale(1);
-  z-index: 1;
-  visibility: visible;
+
+.visible {
+  visibility: inherit !important;
 }
-.refresher {
-  pointer-events: none;
-  --refresh-width: 55px;
-  background: #fff;
-  width: var(--refresh-width);
-  height: var(--refresh-width);
-  border-radius: 50%;
-  position: absolute;
-  left: calc(50% - var(--refresh-width) / 2);
-  padding: 8px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
-    0 3px 1px -2px rgba(0, 0, 0, 0.2);
-  transition: all 300ms cubic-bezier(0, 0, 0.2, 1);
+
+.pulldown-element {
+  --width: 55px;
+
+  width: var(--width);
+  height: var(--width);
+  left: calc(50% - var(--width) / 2);
   will-change: transform, opacity;
-  display: inline-flex;
-  justify-content: space-evenly;
-  align-items: center;
   visibility: hidden;
-}
-body.refreshing .refresher.shrink {
-  transform: translate3d(0, 150%, 0) scale(0);
-  opacity: 0;
-}
-.refresher.done {
-  transition: none;
-}
-.loading-bar {
-  width: 4px;
-  height: 18px;
-  border-radius: 4px;
-  animation: loading 1s ease-in-out infinite;
-}
-.loading-bar:nth-child(1) {
-  background-color: #3498db;
-  animation-delay: 0;
-}
-.loading-bar:nth-child(2) {
-  background-color: #c0392b;
-  animation-delay: 0.09s;
-}
-.loading-bar:nth-child(3) {
-  background-color: #f1c40f;
-  animation-delay: 0.18s;
-}
-.loading-bar:nth-child(4) {
-  background-color: #27ae60;
-  animation-delay: 0.27s;
-}
-@keyframes loading {
-  0% {
-    transform: scale(1);
-  }
-  20% {
-    transform: scale(1, 2.2);
-  }
-  40% {
-    transform: scale(1);
-  }
 }
 </style>

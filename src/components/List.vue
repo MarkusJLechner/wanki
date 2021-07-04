@@ -13,6 +13,7 @@
       v-long-press="() => onLongPress(item)"
       v-ripple
       class="
+        select-none
         cursor-pointer
         relative
         focus:outline-none
