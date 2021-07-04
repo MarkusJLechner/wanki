@@ -103,7 +103,7 @@ export default {
 
       // run task
       await this.pullToRefresh()
-      await sleep(300)
+      await sleep(30000)
 
       await pullElementAnimation.finished
 
@@ -130,6 +130,7 @@ export default {
 .refresh-content.refresh-active {
   filter: blur(2px);
   touch-action: none;
+  pointer-events: none;
 }
 
 .visible {
