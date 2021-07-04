@@ -122,7 +122,6 @@ export default {
 
       if (this.touch.distanceX > this.touch.threshold) {
         this.touch.onSlide = true
-        document.dispatchEvent(new Event('reset-long-press'))
       }
 
       if (this.touch.onSlide) {
