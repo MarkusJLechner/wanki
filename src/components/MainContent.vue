@@ -103,7 +103,7 @@ export default {
 
       // run task
       await this.pullToRefresh()
-      await sleep(30000)
+      await sleep(300)
 
       await pullElementAnimation.finished
 
