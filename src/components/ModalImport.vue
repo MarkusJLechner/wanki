@@ -205,6 +205,7 @@ export default {
       await persist()
 
       this.progress.label = 'Importing'
+      this.progress.tasks = ['Prepare import...']
       const progress = await importDeck(decompressedFile)
       await promiseProgress(progress, ({ percent, total, value, payload }) => {
         this.progress.value = value

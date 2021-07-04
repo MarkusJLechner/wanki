@@ -19,6 +19,8 @@
       />
     </TheHeader>
 
+    <ButtonFloating />
+
     <MainContent :pull-to-refresh="() => pullToRefresh()">
       <ModalImport v-model="showModalImport" @close="closeImport" />
 
@@ -109,11 +111,13 @@ import { sqlDbDeck, sqlDeck } from '@/plugins/sql.js'
 import { exportDeck } from '@/plugins/exporter.js'
 import MainContent from '@/components/MainContent.vue'
 import ButtonIconReload from '@/components/ButtonIconReload.vue'
+import ButtonFloating from '@/components/ButtonFloating.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    ButtonFloating,
     ButtonIconReload,
     MainContent,
     InputTextField,
