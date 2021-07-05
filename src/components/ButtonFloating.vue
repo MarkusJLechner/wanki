@@ -1,6 +1,7 @@
 <template>
   <div
     class="
+      z-10
       fixed
       inline-flex
       justify-center
