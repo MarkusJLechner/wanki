@@ -8,7 +8,7 @@
         h-screen
         left-0
         top-0
-        bg-gray-700 bg-opacity-60
+        bg-gray-700 bg-opacity-50
         backdrop-filter backdrop-blur-[2px]
       "
       @click="show = false"
@@ -23,6 +23,7 @@
               py-1
               px-2
               rounded
+              text-white
             "
             >{{ item.text }}</span
           ><ButtonRound small :icon="item.icon" />

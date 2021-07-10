@@ -6,10 +6,13 @@
       justify-center
       items-center
       shadow-md
-      bg-blue-500 bg-opacity-70
+      bg-gray-400 bg-opacity-70
       rounded-full
       border-white
       backdrop-filter backdrop-blur-sm
+      text-gray-900
+      dark:text-white
+      dark:bg-blue-500
     "
     :class="computedClass"
   >
