@@ -27,6 +27,7 @@
 
 <script>
 import LoadingLogo from '@/components/LoadingLogo.vue'
+import { modalOpened } from '@/store/globalstate.js'
 export default {
   name: 'MainContent',
   components: { LoadingLogo },
@@ -54,7 +55,7 @@ export default {
         'touchstart',
         (e) => {
           _startY = e.touches[0].pageY
-          okPull = container.scrollTop === 0
+          okPull = container.parentElement.scrollTop === 0
         },
         { passive: true },
       )
@@ -70,6 +71,7 @@ export default {
           const y = e.touches[0].pageY - pullOverY
           if (
             okPull &&
+            !modalOpened.value &&
             document.scrollingElement.scrollTop === 0 &&
             y > _startY &&
             !document.body.classList.contains('refreshing')

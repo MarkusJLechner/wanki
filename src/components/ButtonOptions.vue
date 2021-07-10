@@ -30,7 +30,7 @@
               w-[15rem]
               pointer-event-none
               top-0
-              right-0
+              right-1
               absolute
             "
           >

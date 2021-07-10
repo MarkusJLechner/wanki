@@ -54,3 +54,5 @@ export const darkTheme = ref(
 watch(darkTheme, () => {
   localStorage.setItem('darkTheme', JSON.stringify(darkTheme.value))
 })
+
+export const modalOpened = ref(false)

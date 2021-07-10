@@ -7,13 +7,15 @@
       justify-center
       items-center
       shadow-xl
-      right-0
-      bottom-0
+      right-2
+      bottom-4
       m-4
-      bg-blue-500 bg-opacity-60
+      bg-blue-500 bg-opacity-70
       rounded-full
-      h-16
-      w-16
+      h-14
+      w-14
+      border-white border
+      backdrop-filter backdrop-blur-sm
     "
   >
     <i class="fas fa-plus font-lg" />

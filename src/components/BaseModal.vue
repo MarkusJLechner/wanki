@@ -97,6 +97,7 @@
 
 <script>
 import ButtonActions from '@/components/ButtonActions.vue'
+import { modalOpened } from '@/store/globalstate.js'
 
 export default {
   components: { ButtonActions },
@@ -159,9 +160,13 @@ export default {
   },
 
   watch: {
-    modelValue(newValue) {
-      this.show = newValue
-      this.$emit('visible', newValue)
+    modelValue: {
+      immediate: true,
+      handler(newValue) {
+        this.show = newValue
+        this.$emit('visible', newValue)
+        modalOpened.value = newValue
+      },
     },
   },
 
