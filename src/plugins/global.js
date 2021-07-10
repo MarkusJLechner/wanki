@@ -7,6 +7,10 @@ export const vibrate = (pattern = 30) => {
   }
 }
 
+export const isMobile =
+  'ontouchstart' in document.documentElement &&
+  /mobi/i.test(navigator.userAgent)
+
 export function promptFile(accept, multiple = false) {
   const input = document.createElement('input')
   input.type = 'file'

@@ -17,8 +17,8 @@ export default {
     let thresholdMove = 10
 
     const start = (e) => {
-      ix = e.clientX || e.touches[0].clientX
-      iy = e.clientY || e.touches[0].clientY
+      ix = e.clientX || (e.touches && e.touches[0].clientX)
+      iy = e.clientY || (e.touches && e.touches[0].clientY)
       dx = ix
       dy = iy
       if (e.type === 'click' && e.button !== 0) {
@@ -42,8 +42,8 @@ export default {
     }
 
     const move = (e) => {
-      dx = e.clientX || e.touches[0].clientX
-      dy = e.clientY || e.touches[0].clientY
+      dx = e.clientX || (e.touches && e.touches[0].clientX)
+      dy = e.clientY || (e.touches && e.touches[0].clientY)
     }
 
     const cancel = (e) => {

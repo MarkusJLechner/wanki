@@ -28,6 +28,7 @@
 <script>
 import LoadingLogo from '@/components/LoadingLogo.vue'
 import { modalOpened } from '@/store/globalstate.js'
+import { isMobile } from '@/plugins/global.js'
 export default {
   name: 'MainContent',
   components: { LoadingLogo },
@@ -51,37 +52,43 @@ export default {
       let okPull = false
 
       const container = document.querySelector('.refresh-content')
-      container.addEventListener(
-        'touchstart',
-        (e) => {
-          _startY = e.touches[0].pageY
-          okPull = container.parentElement.scrollTop === 0
-        },
-        { passive: true },
-      )
 
-      container.addEventListener(
-        'touchmove',
-        (e) => {
-          if (!okPull) {
-            return
-          }
+      const onStart = (e) => {
+        _startY = e.clientY || (e.touches && e.touches[0].clientY)
+        okPull = container.parentElement.scrollTop === 0
+      }
 
-          const pullOverY = 84
-          const y = e.touches[0].pageY - pullOverY
-          if (
-            okPull &&
-            !modalOpened.value &&
-            document.scrollingElement.scrollTop === 0 &&
-            y > _startY &&
-            !document.body.classList.contains('refreshing')
-          ) {
-            this.callPullToRefresh()
-            okPull = false
-          }
-        },
-        { passive: true },
-      )
+      const onMove = (e) => {
+        if (!okPull) {
+          return
+        }
+
+        const pullOverY = 84
+        const y = (e.clientY || (e.touches && e.touches[0].clientY)) - pullOverY
+        if (
+          okPull &&
+          !modalOpened.value &&
+          document.scrollingElement.scrollTop === 0 &&
+          y > _startY &&
+          !document.body.classList.contains('refreshing')
+        ) {
+          this.callPullToRefresh()
+          okPull = false
+        }
+      }
+
+      const onEnd = () => {
+        okPull = false
+      }
+
+      if (isMobile) {
+        container.addEventListener('touchstart', onStart, { passive: true })
+        container.addEventListener('touchmove', onMove, { passive: true })
+      } else {
+        container.addEventListener('mousedown', onStart, { passive: true })
+        container.addEventListener('mousemove', onMove, { passive: true })
+        container.addEventListener('mouseup', onEnd, { passive: true })
+      }
     },
 
     async callPullToRefresh() {

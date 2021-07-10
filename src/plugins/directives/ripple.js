@@ -32,8 +32,8 @@ const Ripple = {
     let thresholdMove = 10
 
     const move = (e) => {
-      destx = e.clientX || e.touches[0].clientX
-      desty = e.clientY || e.touches[0].clientY
+      destx = e.clientX || (e.touches && e.touches[0].clientX)
+      desty = e.clientY || (e.touches && e.touches[0].clientY)
       if (
         Math.abs(initx - destx) > thresholdMove ||
         Math.abs(inity - desty) > thresholdMove
