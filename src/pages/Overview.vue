@@ -19,7 +19,7 @@
       />
     </TheHeader>
 
-    <ButtonFloating />
+    <ButtonFloating :model-value="optionsFloating" />
 
     <MainContent :pull-to-refresh="() => pullToRefresh()">
       <ModalImport v-model="showModalImport" @close="closeImport" />
@@ -146,6 +146,11 @@ export default {
       loadingOnExport: false,
       inputRename: '',
       modalOptionsItem: null,
+      optionsFloating: [
+        { text: 'Get shared deck', icon: 'fas fa-cloud-download-alt' },
+        { text: 'Create deck', icon: 'fas fa-folder-plus' },
+        { text: 'Add note', icon: 'fas fa-plus' },
+      ],
       deckOptions: [
         {
           text: 'Rename',

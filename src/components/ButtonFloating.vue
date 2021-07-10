@@ -1,31 +1,94 @@
 <template>
-  <div
-    class="
-      z-10
-      fixed
-      inline-flex
-      justify-center
-      items-center
-      shadow-xl
-      right-2
-      bottom-4
-      m-4
-      bg-blue-500 bg-opacity-70
-      rounded-full
-      h-14
-      w-14
-      border-white border
-      backdrop-filter backdrop-blur-sm
-    "
-  >
-    <i class="fas fa-plus font-lg" />
+  <div class="z-10 fixed right-2 bottom-4 text-right">
+    <div
+      v-if="show"
+      class="
+        fixed
+        w-screen
+        h-screen
+        left-0
+        top-0
+        bg-gray-700 bg-opacity-60
+        backdrop-filter backdrop-blur-[2px]
+      "
+      @click="show = false"
+    />
+    <transition name="fade">
+      <ul v-if="show" class="mr-2 -mb-1">
+        <li v-for="(item, index) in modelValue" :key="index">
+          <span
+            class="
+              bg-gray-800 bg-opacity-80
+              backdrop-blur-[11px] backdrop-filter
+              py-1
+              px-2
+              rounded
+            "
+            >{{ item.text }}</span
+          ><ButtonRound small :icon="item.icon" />
+        </li>
+      </ul>
+    </transition>
+    <ButtonRound
+      class="transform duration-100"
+      :class="{
+        'rotate-45': show,
+        border: !show,
+      }"
+      @click="onClick"
+    />
   </div>
 </template>
 
 <script>
+import ButtonRound from '@/components/ButtonRound.vue'
 export default {
   name: 'ButtonFloating',
+  components: { ButtonRound },
+  props: {
+    modelValue: {
+      type: Array,
+      default: () => [],
+    },
+  },
+
+  data() {
+    return {
+      show: false,
+    }
+  },
+
+  methods: {
+    onClick() {
+      this.show = !this.show
+    },
+  },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active li,
+.fade-leave-active li {
+  transition: transform 0.15s, opacity 0.15s ease;
+}
+
+.fade-enter-from li {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-to li {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-leave-from li {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-leave-to li {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>
