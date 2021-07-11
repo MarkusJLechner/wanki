@@ -1,5 +1,5 @@
 <template>
-  <div v-if="deck">
+  <div v-if="deck" class="w-screen">
     <TheHeader>
       <FlexSpacer />
       <ThemeSwitcher />
@@ -24,8 +24,13 @@
         @item="onClickOptions"
       />
     </TheHeader>
-    <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
-    <div class="text-yellow-400">Deck Name: {{ deck.name }}</div>
+
+    <MainContent>
+      <InformationHeaderReview :current="2" :timer="timerText" />
+
+      <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
+      <div class="text-yellow-400">Deck Name: {{ deck.name }}</div>
+    </MainContent>
 
     <ButtonsReview
       :show-rating="showAnswer"
@@ -42,10 +47,14 @@ import ThemeSwitcher from 'components/ThemeSwitcher.vue'
 import ButtonOptions from '@/components/ButtonOptions.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ButtonsReview from '@/components/ButtonsReview.vue'
-import { sleep } from '@/plugins/global.js'
+import { createTimer, sleep } from '@/plugins/global.js'
+import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
+import MainContent from '@/components/MainContent.vue'
 
 export default {
   components: {
+    MainContent,
+    InformationHeaderReview,
     ButtonsReview,
     ButtonIcon,
     ButtonOptions,
@@ -59,16 +68,32 @@ export default {
       deckid: 1,
       deck: null,
       showAnswer: false,
+      timer: null,
+      timerText: '00:00',
+      timerDuration: 0,
     }
   },
 
   async created() {
     console.log('load')
+    this.timer = createTimer({
+      duration: 60,
+      callback: (timerDuration, timerText) => {
+        this.timerDuration = timerDuration
+        this.timerText = timerText
+      },
+      runOnStart: false,
+    })
+
     this.deckid = +this.$route.query.deckid
     this.deck = await wankidb.decks.get({ id: this.deckid })
     if (!this.deck) {
       await this.$router.push({ path: '/' })
     }
+  },
+
+  mounted() {
+    this.timer.start()
   },
 
   unmounted() {
@@ -86,6 +111,7 @@ export default {
 
     async onRating(value) {
       await sleep(200)
+      this.timer.reset()
       this.showAnswer = false
     },
   },

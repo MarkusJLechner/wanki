@@ -14,6 +14,59 @@ export const isMobile =
 export const sleep = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout))
 
+export function createTimer({
+  duration = 60,
+  callback = () => {},
+  runOnStart = true,
+}) {
+  let timer = 0
+  let paused = !runOnStart
+  let minutes, seconds
+  let interval = null
+  const set = (duration) => {
+    interval = setInterval(function () {
+      if (!paused) {
+        minutes = parseInt('' + timer / 60, 10)
+        seconds = parseInt('' + (timer % 60), 10)
+
+        minutes = minutes < 10 ? '0' + minutes : minutes
+        seconds = seconds < 10 ? '0' + seconds : seconds
+
+        callback(timer, minutes + ':' + seconds)
+
+        if (timer++ >= duration) {
+          clearInterval(interval)
+          interval = null
+        }
+      }
+    }, 1000)
+  }
+
+  if (runOnStart) {
+    set(duration)
+  }
+
+  const start = () => {
+    if (interval === null) {
+      set(duration)
+    }
+    paused = false
+  }
+  const pause = () => (paused = true)
+  const reset = () => {
+    timer = 0
+    callback(0, '00:00')
+    start()
+  }
+
+  return {
+    start,
+    pause,
+    set,
+    reset,
+  }
+}
+
 export function promptFile(accept, multiple = false) {
   const input = document.createElement('input')
   input.type = 'file'

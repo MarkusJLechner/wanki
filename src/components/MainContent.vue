@@ -19,7 +19,7 @@
       <LoadingLogo />
     </div>
 
-    <div class="refresh-content flex-grow">
+    <div class="refresh-content flex-grow relative">
       <slot />
     </div>
   </div>
@@ -35,7 +35,7 @@ export default {
   props: {
     pullToRefresh: {
       type: Function,
-      default: () => {},
+      default: null,
     },
   },
 
