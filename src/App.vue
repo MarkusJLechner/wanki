@@ -1,5 +1,6 @@
 <template>
   <main class="dark:bg-gray-600 bg-gray-200 dark:text-white h-screen text-lg">
+    <Toasts />
     <router-view v-slot="{ Component, route }">
       <transition appear :name="route.meta.transition || transitionName">
         <keep-alive include="Overview">
@@ -20,9 +21,10 @@ import { refstorage } from './store/globalstate'
 import { persist } from '@/plugins/idb.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import BackgroundTask from '@/components/BackgroundTask.vue'
+import Toasts from '@/components/Toasts.vue'
 
 export default {
-  components: { BackgroundTask },
+  components: { Toasts, BackgroundTask },
   data() {
     return {
       transitionName: 'fade',

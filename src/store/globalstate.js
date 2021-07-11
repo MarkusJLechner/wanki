@@ -1,5 +1,6 @@
 import { ref, watch } from 'vue'
 import { vibrate } from '../plugins/global.js'
+import { nanoid } from 'nanoid'
 
 const storeItemSubscribers = {}
 
@@ -56,3 +57,18 @@ watch(darkTheme, () => {
 })
 
 export const modalOpened = ref(false)
+
+export const toasts = ref([])
+export const addToast = ({ type, text, timeout = 3 }) => {
+  const id = nanoid(4)
+  if (type !== 'error' && type !== 'success') {
+    type = 'info'
+  }
+  const item = {
+    id,
+    type,
+    text,
+    timeout,
+  }
+  toasts.value = [...toasts.value, item]
+}

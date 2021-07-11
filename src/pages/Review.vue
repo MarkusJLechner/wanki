@@ -50,6 +50,7 @@ import ButtonsReview from '@/components/ButtonsReview.vue'
 import { createTimer, sleep } from '@/plugins/global.js'
 import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
+import { addToast } from '@/store/globalstate.js'
 
 export default {
   components: {
@@ -93,6 +94,7 @@ export default {
   },
 
   mounted() {
+    addToast({ type: 'info', text: 'Started review' })
     this.timer.start()
   },
 
