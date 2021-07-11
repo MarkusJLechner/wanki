@@ -94,6 +94,8 @@ export default {
 
   unmounted() {
     document.removeEventListener('touchstart', this.onTouchdown)
+    document.removeEventListener('touchmove', this.onTouchmove)
+    document.removeEventListener('touchend', this.onTouchend)
   },
 
   methods: {

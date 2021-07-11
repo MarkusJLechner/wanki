@@ -272,6 +272,8 @@ export default {
 
     onDeck(item) {
       console.log(item)
+
+      this.$router.push({ path: '/review', query: { deckid: item.id } })
     },
 
     onMenu(item) {
