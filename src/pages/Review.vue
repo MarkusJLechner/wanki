@@ -26,6 +26,12 @@
     </TheHeader>
     <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
     <div class="text-yellow-400">Deck Name: {{ deck.name }}</div>
+
+    <ButtonsReview
+      :show-rating="showAnswer"
+      @show="onShow"
+      @rating="onRating"
+    />
   </div>
 </template>
 
@@ -35,9 +41,12 @@ import FlexSpacer from 'components/FlexSpacer.vue'
 import ThemeSwitcher from 'components/ThemeSwitcher.vue'
 import ButtonOptions from '@/components/ButtonOptions.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
+import ButtonsReview from '@/components/ButtonsReview.vue'
+import { sleep } from '@/plugins/global.js'
 
 export default {
   components: {
+    ButtonsReview,
     ButtonIcon,
     ButtonOptions,
     ThemeSwitcher,
@@ -49,6 +58,7 @@ export default {
     return {
       deckid: 1,
       deck: null,
+      showAnswer: false,
     }
   },
 
@@ -68,6 +78,15 @@ export default {
   methods: {
     onClickOptions(item) {
       console.log(item)
+    },
+
+    onShow() {
+      this.showAnswer = true
+    },
+
+    async onRating(value) {
+      await sleep(200)
+      this.showAnswer = false
     },
   },
 }

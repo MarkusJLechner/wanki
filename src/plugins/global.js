@@ -11,6 +11,9 @@ export const isMobile =
   'ontouchstart' in document.documentElement &&
   /mobi/i.test(navigator.userAgent)
 
+export const sleep = (timeout) =>
+  new Promise((resolve) => setTimeout(resolve, timeout))
+
 export function promptFile(accept, multiple = false) {
   const input = document.createElement('input')
   input.type = 'file'

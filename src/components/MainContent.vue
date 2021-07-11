@@ -28,7 +28,7 @@
 <script>
 import LoadingLogo from '@/components/LoadingLogo.vue'
 import { modalOpened } from '@/store/globalstate.js'
-import { isMobile } from '@/plugins/global.js'
+import { isMobile, sleep } from '@/plugins/global.js'
 export default {
   name: 'MainContent',
   components: { LoadingLogo },
@@ -92,9 +92,6 @@ export default {
     },
 
     async callPullToRefresh() {
-      const sleep = (timeout) =>
-        new Promise((resolve) => setTimeout(resolve, timeout))
-
       const pulldownElement = document.querySelector('.pulldown-element')
       const refreshContent = document.querySelector('.refresh-content')
       refreshContent.classList.add('refresh-active')
