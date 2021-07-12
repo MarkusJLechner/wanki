@@ -47,54 +47,15 @@
 </template>
 
 <script>
-import { addToast, toasts } from '@/store/globalstate.js'
-import { watch } from 'vue'
+import { toasts } from '@/store/globalstate.js'
 
 export default {
   name: 'Toasts',
 
   data() {
     return {
-      toasts: [],
-      timeoutList: [],
-    }
-  },
-
-  mounted() {
-    watch(
       toasts,
-      (newValue) => {
-        newValue.forEach((e) => {
-          if (!this.timeoutList.includes(e.id)) {
-            this.timeoutList = [...this.timeoutList, e.id]
-            this.showToast(e)
-          }
-        })
-      },
-      { deep: true },
-    )
-  },
-
-  methods: {
-    showToast({ id, type, text, timeout }) {
-      const item = {
-        id,
-        type,
-        text,
-      }
-      this.toasts = [...this.toasts, item]
-
-      setTimeout(() => {
-        const itmId = this.toasts.find((t) => t.id === id)
-        const index = this.toasts.findIndex((t) => t.id === id)
-        this.removeToast(itmId, index)
-      }, timeout * 1000)
-    },
-
-    removeToast(id, index) {
-      this.timeoutList = this.timeoutList.filter((_, i) => i !== id)
-      this.toasts = this.toasts.filter((_, i) => i !== index)
-    },
+    }
   },
 }
 </script>

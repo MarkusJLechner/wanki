@@ -59,6 +59,7 @@ watch(darkTheme, () => {
 export const modalOpened = ref(false)
 
 export const toasts = ref([])
+
 export const addToast = ({ type, text, timeout = 3 }) => {
   const id = nanoid(4)
   if (type !== 'error' && type !== 'success') {
@@ -71,4 +72,8 @@ export const addToast = ({ type, text, timeout = 3 }) => {
     timeout,
   }
   toasts.value = [...toasts.value, item]
+
+  setTimeout(() => {
+    toasts.value = toasts.value.filter((toast) => toast.id !== id)
+  }, timeout * 1000)
 }

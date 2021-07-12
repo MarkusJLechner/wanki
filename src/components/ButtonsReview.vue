@@ -1,6 +1,7 @@
 <template>
   <div
     class="
+      select-none
       flex
       fixed
       bottom-0
@@ -14,6 +15,7 @@
     <div
       v-if="!showRating"
       v-ripple
+      role="button"
       class="flex justify-center items-center w-full text-white"
       @click="onShow"
     >
@@ -24,6 +26,7 @@
         v-for="(button, index) in buttons"
         :key="index"
         v-ripple
+        role="button"
         class="flex justify-center items-center text-white"
         :class="{
           'bg-red-500': button.color === 'red',
