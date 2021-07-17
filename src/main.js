@@ -9,6 +9,9 @@ import longPress from '@/plugins/directives/longPress.js'
 import ripple from '@/plugins/directives/ripple.js'
 import autofocus from '@/plugins/directives/autofocus.js'
 
+import '@/plugins/collection.js'
+import '@/plugins/scheduler.js'
+
 const app = createApp(App)
 app.config.devtools = true
 app.use(router)

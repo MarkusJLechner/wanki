@@ -8,24 +8,17 @@
         h-screen
         left-0
         top-0
-        bg-gray-700 bg-opacity-50
-        backdrop-filter backdrop-blur-[2px]
+        bg-gray-900 bg-opacity-50
+        backdrop-grayscale backdrop-filter
       "
       @click="show = false"
     />
     <transition name="fade">
-      <ul v-if="show" class="mr-2 -mb-1">
+      <ul v-if="show" class="relative mr-2 -mb-1">
         <li v-for="(item, index) in modelValue" :key="index">
-          <span
-            class="
-              bg-gray-800 bg-opacity-80
-              backdrop-blur-[11px] backdrop-filter
-              py-1
-              px-2
-              rounded
-              text-white
-            "
-            >{{ item.text }}</span
+          <span class="bg-gray-800 py-1 px-2 z-20 rounded text-white">{{
+            item.text
+          }}</span
           ><ButtonRound small :icon="item.icon" />
         </li>
       </ul>

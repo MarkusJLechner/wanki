@@ -7,9 +7,7 @@
       bottom-0
       w-full
       h-28
-      bg-opacity-50
-      blur-[15px]
-      bg-gray-500
+      bg-opacity-50 bg-gray-500
     "
   >
     <div

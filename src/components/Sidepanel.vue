@@ -6,17 +6,16 @@
       <div
         v-if="openState"
         class="
-          bg-black bg-opacity-40
+          bg-gray-900 bg-opacity-50
           z-10
           fixed
           w-full
           h-screen
           top-0
           left-0
-          backdrop-blur-[4px] backdrop-filter
+          backdrop-grayscale backdrop-filter
         "
-        @mousedown.stop.prevent="close()"
-        @touchstart.stop.prevent="close()"
+        @click="close()"
       ></div>
     </transition>
     <nav
@@ -83,7 +82,7 @@ export default {
   },
 
   mounted() {
-    document.addEventListener('touchstart', this.onTouchdown, { passive: true })
+    document.addEventListener('touchstart', this.onTouchdown)
     document.addEventListener('touchmove', this.onTouchmove)
     document.addEventListener('touchend', this.onTouchend)
   },
@@ -107,7 +106,7 @@ export default {
     },
 
     onTouchmove(event) {
-      if (!this.touch.init) {
+      if (!this.touch.init || this.openState) {
         return
       }
       // todo remove me
@@ -140,6 +139,9 @@ export default {
     },
 
     onTouchdown(event) {
+      if (this.openState) {
+        return
+      }
       const { clientX, clientY } = this.getClientPos(event)
       this.touch.init = clientX < this.slideXPosition
       this.touch.onSlide = false

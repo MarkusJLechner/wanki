@@ -5,10 +5,10 @@
         v-if="menu"
         class="
           fixed
-          z-10
+          z-20
           inset-0
-          bg-black bg-black bg-opacity-30
-          backdrop-blur-[4px] backdrop-filter
+          bg-gray-900 bg-opacity-50
+          backdrop-grayscale backdrop-filter
           transition-opacity
         "
         aria-hidden="true"

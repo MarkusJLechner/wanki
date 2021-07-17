@@ -1,5 +1,6 @@
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
+import { CardType, QueueType } from '@/plugins/conts.js'
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 
 /***
@@ -143,7 +144,39 @@ export class Card extends BaseTable {
     )
   }
 
+  isInDynamicDeck() {
+    return !!this.odid
+  }
+
   get note() {
     return wankidb.notes.get({ id: this.nid })
+  }
+
+  increaseRepetition() {
+    this.reps++
+  }
+
+  get queueType() {
+    return QueueType[this.queue]
+  }
+
+  set queueType(value) {
+    this.queue = value
+  }
+
+  isTypeNew() {
+    return this.type === CardType.New
+  }
+
+  isTypeLearn() {
+    return this.type === CardType.Learn
+  }
+
+  isTypeReview() {
+    return this.type === CardType.Review
+  }
+
+  isTypeRelearning() {
+    return this.type === CardType.Relearning
   }
 }
