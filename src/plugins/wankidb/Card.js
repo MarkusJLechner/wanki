@@ -1,6 +1,7 @@
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
-import { CardType, QueueType } from '@/plugins/conts.js'
+import { CardType, getConstName, QueueType } from '@/plugins/conts.js'
+import { cardDeckConfig } from '@/plugins/collection.js'
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 
 /***
@@ -142,6 +143,8 @@ export class Card extends BaseTable {
       ],
       load,
     )
+
+    this.timerStarted = 0
   }
 
   isInDynamicDeck() {
@@ -157,11 +160,30 @@ export class Card extends BaseTable {
   }
 
   get queueType() {
-    return QueueType[this.queue]
+    return getConstName(QueueType, this.queue)
   }
 
-  set queueType(value) {
-    this.queue = value
+  get cardType() {
+    return getConstName(CardType, this.type)
+  }
+
+  startTimer() {
+    this.timerStarted = new Date().getTime()
+  }
+
+  get timeTaken() {
+    return (async () => {
+      const now = new Date().getTime()
+      const total = Math.floor(now - this.timerStarted)
+      return Math.min(total, await this.timeLimit)
+    })()
+  }
+
+  get timeLimit() {
+    return (async () => {
+      const conf = await cardDeckConfig(this, this.isInDynamicDeck())
+      return conf.maxTaken * 1000
+    })()
   }
 
   isTypeNew() {

@@ -1,3 +1,7 @@
+export function getConstName(object, value) {
+  return Object.keys(object).find((key) => object[key] === value)
+}
+
 export const QueueType = {
   ManuallyBuried: -3,
   SiblingBuried: -2,
@@ -19,6 +23,14 @@ export const CardType = {
 export const NewCardOrder = {
   Random: 0,
   Due: 1,
+}
+
+export const Ease = {
+  Again: 0,
+  One: 1,
+  Two: 2,
+  Three: 3,
+  Four: 4,
 }
 
 export const StatisticType = {

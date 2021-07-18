@@ -7,6 +7,11 @@ wankidb.col.hook('creating', (primKey, obj) => {
   // obj.models = cast(obj.models)
   // obj.decks = cast(obj.decks)
 })
+wankidb.col.hook('reading', (obj) => {
+  const parse = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
+  obj.conf = parse(obj.conf)
+  return Object.assign(new Col(), obj)
+})
 
 /***
  * col contains a single row that holds various information about the collection
