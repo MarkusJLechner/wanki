@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import { Ease } from '@/plugins/conts.js'
+
 export default {
   name: 'ButtonsReview',
 
@@ -56,10 +58,10 @@ export default {
   data() {
     return {
       buttons: [
-        { text: 'AGAIN', color: 'red', emit: 0 },
-        { text: 'HARD', color: 'gray', emit: 1 },
-        { text: 'GOOD', color: 'green', emit: 2 },
-        { text: 'EASY', color: 'blue', emit: 3 },
+        { text: 'AGAIN', color: 'red', emit: Ease.Again },
+        { text: 'HARD', color: 'gray', emit: Ease.One },
+        { text: 'GOOD', color: 'green', emit: Ease.Two },
+        { text: 'EASY', color: 'blue', emit: Ease.Three },
       ],
     }
   },

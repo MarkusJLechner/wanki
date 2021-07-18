@@ -51,6 +51,9 @@ import { createTimer, sleep } from '@/plugins/global.js'
 import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
 import { addToast } from '@/store/globalstate.js'
+import { wankidb } from '@/plugins/wankidb/db.js'
+import { Ease } from '@/plugins/conts.js'
+import { answerCard } from '@/plugins/scheduler.js'
 
 export default {
   components: {
@@ -111,10 +114,20 @@ export default {
       this.showAnswer = true
     },
 
-    async onRating(value) {
+    async onRating(ease) {
       await sleep(200)
       this.timer.reset()
       this.showAnswer = false
+
+      console.log(ease)
+
+      const firstCard = (
+        await wankidb.cards.toCollection().limit(1).toArray()
+      )[0]
+      if (!firstCard) {
+        return
+      }
+      await answerCard(firstCard, ease)
     },
   },
 }
