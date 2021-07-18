@@ -1,6 +1,8 @@
 <template>
   <div
     class="
+      top-0
+      sticky
       flex
       justify-between
       dark:bg-gray-800
@@ -9,6 +11,7 @@
       px-3
       py-1
       text-sm
+      backdrop-filter backdrop-blur
     "
   >
     <div class="flex">

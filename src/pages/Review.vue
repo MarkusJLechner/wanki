@@ -26,17 +26,49 @@
     </TheHeader>
 
     <MainContent>
-      <InformationHeaderReview :current="2" :timer="timerText" />
+      <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
-      <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
-      <div class="text-yellow-400">Deck Name: {{ deck.name }}</div>
+      <div id="review-container" class="p-3">
+        <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
+        <div class="text-yellow-400 mb-1">Deck Name: {{ deck.name }}</div>
+
+        <div v-if="note">
+          <div class="text-blue-300 font-bold">Card:</div>
+          <div>id: {{ card.id }}</div>
+          <div>nid: {{ card.nid }}</div>
+          <div>did: {{ card.did }}</div>
+          <div>ord: {{ card.ord }}</div>
+          <div>mod: {{ card.mod }}</div>
+          <div>usn: {{ card.usn }}</div>
+          <div>type: {{ card.type }}</div>
+          <div>queue: {{ card.queue }}</div>
+          <div>due: {{ card.due }}</div>
+          <div>ivl: {{ card.ivl }}</div>
+          <div>factor: {{ card.factor }}</div>
+          <div>reps: {{ card.reps }}</div>
+          <div>lapses: {{ card.lapses }}</div>
+          <div>left: {{ card.left }}</div>
+          <div>odue: {{ card.odue }}</div>
+          <div>odid: {{ card.odid }}</div>
+          <div>flags: {{ card.flags }}</div>
+          <div>data: {{ card.data }}</div>
+          <div class="text-blue-300 font-bold">NOTE:</div>
+          <div v-html="getFields().join(' ')"></div>
+          <div>Tags: {{ note.tags }}</div>
+          <div>flags: {{ note.flags }}</div>
+          <div>usn: {{ note.usn }}</div>
+          <div>csum: {{ note.csum }}</div>
+          <div>mid: {{ note.mid }}</div>
+          <div>mod: {{ note.mod }}</div>
+        </div>
+      </div>
+
+      <ButtonsReview
+        :show-rating="showAnswer"
+        @show="onShow"
+        @rating="onRating"
+      />
     </MainContent>
-
-    <ButtonsReview
-      :show-rating="showAnswer"
-      @show="onShow"
-      @rating="onRating"
-    />
   </div>
 </template>
 
@@ -71,6 +103,8 @@ export default {
     return {
       deckid: 1,
       deck: null,
+      card: null,
+      note: null,
       showAnswer: false,
       timer: null,
       timerText: '00:00',
@@ -97,6 +131,7 @@ export default {
   },
 
   mounted() {
+    this.loadFirstCard()
     addToast({ type: 'info', text: 'Started review' })
     this.timer.start()
   },
@@ -106,6 +141,32 @@ export default {
   },
 
   methods: {
+    async loadFirstCard() {
+      this.card = await wankidb.cards.get({ did: this.deckid })
+      await this.loadNote()
+
+      console.log(this.card)
+    },
+
+    async loadNote() {
+      if (this.card) {
+        this.note = await this.card.note
+      }
+    },
+
+    getFields() {
+      if (!this.note) {
+        return []
+      }
+
+      return this.note.flds.split('\u001fa')
+    },
+
+    async loadCard(cardId) {
+      this.card = await wankidb.cards.get({ id: cardId })
+      await this.loadNote()
+    },
+
     onClickOptions(item) {
       console.log(item)
     },
@@ -121,13 +182,10 @@ export default {
 
       console.log(ease)
 
-      const firstCard = (
-        await wankidb.cards.toCollection().limit(1).toArray()
-      )[0]
-      if (!firstCard) {
+      if (!this.card) {
         return
       }
-      await answerCard(firstCard, ease)
+      await answerCard(this.card, ease)
     },
   },
 }

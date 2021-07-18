@@ -3,11 +3,12 @@
     class="
       select-none
       flex
-      fixed
+      sticky
       bottom-0
       w-full
-      h-28
+      h-32
       bg-opacity-50 bg-gray-500
+      backdrop-filter backdrop-blur
     "
   >
     <div
