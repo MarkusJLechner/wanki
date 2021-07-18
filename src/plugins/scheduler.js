@@ -1,6 +1,7 @@
 import {
   CardType,
   Ease,
+  Leech,
   NewCardOrder,
   QueueType,
   StatisticType,
@@ -9,19 +10,29 @@ import { wankidb } from '@/plugins/wankidb/db.js'
 import {
   cardDeckConfig,
   creationTimestamp,
-  getCol,
   getColKey,
   getConf,
   getDecks,
   setConf,
 } from '@/plugins/collection.js'
 import { debug, info, log } from '@/plugins/log.js'
+import { Counts } from '@/plugins/classes/Counts.js'
+import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue.js'
+import { LrnCard } from '@/plugins/classes/LrnCard.js'
+import { addToast } from '@/store/globalstate.js'
 
 const reportLimit = 99999
+const FACTOR_ADDITION_VALUES = [-150, 0, 150]
 let dayCutof = getDayCutoff()
 
 let mToday = 0
 let mDayCutoff
+let mLrnQueue = LrnCardQueue.default
+let mNewCount = 0
+let mLrnCount = 0
+let mRevCount = 0
+
+const SECONDS_PER_DAY = 86400
 
 _updateCutoff()
 async function _updateCutoff() {
@@ -40,11 +51,8 @@ async function _updateCutoff() {
     mDayCutoff = await _dayCutoff()
   }
 
-  console.log({ timing, mToday, mDayCutoff })
-
   if (oldToday !== mToday) {
-    info('mCol.log', mToday, mDayCutoff)
-    // todo was ist das? mCol.log(mToday, mDayCutoff);
+    info('mCol.log', { mToday, mDayCutoff })
   }
 
   ;(await getDecks()).forEach((deck) => {
@@ -83,7 +91,7 @@ function sched_timing_today(collectionCreated, offsetMinutesUtc, rolloverHour) {
   let now = new Date().getTime()
   let isRolloverPassed = rollover <= now
 
-  const durationDay = 1000 * 60 * 60 * 24 // 86400000
+  const durationDay = SECONDS_PER_DAY * 1000
   const nextDay = isRolloverPassed ? rollover + durationDay : rollover
 
   const diffDays = diffDaysWithRollover(colCreated, now, isRolloverPassed)
@@ -113,8 +121,9 @@ async function _daysSinceCreation() {
   const crtTime = new Date(await creationTimestamp())
   crtTime.setHours(await _rolloverHour(), 0, 0, 0)
   const now = new Date()
-  const daySeconds = 86400
-  return Math.floor((now.getTime() - crtTime.getTime()) / 1000 / daySeconds)
+  return Math.floor(
+    (now.getTime() - crtTime.getTime()) / 1000 / SECONDS_PER_DAY,
+  )
 }
 
 async function _dayCutoff() {
@@ -191,18 +200,163 @@ export async function answerCard(card, ease = 3) {
       break
     case QueueType.Review:
       log('Do Review')
-
+      await _answerRevCard(card, ease)
+      await updateStatistics(card, StatisticType.Review)
       break
+    default:
+      throw new Error('Invalid queue')
   }
 
-  console.log(card)
-
-  // todo here
-  return {
-    queueType: QueueType.Learn,
-    type: CardType.Learn,
-    left: await _startingLeft(card),
+  // once a card has been answered once, the original due date
+  // no longer applies
+  if (card.odue > 0) {
+    card.odue = 0
   }
+
+  card.save()
+
+  info('finished review', card)
+}
+
+async function _answerRevCard(card, ease) {
+  let delay = 0
+  const early = card.isInDynamicDeck() && card.odue > mToday
+  const type = early ? 3 : 1
+  if (ease === Ease.One) {
+    delay = await _rescheduleLapse(card)
+  } else {
+    await _rescheduleRev(card, ease, early)
+  }
+
+  await addRevlogReview(card, ease, delay, type)
+}
+
+async function _rescheduleLapse(card) {
+  const conf = await _lapseConf(card)
+  card.lapses++
+  card.factor = Math.max(1300, card.factor - 200)
+  let delay
+  let suspended =
+    (await _checkLeech(card, conf)) && card.queue === QueueType.Suspended
+  if (conf.delays.length > 0 && !suspended) {
+    card.type = CardType.Relearning
+    delay = _moveToFirstStep(card, conf)
+  } else {
+    // no relearning steps
+    _updateRevIvlOnFail(card, conf)
+    _rescheduleAsRev(card, conf, false)
+    // need to reset the queue after rescheduling
+    if (suspended) {
+      card.queue = QueueType.Suspended
+    }
+    delay = 0
+  }
+
+  return delay
+}
+
+async function _checkLeech(card, conf) {
+  const lf = conf.leechFails
+  if (lf === 0) {
+    return false
+  }
+  // if over threshold or every half threshold reps after that
+  if (card.lapses >= lf && (card.lapses - lf) % Math.max(lf / 2, 1) === 0) {
+    // add a leech tag
+    const n = await card.note
+
+    n.addTag('leech')
+    n.save()
+    // handle
+    if (conf.leechAction === Leech.Suspend) {
+      card.queue = QueueType.Suspended
+    }
+    // notify UI
+    // todo maybe get note information
+    addToast({ type: 'info', text: 'Card was leeched' })
+    return true
+  }
+  return false
+}
+
+async function _rescheduleRev(card, ease, early) {
+  // update interval
+  card.lastIvl = card.ivl
+  if (early) {
+    _updateEarlyRevIvl(card, ease)
+  } else {
+    await _updateRevIvl(card, ease)
+  }
+
+  // then the rest
+  card.factor = Math.max(1300, card.factor + FACTOR_ADDITION_VALUES[ease - 2])
+  card.due = mToday + card.ivl
+
+  // card leaves filtered deck
+  _removeFromFiltered(card)
+}
+
+function _updateEarlyRevIvl(card, ease) {
+  card.ivl = _earlyReviewIvl(card, ease)
+}
+
+async function _updateRevIvl(card, ease) {
+  card.ivl = await _nextRevIvl(card, ease, true)
+}
+
+function _earlyReviewIvl(card, ease) {}
+
+async function _nextRevIvl(card, ease, fuzz) {
+  const delay = _daysLate(card)
+  const conf = await _revConf(card)
+  const fct = card.factor / 1000
+  const hardFactor = conf.hardFactor || 1.2
+  let hardMin
+  if (hardFactor > 1) {
+    hardMin = card.ivl
+  } else {
+    hardMin = 0
+  }
+
+  const ivl2 = _constrainedIvl(card.ivl * hardFactor, conf, hardMin, fuzz)
+  if (ease === Ease.Two) {
+    return ivl2
+  }
+
+  const ivl3 = _constrainedIvl((card.ivl + delay / 2) * fct, conf, ivl2, fuzz)
+  if (ease === Ease.Three) {
+    return ivl3
+  }
+
+  return _constrainedIvl(
+    (card.ivl + delay) * fct * conf.ease4,
+    conf,
+    ivl3,
+    fuzz,
+  )
+}
+
+function _daysLate(card) {
+  const due = card.isInDynamicDeck() ? card.odue : card.due
+  return Math.max(0, mToday - due)
+}
+
+async function _revConf(card) {
+  const conf = await cardDeckConfig(card, card.isInDynamicDeck())
+
+  return conf.rev
+}
+
+function _constrainedIvl(ivl, conf, prev, fuzz) {
+  let newIvl = Math.floor(ivl * (conf.ivlFct || 1))
+  if (fuzz) {
+    newIvl = _fuzzedIvl(newIvl)
+  }
+
+  newIvl = Math.floor(Math.max(Math.max(newIvl, prev + 1), 1))
+  newIvl = Math.min(newIvl, conf.maxIvl)
+
+  return newIvl
 }
 
 async function _startingLeft(card) {
@@ -281,7 +435,7 @@ function _leftToday(delays, left, now = 0) {
 }
 
 async function _answerLrnCard(card, ease) {
-  const deckConfig = await cardDeckConfig(card)
+  const conf = await _lrnConf(card)
   let type
   if (card.type === CardType.Review || card.type === CardType.Relearning) {
     type = CardType.Review
@@ -289,27 +443,142 @@ async function _answerLrnCard(card, ease) {
     type = CardType.New
   }
 
+  // lrnCount was decremented once when card was fetched
   const lastLeft = card.left
   let leaving = false
 
   switch (ease) {
     case Ease.Four:
-      log('FOUR')
+      log('ease FOUR')
+      _rescheduleAsRev(card, conf, true)
+      leaving = true
       break
     case Ease.Three:
-      log('Three')
+      log('ease Three')
+      if ((card.left % 1000) - 1 <= 0) {
+        await _rescheduleAsRev(card, conf, true)
+      } else {
+        _moveToNextStep(card, conf)
+      }
       break
     case Ease.Two:
-      log('Two')
-      break
-    case Ease.One:
-      log('One')
+      log('ease Two')
+      await _repeatStep(card, conf)
       break
     default:
-      log('Again')
+      log('ease One / default')
+      // move back to first step
+      await _moveToFirstStep(card, conf)
   }
 
-  await addRevlogLearn(card, ease, deckConfig, leaving, type, lastLeft)
+  await addRevlogLearn(card, ease, conf, leaving, type, lastLeft)
+}
+
+async function _moveToFirstStep(card, conf) {
+  card.left = await _startingLeft(card)
+
+  if (card.type === CardType.Relearning) {
+    await _updateRevIvlOnFail(card, conf)
+  }
+
+  return _rescheduleLrnCard(card, conf)
+}
+
+function _updateRevIvlOnFail(card, conf) {
+  card.lastIvl = card.ivl
+  card.ivl = _lapseIvl(card, conf)
+}
+
+function _lapseIvl(card, conf) {
+  return Math.max(1, Math.max(conf.minInt, Math.floor(card.ivl * conf.mult)))
+}
+
+function _moveToNextStep(card, conf) {
+  const left = (card.left % 1000) - 1
+  card.left = _leftToday(conf.delays, left) * 1000 + left
+
+  return _rescheduleAsRev(card, conf)
+}
+
+async function _repeatStep(card, conf) {
+  const delay = _delayForRepeatingGrade(conf, card.left)
+  return _rescheduleLrnCard(card, conf, delay)
+}
+
+function _delayForRepeatingGrade(conf, left) {
+  // halfway between last and next
+  const delay1 = _delayForGrade(conf, left)
+  let delay2
+  if (conf.delays.length > 1) {
+    delay2 = _delayForGrade(conf, left - 1)
+  } else {
+    delay2 = delay1 * 2
+  }
+  return (delay1 + Math.max(delay1, delay2)) / 2
+}
+
+async function _rescheduleLrnCard(card, conf, delay) {
+  if (!delay) {
+    delay = _delayForGrade(conf, card.left)
+  }
+  card.due = new Date().getTime() + delay
+  // due today?
+  if (card.due < mDayCutoff) {
+    // Add some randomness, up to 5 minutes or 25%
+    const maxExtra = Math.min(300, Math.floor(delay * 0.25))
+    const fuzz = Math.floor(Math.random() * Math.max(maxExtra, 1))
+    card.due = Math.min(mDayCutoff - 1, card.due + fuzz)
+    card.queue = QueueType.Learn
+    if (
+      card.due <
+      new Date().getTime() + (await getConf('collapseTime', 1200))
+    ) {
+      mLrnCount += 1
+      // if the queue is not empty and there's nothing else to do, make
+      // sure we don't put it at the head of the queue and end up showing
+      // it twice in a row
+      if (!mLrnQueue.isEmpty() && counts().reviewCount && counts().newCount) {
+        const smallestDue = mLrnQueue.getFirstDue()
+        card.due = Math.max(card.due, smallestDue + 1)
+      }
+      _sortIntoLrn(card.due, card.id)
+    }
+  } else {
+    // the card is due in one or more days, so we need to use the day learn queue
+    const ahead = (card.due - mDayCutoff) / SECONDS_PER_DAY + 1
+    card.due = mToday + ahead
+    card.queue = QueueType.DayLearnRelearn
+  }
+  return delay
+}
+
+function counts() {
+  return new Counts(mNewCount, mLrnCount, mRevCount)
+}
+
+function _sortIntoLrn(due, id) {
+  if (!mLrnQueue.isFilled) {
+    return
+  }
+
+  const queue = mLrnQueue.queue
+  const index = queue.findIndex((queueItem) => queueItem.due > due)
+  queue.splice(index, 0, new LrnCard(due, id))
+}
+
+async function addRevlogReview(card, ease, delay, type) {
+  const usn = await getColKey('usn', 0)
+  const ivl = delay !== 0 ? -delay : card.ivl
+  await addRevLog(
+    card.id,
+    usn,
+    ease,
+    ivl,
+    card.lastIvl,
+    card.factor,
+    await card.timeTaken,
+    type,
+  )
 }
 
 async function addRevlogLearn(card, ease, conf, leaving, type, lastLeft) {
@@ -332,7 +601,7 @@ function _delayForGrade(conf, left) {
   left = left % 1000
   try {
     let delay
-    const delays = getConf('delays', [])
+    const delays = conf.delays
     const len = delays.length
     try {
       delay = delays[len - left]
@@ -351,10 +620,10 @@ function _delayForGrade(conf, left) {
   }
 }
 
-async function addRevLog(id, cid, usn, ease, ivl, lastIvl, factor, time, type) {
+async function addRevLog(cardId, usn, ease, ivl, lastIvl, factor, time, type) {
   await wankidb.revlog.add({
-    id: id,
-    cid: cid,
+    id: new Date().getTime(),
+    cid: cardId,
     usn: usn,
     ease: ease,
     ivl: ivl,
@@ -365,32 +634,91 @@ async function addRevLog(id, cid, usn, ease, ivl, lastIvl, factor, time, type) {
   })
 }
 
-async function _rescheduleAsRev(card, conf, early) {
+function _rescheduleAsRev(card, conf, early) {
   const isLapse =
     card.type === CardType.Review || card.type === CardType.Relearning
 
   if (isLapse) {
-    await _rescheduleGraduatingLapse(card, early)
+    _rescheduleGraduatingLapse(card, early)
   } else {
-    await _rescheduleNew(card, conf, early)
+    _rescheduleNew(card, conf, early)
   }
 
   if (card.isInDynamicDeck()) {
-    await _removeFromFiltered(card)
+    _removeFromFiltered(card)
   }
 }
 
-async function _rescheduleGraduatingLapse(card, early) {
+function _rescheduleGraduatingLapse(card, early) {
   if (early) {
     card.ivl++
   }
 
-  card.due += 2222
+  card.due += mToday + card.ivl
   card.queue = QueueType.Review
   card.type = CardType.Review
 }
-async function _rescheduleNew(card, conf, early) {}
-async function _removeFromFiltered(card) {}
+
+function _rescheduleNew(card, conf, early) {
+  card.ivl = _graduatingIvl(card, conf, early)
+  card.due = mToday + card.ivl
+  card.factor = conf.initialFactor
+  card.type = CardType.Review
+  card.queue = QueueType.Review
+}
+
+function _graduatingIvl(card, conf, early, fuzz = false) {
+  if (card.type === CardType.Review || card.type === CardType.Relearning) {
+    const bonus = early ? 1 : 0
+    return card.ivl + bonus
+  }
+  let ideal
+  const ints = conf.ints
+  if (!early) {
+    // graduate
+    ideal = ints[0]
+  } else {
+    // early remove
+    ideal = ints[1]
+  }
+  if (fuzz) {
+    ideal = _fuzzedIvl(ideal)
+  }
+  return ideal
+}
+
+function _fuzzedIvl(ivl) {
+  const { min, max } = _fuzzIvlRange(ivl)
+  // Anki's python uses random.randint(a, b) which returns x in [a, b] while the eq Random().nextInt(a, b)
+  // returns x in [0, b-a), hence the +1 diff with libanki
+  return Math.random() * (max - min + 1) + min
+}
+
+function _fuzzIvlRange(ivl) {
+  let fuzz
+  if (ivl < 2) {
+    return [1, 1]
+  } else if (ivl === 2) {
+    return [2, 3]
+  } else if (ivl < 7) {
+    fuzz = Math.floor(ivl * 0.25)
+  } else if (ivl < 30) {
+    fuzz = Math.max(2, Math.floor(ivl * 0.15))
+  } else {
+    fuzz = Math.max(4, Math.floor(ivl * 0.05))
+  }
+  // fuzz at least a day
+  fuzz = Math.max(fuzz, 1)
+  return [ivl - fuzz, ivl + fuzz]
+}
+
+function _removeFromFiltered(card) {
+  if (card.isInDynamicDeck()) {
+    card.did = card.oid
+    card.odue = 0
+    card.odid = 0
+  }
+}
 
 export async function updateStatistics(card, type, cnt = 1) {
   const key = type + 'Today'
@@ -416,7 +744,7 @@ export async function updateStatistics(card, type, cnt = 1) {
     return
   }
 
-  debug.info('result', await answerCard(firstCard))
+  await answerCard(firstCard, 0)
 })()
 
 const stackUndo = []
@@ -427,6 +755,4 @@ export function addUndo(card) {
     stackUndo.shift()
   }
   stackUndo.push(clonedCard)
-
-  debug.log('added undo', stackUndo)
 }

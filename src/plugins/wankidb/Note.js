@@ -85,4 +85,8 @@ export class Note extends BaseTable {
       load,
     )
   }
+
+  addTag(tag) {
+    this.tags = (this.tags + ` ${tag}`).trim()
+  }
 }

@@ -20,9 +20,19 @@ export const CardType = {
   Relearning: 3,
 }
 
+export const DeckType = {
+  Standard: 0,
+  Dynamic: 1,
+}
+
 export const NewCardOrder = {
   Random: 0,
   Due: 1,
+}
+
+export const Leech = {
+  Suspend: 0,
+  TagOnly: 1,
 }
 
 export const Ease = {
@@ -35,4 +45,5 @@ export const Ease = {
 
 export const StatisticType = {
   New: 'new',
+  Review: 'rev',
 }
