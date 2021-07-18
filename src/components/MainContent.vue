@@ -135,8 +135,7 @@ export default {
 <style scoped>
 .refresh-content.refresh-active {
   filter: blur(2px);
-
-  /* touch-action: none; TODO activate me */
+  touch-action: none;
   pointer-events: none;
 }
 
