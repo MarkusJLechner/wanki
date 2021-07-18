@@ -34,7 +34,6 @@ let mRevCount = 0
 
 const SECONDS_PER_DAY = 86400
 
-_updateCutoff()
 async function _updateCutoff() {
   const oldToday = mToday || 0
 
@@ -175,6 +174,10 @@ function getDayCutoff() {
 }
 
 export async function answerCard(card, ease = 3) {
+  if (!mDayCutoff) {
+    await _updateCutoff()
+  }
+
   debug.info('Answer card: ', card.id, ease)
 
   addUndo(card)
@@ -185,7 +188,7 @@ export async function answerCard(card, ease = 3) {
 
   switch (card.queue) {
     case QueueType.New:
-      log('Do New')
+      log('Do review on card type: New')
 
       card.queue = QueueType.Learn
       card.type = CardType.Learn
@@ -194,12 +197,12 @@ export async function answerCard(card, ease = 3) {
       break
     case QueueType.Learn:
     case QueueType.DayLearnRelearn:
-      log('Do Learn, DayLearnRelearn')
+      log('Do review on card type: Learn, DayLearnRelearn')
 
       await _answerLrnCard(card, ease)
       break
     case QueueType.Review:
-      log('Do Review')
+      log('Do review on card type: Review')
       await _answerRevCard(card, ease)
       await updateStatistics(card, StatisticType.Review)
       break
@@ -744,7 +747,7 @@ export async function updateStatistics(card, type, cnt = 1) {
     return
   }
 
-  await answerCard(firstCard, 0)
+  await answerCard(firstCard, Ease.Two)
 })()
 
 const stackUndo = []
