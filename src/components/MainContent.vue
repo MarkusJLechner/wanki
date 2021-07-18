@@ -19,7 +19,7 @@
       <LoadingLogo />
     </div>
 
-    <div class="refresh-content flex-grow relative">
+    <div class="refresh-content flex flex-col flex-grow relative">
       <slot />
     </div>
   </div>
@@ -135,7 +135,8 @@ export default {
 <style scoped>
 .refresh-content.refresh-active {
   filter: blur(2px);
-  touch-action: none;
+
+  /* touch-action: none; TODO activate me */
   pointer-events: none;
 }
 

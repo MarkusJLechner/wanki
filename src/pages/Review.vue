@@ -28,11 +28,11 @@
     <MainContent>
       <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
-      <div id="review-container" class="p-3">
+      <div id="review-container" class="flex-grow p-3">
         <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
         <div class="text-yellow-400 mb-1">Deck Name: {{ deck.name }}</div>
 
-        <div v-if="note">
+        <div v-if="note" class="text-xs">
           <div class="text-blue-300 font-bold">Card:</div>
           <div>id: {{ card.id }}</div>
           <div>nid: {{ card.nid }}</div>
@@ -179,8 +179,6 @@ export default {
       await sleep(200)
       this.timer.reset()
       this.showAnswer = false
-
-      console.log(ease)
 
       if (!this.card) {
         return

@@ -174,6 +174,11 @@ function getDayCutoff() {
 }
 
 export async function answerCard(card, ease = 3) {
+  if (!card) {
+    console.warn('Empty card', card, ease)
+    return
+  }
+
   if (!mDayCutoff) {
     await _updateCutoff()
   }
@@ -182,7 +187,12 @@ export async function answerCard(card, ease = 3) {
 
   addUndo(card)
   // todo handle preview
-  card.increaseRepetition()
+  try {
+    card.increaseRepetition()
+  } catch (e) {
+    console.error(e)
+    console.trace(card)
+  }
 
   log('Current card type: ' + card.queueType)
 
@@ -739,16 +749,6 @@ export async function updateStatistics(card, type, cnt = 1) {
 
   return Promise.all(savePromises)
 }
-
-;(async () => {
-  const firstCard = (await wankidb.cards.toCollection().limit(1).toArray())[0]
-
-  if (!firstCard) {
-    return
-  }
-
-  await answerCard(firstCard, Ease.Two)
-})()
 
 const stackUndo = []
 const stackUndoLength = 10

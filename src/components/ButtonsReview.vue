@@ -6,10 +6,10 @@
       sticky
       bottom-0
       w-full
-      h-32
       bg-opacity-50 bg-gray-500
       backdrop-filter backdrop-blur
     "
+    style="min-height: 8rem"
   >
     <div
       v-if="!showRating"
