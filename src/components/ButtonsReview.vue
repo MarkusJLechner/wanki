@@ -8,7 +8,12 @@
       w-full
       bg-opacity-50 bg-gray-500
       backdrop-filter backdrop-blur
+      bg-opacity-30
     "
+    :class="{
+      'bg-black': showRating,
+      'bg-gray-500': !showRating,
+    }"
     style="min-height: 8rem"
   >
     <div
@@ -26,7 +31,7 @@
         :key="index"
         v-ripple
         role="button"
-        class="flex justify-center items-center text-white"
+        class="flex justify-center items-center text-white bg-opacity-50"
         :class="{
           'bg-red-500': button.color === 'red',
           'bg-gray-500': button.color === 'gray',

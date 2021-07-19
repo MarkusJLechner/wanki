@@ -52,6 +52,8 @@
           <div>odid: {{ card.odid }}</div>
           <div>flags: {{ card.flags }}</div>
           <div>data: {{ card.data }}</div>
+          <div>cardType: {{ card.cardType }}</div>
+          <div>queueType: {{ card.queueType }}</div>
           <div class="text-blue-300 font-bold">NOTE:</div>
           <div v-html="getFields().join(' ')"></div>
           <div>Tags: {{ note.tags }}</div>
@@ -60,6 +62,22 @@
           <div>csum: {{ note.csum }}</div>
           <div>mid: {{ note.mid }}</div>
           <div>mod: {{ note.mod }}</div>
+          <div class="text-blue-300 font-bold">DECK:</div>
+          <div>browserCollapsed: {{ deck.browserCollapsed }}</div>
+          <div>collapsed: {{ deck.collapsed }}</div>
+          <div>conf: {{ deck.conf }}</div>
+          <div>desc: {{ deck.desc }}</div>
+          <div>dyn: {{ deck.dyn }}</div>
+          <div>extendNew: {{ deck.extendNew }}</div>
+          <div>extendRev: {{ deck.extendRev }}</div>
+          <div>id: {{ deck.id }}</div>
+          <div>lrnToday: {{ deck.lrnToday }}</div>
+          <div>mod: {{ deck.mod }}</div>
+          <div>name: {{ deck.name }}</div>
+          <div>newToday: {{ deck.newToday }}</div>
+          <div>revToday: {{ deck.revToday }}</div>
+          <div>timeToday: {{ deck.timeToday }}</div>
+          <div>usn: {{ deck.usn }}</div>
         </div>
       </div>
 

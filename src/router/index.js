@@ -52,7 +52,7 @@ const routes = [
     // component: () => import('pages/Statistics.vue'),
   },
   {
-    path: '/review',
+    path: '/review/on',
     name: 'Review',
     component: Review,
     // component: () => import('pages/Review.vue'),
