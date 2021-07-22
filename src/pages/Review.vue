@@ -211,7 +211,11 @@ export default {
       if (!this.card) {
         return
       }
-      await answerCard(this.card, ease)
+      try {
+        await answerCard(this.card, ease)
+      } catch (e) {
+        console.error(e)
+      }
     },
   },
 }

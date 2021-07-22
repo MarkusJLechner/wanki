@@ -16,9 +16,13 @@ const Ripple = {
 
     setProps(Object.keys(binding.modifiers), props)
     props.event.forEach((e) =>
-      el.addEventListener(e, function (event) {
-        rippler(event, el, binding.value)
-      }),
+      el.addEventListener(
+        e,
+        function (event) {
+          rippler(event, el, binding.value)
+        },
+        { passive: true },
+      ),
     )
 
     let onClick = false

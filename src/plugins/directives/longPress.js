@@ -59,7 +59,9 @@ export default {
       }
     }
 
-    ;['mousedown', 'touchstart'].forEach((e) => el.addEventListener(e, start))
+    ;['mousedown', 'touchstart'].forEach((e) =>
+      el.addEventListener(e, start, { passive: true }),
+    )
     ;['mousemove', 'touchmove'].forEach((e) =>
       el.addEventListener(e, move, { passive: true }),
     )
