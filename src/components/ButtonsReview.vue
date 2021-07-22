@@ -64,10 +64,10 @@ export default {
   data() {
     return {
       buttons: [
-        { text: 'AGAIN', color: 'red', emit: Ease.Again },
-        { text: 'HARD', color: 'gray', emit: Ease.One },
-        { text: 'GOOD', color: 'green', emit: Ease.Two },
-        { text: 'EASY', color: 'blue', emit: Ease.Three },
+        { text: 'AGAIN', color: 'red', emit: Ease.One },
+        { text: 'HARD', color: 'gray', emit: Ease.Two },
+        { text: 'GOOD', color: 'green', emit: Ease.Three },
+        { text: 'EASY', color: 'blue', emit: Ease.Four },
       ],
     }
   },

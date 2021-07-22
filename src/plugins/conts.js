@@ -2,6 +2,12 @@ export function getConstName(object, value) {
   return Object.keys(object).find((key) => object[key] === value)
 }
 
+export const ToastType = {
+  error: 'error',
+  success: 'success',
+  info: 'info',
+}
+
 export const QueueType = {
   ManuallyBuried: -3,
   SiblingBuried: -2,
@@ -36,7 +42,6 @@ export const Leech = {
 }
 
 export const Ease = {
-  Again: 0,
   One: 1,
   Two: 2,
   Three: 3,

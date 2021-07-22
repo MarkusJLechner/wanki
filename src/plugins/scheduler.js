@@ -1,10 +1,12 @@
 import {
   CardType,
   Ease,
+  getConstName,
   Leech,
   NewCardOrder,
   QueueType,
   StatisticType,
+  ToastType,
 } from '@/plugins/conts.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import {
@@ -35,7 +37,7 @@ let mRevCount = 0
 const SECONDS_PER_DAY = 86400
 
 async function _updateCutoff() {
-  const oldToday = mToday || 0
+  const oldToday = mToday ?? 0
 
   const timing = await _timingToday()
 
@@ -217,7 +219,16 @@ export async function answerCard(card, ease = 3) {
       await updateStatistics(card, StatisticType.Review)
       break
     default:
-      throw new Error('Invalid queue')
+      addToast({
+        type: ToastType.error,
+        text: `Card is ${getConstName(QueueType, card.queue)}`,
+      })
+      throw new Error(
+        `Invalid queue type: ${card.queue}. Card is ${getConstName(
+          QueueType,
+          card.queue,
+        )}`,
+      )
   }
 
   // once a card has been answered once, the original due date
@@ -235,6 +246,7 @@ async function _answerRevCard(card, ease) {
   let delay = 0
   const early = card.isInDynamicDeck() && card.odue > mToday
   const type = early ? 3 : 1
+
   if (ease === Ease.One) {
     delay = await _rescheduleLapse(card)
   } else {
@@ -246,7 +258,7 @@ async function _answerRevCard(card, ease) {
 
 async function _rescheduleLapse(card) {
   const conf = await _lapseConf(card)
-  card.lapses++
+  card.lapses = (card.lapses ?? 0) + 1
   card.factor = Math.max(1300, card.factor - 200)
   let delay
   let suspended =
@@ -285,8 +297,7 @@ async function _checkLeech(card, conf) {
       card.queue = QueueType.Suspended
     }
     // notify UI
-    // todo maybe get note information
-    addToast({ type: 'info', text: 'Card was leeched' })
+    addToast({ type: ToastType.info, text: 'Card was leeched' })
     return true
   }
   return false
@@ -295,35 +306,81 @@ async function _checkLeech(card, conf) {
 async function _rescheduleRev(card, ease, early) {
   // update interval
   card.lastIvl = card.ivl
+
   if (early) {
-    _updateEarlyRevIvl(card, ease)
+    await _updateEarlyRevIvl(card, ease)
   } else {
     await _updateRevIvl(card, ease)
   }
 
   // then the rest
-  card.factor = Math.max(1300, card.factor + FACTOR_ADDITION_VALUES[ease - 2])
+  card.factor = Math.max(
+    1300,
+    card.factor + FACTOR_ADDITION_VALUES[Math.max(ease - 2, 0)],
+  )
   card.due = mToday + card.ivl
 
   // card leaves filtered deck
   _removeFromFiltered(card)
 }
 
-function _updateEarlyRevIvl(card, ease) {
-  card.ivl = _earlyReviewIvl(card, ease)
+async function _updateEarlyRevIvl(card, ease) {
+  card.ivl = await _earlyReviewIvl(card, ease)
 }
 
 async function _updateRevIvl(card, ease) {
   card.ivl = await _nextRevIvl(card, ease, true)
 }
 
-function _earlyReviewIvl(card, ease) {}
+async function _earlyReviewIvl(card, ease) {
+  if (
+    !card.isInDynamicDeck() ||
+    card.type !== CardType.Review ||
+    card.factor === 0
+  ) {
+    throw new Error('Unexpected card parameters')
+  }
+  if (ease <= 1) {
+    throw new Error('Ease must be greater than 1')
+  }
+
+  const elapsed = card.ivl - (card.odue - mToday)
+
+  const conf = await _revConf(card)
+
+  let easyBonus = 1
+  // early 3/4 reviews shouldn't decrease previous interval
+  let minNewIvl = 1
+
+  let factor
+  if (ease === Ease.Two) {
+    factor = conf.hardFactor ?? 1.2
+    // hard cards shouldn't have their interval decreased by more than 50%
+    // of the normal factor
+    minNewIvl = factor / 2
+  } else if (ease === Ease.Three) {
+    factor = card.factor / 1000.0
+  } else {
+    // ease == 4
+    factor = card.factor / 1000.0
+    const ease4 = conf.ease4
+    // 1.3 -> 1.15
+    easyBonus = ease4 - (ease4 - 1) / 2
+  }
+
+  let ivl = Math.max(elapsed * factor, 1)
+
+  // cap interval decreases
+  ivl = Math.max(card.ivl * minNewIvl, ivl) * easyBonus
+
+  return _constrainedIvl(ivl, conf, 0, false)
+}
 
 async function _nextRevIvl(card, ease, fuzz) {
   const delay = _daysLate(card)
   const conf = await _revConf(card)
   const fct = card.factor / 1000
-  const hardFactor = conf.hardFactor || 1.2
+  const hardFactor = conf.hardFactor ?? 1.2
   let hardMin
   if (hardFactor > 1) {
     hardMin = card.ivl
@@ -361,7 +418,7 @@ async function _revConf(card) {
 }
 
 function _constrainedIvl(ivl, conf, prev, fuzz) {
-  let newIvl = Math.floor(ivl * (conf.ivlFct || 1))
+  let newIvl = Math.floor(ivl * (conf.ivlFct ?? 1))
   if (fuzz) {
     newIvl = _fuzzedIvl(newIvl)
   }
@@ -664,7 +721,7 @@ function _rescheduleAsRev(card, conf, early) {
 
 function _rescheduleGraduatingLapse(card, early) {
   if (early) {
-    card.ivl++
+    card.ivl = (card.ivl ?? 0) + 1
   }
 
   card.due += mToday + card.ivl
@@ -701,7 +758,7 @@ function _graduatingIvl(card, conf, early, fuzz = false) {
 }
 
 function _fuzzedIvl(ivl) {
-  const { min, max } = _fuzzIvlRange(ivl)
+  const [min, max] = _fuzzIvlRange(ivl)
   // Anki's python uses random.randint(a, b) which returns x in [a, b] while the eq Random().nextInt(a, b)
   // returns x in [0, b-a), hence the +1 diff with libanki
   return Math.random() * (max - min + 1) + min

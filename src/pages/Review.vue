@@ -42,7 +42,9 @@
           <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
           <div>usn: {{ card.usn }}</div>
           <div>type: {{ card.type }}</div>
+          <div>cardType: {{ card.cardType }}</div>
           <div>queue: {{ card.queue }}</div>
+          <div>queueType: {{ card.queueType }}</div>
           <div>due: {{ card.due }}</div>
           <div>due: {{ new Date(card.due).toLocaleString() }}</div>
           <div>ivl: {{ card.ivl }}</div>
@@ -54,8 +56,6 @@
           <div>odid: {{ card.odid }}</div>
           <div>flags: {{ card.flags }}</div>
           <div>data: {{ card.data }}</div>
-          <div>cardType: {{ card.cardType }}</div>
-          <div>queueType: {{ card.queueType }}</div>
           <div class="text-blue-300 font-bold">NOTE:</div>
           <div v-html="getFields().join(' ')"></div>
           <div>Tags: {{ note.tags }}</div>
@@ -106,7 +106,7 @@ import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
 import { addToast } from '@/store/globalstate.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
-import { Ease } from '@/plugins/conts.js'
+import { Ease, ToastType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
 
 export default {
@@ -154,7 +154,7 @@ export default {
 
   mounted() {
     this.loadFirstCard()
-    addToast({ type: 'info', text: 'Started review' })
+    addToast({ type: ToastType.info, text: 'Started review' })
     this.timer.start()
   },
 

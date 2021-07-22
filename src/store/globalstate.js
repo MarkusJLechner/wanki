@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { vibrate } from '../plugins/global.js'
 import { nanoid } from 'nanoid'
+import { ToastType } from '@/plugins/conts.js'
 
 const storeItemSubscribers = {}
 
@@ -62,8 +63,8 @@ export const toasts = ref([])
 
 export const addToast = ({ type, text, timeout = 3 }) => {
   const id = nanoid(4)
-  if (type !== 'error' && type !== 'success') {
-    type = 'info'
+  if (type !== ToastType.error && type !== ToastType.success) {
+    type = ToastType.info
   }
   const item = {
     id,
