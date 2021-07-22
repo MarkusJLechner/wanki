@@ -5,7 +5,10 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 
 [Try it out: wanki.netlify.app](https://wanki.netlify.app/)
 
----
+###### 👀 Screenshots
+![image](https://user-images.githubusercontent.com/48199873/126620412-a6dc8bbd-5a2c-492e-849c-1d14ad638534.png)
+![image](https://user-images.githubusercontent.com/48199873/126621388-812e8866-684b-481c-b4b6-14006f276bf2.png)
+![image](https://user-images.githubusercontent.com/48199873/126621856-8167b1a2-e464-49bb-a378-88b70737420a.png)
 
 ###### 👏 Motivation for Wanki
 
@@ -20,6 +23,7 @@ Wanki is not bound to any operating system, and that's why it looks and feels th
 ###### 📣 (Future) Features
 
 * Offline first
+* Dark/ Light mode
 * Installable as a Progressive Web App
 * Working with existing [Shared Anki Decks](https://ankiweb.net/shared/decks/)
 * Seamless start reviewing direct in the browser
