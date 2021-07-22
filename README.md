@@ -11,7 +11,7 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 - [👏 Motivation for Wanki](#-motivation-for-wanki)
 - [👨‍🏫 What's the difference?](#-whats-the-difference)
 - [✍️ To-do's](#---to-do-s)
-- [⛏️ Development notes](#---development-notes)
+- [⛏️ Development notes](#⛏️-development-notes)
 - [🤲 Contribution](#-contribution)
   
 ---
