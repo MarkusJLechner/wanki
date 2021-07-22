@@ -1,6 +1,7 @@
 <template>
   <div
     class="
+      z-10
       top-0
       sticky
       flex

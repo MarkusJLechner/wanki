@@ -39,10 +39,12 @@
           <div>did: {{ card.did }}</div>
           <div>ord: {{ card.ord }}</div>
           <div>mod: {{ card.mod }}</div>
+          <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
           <div>usn: {{ card.usn }}</div>
           <div>type: {{ card.type }}</div>
           <div>queue: {{ card.queue }}</div>
           <div>due: {{ card.due }}</div>
+          <div>due: {{ new Date(card.due).toLocaleString() }}</div>
           <div>ivl: {{ card.ivl }}</div>
           <div>factor: {{ card.factor }}</div>
           <div>reps: {{ card.reps }}</div>
@@ -62,6 +64,7 @@
           <div>csum: {{ note.csum }}</div>
           <div>mid: {{ note.mid }}</div>
           <div>mod: {{ note.mod }}</div>
+          <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
           <div class="text-blue-300 font-bold">DECK:</div>
           <div>browserCollapsed: {{ deck.browserCollapsed }}</div>
           <div>collapsed: {{ deck.collapsed }}</div>
@@ -73,6 +76,7 @@
           <div>id: {{ deck.id }}</div>
           <div>lrnToday: {{ deck.lrnToday }}</div>
           <div>mod: {{ deck.mod }}</div>
+          <div>mod: {{ new Date(deck.mod * 1000).toLocaleString() }}</div>
           <div>name: {{ deck.name }}</div>
           <div>newToday: {{ deck.newToday }}</div>
           <div>revToday: {{ deck.revToday }}</div>
