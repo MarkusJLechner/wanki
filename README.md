@@ -10,8 +10,8 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 - [👀 Screenshots](#-screenshots)
 - [👏 Motivation for Wanki](#-motivation-for-wanki)
 - [👨‍🏫 What's the difference?](#-whats-the-difference)
-- [✍️ To-do's](#-to-dos)
-- [⛏️ Development notes](#-development-notes)
+- [✍️ To-do's](#%EF%B8%8F-to-dos)
+- [⛏️ Development notes](#%EF%B8%8F-development-notes)
 - [🤲 Contribution](#-contribution)
   
 ---
