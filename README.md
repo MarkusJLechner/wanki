@@ -6,7 +6,7 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 
 [Try it out: wanki.netlify.app](https://wanki.netlify.app/)
 
-- [📣 (Future) Features](#📣-future-features)
+- [📣 (Future) Features](#-future-features)
 - [👀 Screenshots](#👀-screenshots)
 - [👏 Motivation for Wanki](#👏-motivation-for-wanki)
 - [👨‍🏫 What's the difference?](#👨‍🏫-whats-the-difference)
