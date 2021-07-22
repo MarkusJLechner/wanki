@@ -1,4 +1,5 @@
 ![wankilogo](https://user-images.githubusercontent.com/48199873/126626393-926f86d8-22db-430b-b079-6c8545dc20d3.png)
+[![GitHub license](https://img.shields.io/github/license/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/blob/master/COPYING) [![GitHub stars](https://img.shields.io/github/stars/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/stargazers) [![GitHub forks](https://img.shields.io/github/forks/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/network) [![GitHub issues](https://img.shields.io/github/issues/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/issues)
 ---
   
 Wanki is an unofficial port of the already well known [Anki](https://apps.ankiweb.net/) and [AnkiDroid](https://github.com/ankidroid/Anki-Android) open source spaced repetition flashcard system into JavaScript. 
