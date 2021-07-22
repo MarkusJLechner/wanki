@@ -4,23 +4,10 @@ Wanki is an unofficial port of the already well known [Anki](https://apps.ankiwe
 They support Windows, Mac, Linux and Android. The iOS Version is not open sourced. [AnkiWeb](https://ankiweb.net/about) is already a web version of Anki, but it requires online connection and has a fairly limited feature set, plus is closed source.
 
 [Try it out: wanki.netlify.app](https://wanki.netlify.app/)
-
-###### 👀 Screenshots
-![image](https://user-images.githubusercontent.com/48199873/126620412-a6dc8bbd-5a2c-492e-849c-1d14ad638534.png)
-![image](https://user-images.githubusercontent.com/48199873/126621388-812e8866-684b-481c-b4b6-14006f276bf2.png)
-![image](https://user-images.githubusercontent.com/48199873/126621856-8167b1a2-e464-49bb-a378-88b70737420a.png)
-
-###### 👏 Motivation for Wanki
-
-The code basis for Anki and AnkiDroid are python, rust or java. However, Wanki is a **proof of concept** of porting the official software into JavaScript with 100% offline support. And as it is a served online web page, updates are rolled out immediately when connected to the internet.
-
-###### 👨‍🏫 What's the difference?
-
-Wanki is not bound to any operating system, and that's why it looks and feels the same on every platform. Currently, it is in initial development and lacks many main features.
-
+  
 ---
 
-###### 📣 (Future) Features
+#### 📣 (Future) Features
 
 * Offline first
 * Dark/ Light mode
@@ -28,10 +15,23 @@ Wanki is not bound to any operating system, and that's why it looks and feels th
 * Working with existing [Shared Anki Decks](https://ankiweb.net/shared/decks/)
 * Seamless start reviewing direct in the browser
 * Use of modern JavaScript features
+  
+#### 👀 Screenshots
+![image](https://user-images.githubusercontent.com/48199873/126620412-a6dc8bbd-5a2c-492e-849c-1d14ad638534.png)
+![image](https://user-images.githubusercontent.com/48199873/126621388-812e8866-684b-481c-b4b6-14006f276bf2.png)
+![image](https://user-images.githubusercontent.com/48199873/126621856-8167b1a2-e464-49bb-a378-88b70737420a.png)
+
+#### 👏 Motivation for Wanki
+
+The code basis for Anki and AnkiDroid are python, rust or java. However, Wanki is a **proof of concept** of porting the official software into JavaScript with 100% offline support. And as it is a served online web page, updates are rolled out immediately when connected to the internet.
+
+#### 👨‍🏫 What's the difference?
+  
+Wanki is not bound to any operating system, and that's why it looks and feels the same on every platform. Currently, it is in initial development and lacks many main features.
 
 ---
 
-###### ✍️ To-do's
+#### ✍️ To-do's
 
 - [x] Installable PWA
 - [x] Import Anki files
@@ -51,7 +51,7 @@ Wanki is not bound to any operating system, and that's why it looks and feels th
 
 ---
 
-###### ⛏️ Development notes
+#### ⛏️ Development notes
 
 This project uses
 
@@ -86,6 +86,6 @@ and go to `http://localhost:3000`
 
 ---
 
-###### 🤲 Contribution
+#### 🤲 Contribution
 
 **First, thanks if you're considering contributing!** But as my resources are limited to work on this project, and it is still not published to the public as Wanki is still a proof of concept, issues about bugs aren't currently helpful until the first release. However, improvements in form of pull requests are welcome 💮
