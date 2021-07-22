@@ -1,4 +1,5 @@
-# <p align="center">🌸 Wanki<p>
+![wankilogo](https://user-images.githubusercontent.com/48199873/126626393-926f86d8-22db-430b-b079-6c8545dc20d3.png)
+---
   
 Wanki is an unofficial port of the already well known [Anki](https://apps.ankiweb.net/) and [AnkiDroid](https://github.com/ankidroid/Anki-Android) open source spaced repetition flashcard system into JavaScript. 
 They support Windows, Mac, Linux and Android. The iOS Version is not open sourced. [AnkiWeb](https://ankiweb.net/about) is already a web version of Anki, but it requires online connection and has a fairly limited feature set, plus is closed source.
