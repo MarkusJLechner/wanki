@@ -6,12 +6,6 @@
       <ThemeSwitcher />
       <ButtonOptions
         :value="[
-          { value: 'create-filtered-deck', text: 'Create filtered deck' },
-          { value: 'check-database', text: 'Check database' },
-          { value: 'check-media', text: 'Check media' },
-          { value: 'empty-cards', text: 'Empty cards' },
-          { value: 'restore-from-backup', text: 'Restore from backup' },
-          { value: 'manage-note-types', text: 'Manage note types' },
           { value: 'import', text: 'Import' },
           { value: 'export-collection', text: 'Export collection' },
         ]"

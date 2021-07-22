@@ -9,12 +9,12 @@
       bg-opacity-50 bg-gray-500
       backdrop-filter backdrop-blur
       bg-opacity-30
+      review-height
     "
     :class="{
       'bg-black': showRating,
       'bg-gray-500': !showRating,
     }"
-    style="min-height: 8rem"
   >
     <div
       v-if="!showRating"
@@ -84,4 +84,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.review-height {
+  min-height: min(calc(100vw / 4), 6rem);
+}
+</style>

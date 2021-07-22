@@ -28,7 +28,7 @@
     <MainContent>
       <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
-      <div id="review-container" class="flex-grow p-3">
+      <div id="review-container" class="flex-grow p-3 relative">
         <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
         <div class="text-yellow-400 mb-1">Deck Name: {{ deck.name }}</div>
 
@@ -194,7 +194,6 @@ export default {
     },
 
     async onRating(ease) {
-      await sleep(200)
       this.timer.reset()
       this.showAnswer = false
 
