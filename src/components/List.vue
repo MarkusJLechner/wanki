@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="w-full flex flex-col text-lg"
+    class="w-full flex flex-col text-lg overflow-y-auto"
     :class="{
       'py-2': !noGutters,
       'text-gray-600 dark:text-gray-400': isAnyLoading(),
@@ -36,6 +36,7 @@
       }"
       @click.prevent="onClick(item)"
     >
+      <component :is="item.component" v-if="item.component" />
       <hr
         v-if="item.type === 'seperator'"
         class="border-1 border-gray-900 dark:border-gray-500 w-full"

@@ -28,7 +28,9 @@
 import { refstorage } from 'store/globalstate'
 import ButtonIcon from 'components/ButtonIcon.vue'
 import Sidepanel from '@/components/Sidepanel.vue'
+import SidepanelHeader from '@/components/SidepanelHeader.vue'
 import { wipeDatabase } from '@/plugins/wankidb/db.js'
+import { shallowRef } from 'vue'
 
 export default {
   components: { Sidepanel, ButtonIcon },
@@ -49,10 +51,9 @@ export default {
     return {
       sidepanel: [
         {
+          component: shallowRef(SidepanelHeader),
           type: 'block',
-          class: 'w-full h-14 mb-2',
-          style:
-            'background-color: #000000;opacity: 1;background: linear-gradient(135deg, #3a6ed755 25%, transparent 25%) -21px 0/ 42px 42px, linear-gradient(225deg, #3a6ed7 25%, transparent 25%) -21px 0/ 42px 42px, linear-gradient(315deg, #3a6ed755 25%, transparent 25%) 0px 0/ 42px 42px, linear-gradient(45deg, #3a6ed7 25%, #000000 25%) 0px 0/ 42px 42px;',
+          class: 'w-full h-14 mb-2 bg-gray-300 dark:bg-gray-800 bg-opacity-40',
         },
         { icon: 'fas fa-list', text: 'Decks', route: '/' },
         { icon: 'fas fa-search', text: 'Card Browser', route: 'browser' },
