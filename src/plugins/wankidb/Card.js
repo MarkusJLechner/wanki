@@ -2,6 +2,7 @@ import { wankidb } from '@/plugins/wankidb/db.js'
 import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
 import { CardType, getConstName, QueueType } from '@/plugins/conts.js'
 import { cardDeckConfig } from '@/plugins/collection.js'
+import { collectionCreatedAt, rolloverHour } from '@/plugins/scheduler.js'
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 
 /***
@@ -165,6 +166,48 @@ export class Card extends BaseTable {
 
   get cardType() {
     return getConstName(CardType, this.type)
+  }
+
+  get dueDate() {
+    return (async () => {
+      if (this.due === 1 || this.queue === QueueType.Suspended) {
+        return new Date(0)
+      }
+
+      let date
+
+      switch (this.type) {
+        case CardType.New:
+          date = new Date()
+          break
+        case CardType.Learn:
+          date = new Date(this.due)
+          break
+        case CardType.Relearning:
+          date = new Date()
+          break
+        case CardType.Review:
+          if (('' + this.due).length < 13) {
+            const { today } = await collectionCreatedAt()
+            const dateToday = new Date()
+            dateToday.setDate(dateToday.getDate() + (this.due - today))
+            date = dateToday
+            date.setHours(await rolloverHour(), 0, 0)
+          } else {
+            date = new Date(this.due)
+          }
+          break
+        default:
+          date = new Date()
+          break
+      }
+
+      if (isNaN(date)) {
+        return new Date()
+      }
+
+      return date
+    })()
   }
 
   startTimer() {

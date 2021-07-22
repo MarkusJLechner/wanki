@@ -25,6 +25,29 @@ import { addToast } from '@/store/globalstate.js'
 
 const reportLimit = 99999
 const FACTOR_ADDITION_VALUES = [-150, 0, 150]
+
+export async function collectionCreatedAt() {
+  const schedulerTimeToday = await _timingToday()
+
+  let today
+  let dayCutoff
+  if (!schedulerTimeToday) {
+    today = await _daysSinceCreation()
+    dayCutoff = await _dayCutoff()
+  } else if (await _new_timezone_enabled()) {
+    today = schedulerTimeToday.collectionElapsedDays
+    dayCutoff = schedulerTimeToday.nextDayTimestamp
+  } else {
+    today = await _daysSinceCreation()
+    dayCutoff = await _dayCutoff()
+  }
+
+  return {
+    today,
+    dayCutoff,
+  }
+}
+
 let dayCutof = getDayCutoff()
 
 let mToday = 0
@@ -39,18 +62,9 @@ const SECONDS_PER_DAY = 86400
 async function _updateCutoff() {
   const oldToday = mToday ?? 0
 
-  const timing = await _timingToday()
-
-  if (!timing) {
-    mToday = await _daysSinceCreation()
-    mDayCutoff = await _dayCutoff()
-  } else if (await _new_timezone_enabled()) {
-    mToday = timing.collectionElapsedDays
-    mDayCutoff = timing.nextDayTimestamp
-  } else {
-    mToday = await _daysSinceCreation()
-    mDayCutoff = await _dayCutoff()
-  }
+  const daysSinceCreation = await collectionCreatedAt()
+  mToday = daysSinceCreation.today
+  mDayCutoff = daysSinceCreation.dayCutoff
 
   if (oldToday !== mToday) {
     info('mCol.log', { mToday, mDayCutoff })
@@ -70,11 +84,11 @@ async function _timingToday() {
   return sched_timing_today(
     await creationTimestamp(),
     await _creation_timezone_offset(),
-    await _rolloverHour(),
+    await rolloverHour(),
   )
 }
 
-async function _rolloverHour() {
+export async function rolloverHour() {
   return getConf('rollover', 4)
 }
 
@@ -120,7 +134,7 @@ function diffDays(from, to) {
 
 async function _daysSinceCreation() {
   const crtTime = new Date(await creationTimestamp())
-  crtTime.setHours(await _rolloverHour(), 0, 0, 0)
+  crtTime.setHours(await rolloverHour(), 0, 0, 0)
   const now = new Date()
   return Math.floor(
     (now.getTime() - crtTime.getTime()) / 1000 / SECONDS_PER_DAY,
@@ -128,7 +142,7 @@ async function _daysSinceCreation() {
 }
 
 async function _dayCutoff() {
-  let rolloverTime = await _rolloverHour()
+  let rolloverTime = await rolloverHour()
   if (rolloverTime < 0) {
     rolloverTime = 24 + rolloverTime
   }

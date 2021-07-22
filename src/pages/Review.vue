@@ -47,6 +47,11 @@
           <div>queueType: {{ card.queueType }}</div>
           <div>due: {{ card.due }}</div>
           <div>due: {{ new Date(card.due).toLocaleString() }}</div>
+          <Promise :promise="card.dueDate">
+            <template #default="{ result }">
+              <div>dueDate: {{ result?.toLocaleString() }}</div>
+            </template>
+          </Promise>
           <div>ivl: {{ card.ivl }}</div>
           <div>factor: {{ card.factor }}</div>
           <div>reps: {{ card.reps }}</div>
@@ -101,16 +106,18 @@ import ThemeSwitcher from 'components/ThemeSwitcher.vue'
 import ButtonOptions from '@/components/ButtonOptions.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ButtonsReview from '@/components/ButtonsReview.vue'
-import { createTimer, sleep } from '@/plugins/global.js'
+import { createTimer } from '@/plugins/global.js'
 import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
 import { addToast } from '@/store/globalstate.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
-import { Ease, ToastType } from '@/plugins/conts.js'
+import { ToastType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
+import Promise from '@/components/Promise.vue'
 
 export default {
   components: {
+    Promise,
     MainContent,
     InformationHeaderReview,
     ButtonsReview,
