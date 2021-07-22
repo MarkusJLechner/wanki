@@ -17,9 +17,7 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 * Use of modern JavaScript features
   
 #### 👀 Screenshots
-![image](https://user-images.githubusercontent.com/48199873/126620412-a6dc8bbd-5a2c-492e-849c-1d14ad638534.png)
-![image](https://user-images.githubusercontent.com/48199873/126621388-812e8866-684b-481c-b4b6-14006f276bf2.png)
-![image](https://user-images.githubusercontent.com/48199873/126621856-8167b1a2-e464-49bb-a378-88b70737420a.png)
+![githubheader](https://user-images.githubusercontent.com/48199873/126623924-f520a569-8aee-4fe9-aec5-cbffe425987d.png)
 
 #### 👏 Motivation for Wanki
 
