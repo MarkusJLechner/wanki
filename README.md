@@ -5,6 +5,14 @@ Wanki is an unofficial port of the already well known [Anki](https://apps.ankiwe
 They support Windows, Mac, Linux and Android. The iOS Version is not open sourced. [AnkiWeb](https://ankiweb.net/about) is already a web version of Anki, but it requires online connection and has a fairly limited feature set, plus is closed source.
 
 [Try it out: wanki.netlify.app](https://wanki.netlify.app/)
+
+- [📣 (Future) Features](#📣-future-features)
+- [👀 Screenshots](#👀-screenshots)
+- [👏 Motivation for Wanki](#👏-motivation-for-wanki)
+- [👨‍🏫 What's the difference?](#👨‍🏫-whats-the-difference)
+- [✍️ To-do's](#✍️-to-dos)
+- [⛏️ Development notes](#⛏️-development-notes)
+- [🤲 Contribution](#🤲-contribution)
   
 ---
 
