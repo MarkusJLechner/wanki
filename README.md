@@ -10,8 +10,8 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 - [👀 Screenshots](#-screenshots)
 - [👏 Motivation for Wanki](#-motivation-for-wanki)
 - [👨‍🏫 What's the difference?](#-whats-the-difference)
-- [✍️ To-do's](#%EF%B8%8F-to-dos)
-- [⛏️ Development notes](#%EF%B8%8F-development-notes)
+- [✍️ Todo](#-todo)
+- [⛏️ Development notes](#-development-notes)
 - [🤲 Contribution](#-contribution)
   
 ---
@@ -38,7 +38,7 @@ Wanki is not bound to any operating system, and that's why it looks and feels th
 
 ---
 
-#### ✍️ To-do's
+#### ✍️ Todos
 
 - [x] Installable PWA
 - [x] Import Anki files
