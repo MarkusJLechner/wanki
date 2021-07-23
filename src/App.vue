@@ -1,14 +1,12 @@
 <template>
-  <main
-    class="h-full dark:bg-gray-600 bg-gray-200 dark:text-white h-screen text-lg"
-  >
+  <main class="h-full dark:bg-gray-600 bg-gray-200 dark:text-white text-lg">
     <Toasts />
     <router-view v-slot="{ Component, route }">
       <transition appear :name="route.meta.transition || transitionName">
         <keep-alive include="Overview">
           <component
             :is="Component"
-            class="h-full flex flex-col dark:bg-gray-600 h-screen bg-gray-200"
+            class="h-full flex flex-col dark:bg-gray-600 bg-gray-200"
           />
         </keep-alive>
       </transition>

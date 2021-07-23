@@ -5,7 +5,7 @@
       class="
         fixed
         w-screen
-        h-screen
+        h-full
         left-0
         top-0
         bg-gray-900 bg-opacity-50

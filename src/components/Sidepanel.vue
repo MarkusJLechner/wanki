@@ -10,7 +10,7 @@
           z-10
           fixed
           w-full
-          h-screen
+          h-full
           top-0
           left-0
           backdrop-grayscale backdrop-filter
