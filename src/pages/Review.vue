@@ -7,7 +7,7 @@
       <ButtonIcon icon="fas fa-info-circle" />
       <ButtonIcon icon="fas fa-microphone" />
       <ButtonIcon icon="fas fa-arrow-alt-circle-right" />
-      <ButtonIcon icon="far fa-star" />
+      <ButtonIcon icon="far fa-star" @click="debug = !debug" />
       <ButtonOptions
         :value="[
           { value: 'undo', text: 'Undo' },
@@ -29,65 +29,9 @@
       <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
       <div id="review-container" class="flex-grow p-3 relative">
-        <div class="text-yellow-500">Deck ID: {{ deckid }}</div>
-        <div class="text-yellow-400 mb-1">Deck Name: {{ deck.name }}</div>
+        <ReviewDebug v-if="debug" :card="card" :note="note" :deck="deck" />
 
-        <div v-if="note" class="text-xs">
-          <div class="text-blue-300 font-bold">Card:</div>
-          <div>id: {{ card.id }}</div>
-          <div>nid: {{ card.nid }}</div>
-          <div>did: {{ card.did }}</div>
-          <div>ord: {{ card.ord }}</div>
-          <div>mod: {{ card.mod }}</div>
-          <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
-          <div>usn: {{ card.usn }}</div>
-          <div>type: {{ card.type }}</div>
-          <div>cardType: {{ card.cardType }}</div>
-          <div>queue: {{ card.queue }}</div>
-          <div>queueType: {{ card.queueType }}</div>
-          <div>due: {{ card.due }}</div>
-          <div>due: {{ new Date(card.due).toLocaleString() }}</div>
-          <Promise :promise="card.dueDate">
-            <template #default="{ result }">
-              <div>dueDate: {{ result?.toLocaleString() }}</div>
-            </template>
-          </Promise>
-          <div>ivl: {{ card.ivl }}</div>
-          <div>factor: {{ card.factor }}</div>
-          <div>reps: {{ card.reps }}</div>
-          <div>lapses: {{ card.lapses }}</div>
-          <div>left: {{ card.left }}</div>
-          <div>odue: {{ card.odue }}</div>
-          <div>odid: {{ card.odid }}</div>
-          <div>flags: {{ card.flags }}</div>
-          <div>data: {{ card.data }}</div>
-          <div class="text-blue-300 font-bold">NOTE:</div>
-          <div v-html="getFields().join(' ')"></div>
-          <div>Tags: {{ note.tags }}</div>
-          <div>flags: {{ note.flags }}</div>
-          <div>usn: {{ note.usn }}</div>
-          <div>csum: {{ note.csum }}</div>
-          <div>mid: {{ note.mid }}</div>
-          <div>mod: {{ note.mod }}</div>
-          <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
-          <div class="text-blue-300 font-bold">DECK:</div>
-          <div>browserCollapsed: {{ deck.browserCollapsed }}</div>
-          <div>collapsed: {{ deck.collapsed }}</div>
-          <div>conf: {{ deck.conf }}</div>
-          <div>desc: {{ deck.desc }}</div>
-          <div>dyn: {{ deck.dyn }}</div>
-          <div>extendNew: {{ deck.extendNew }}</div>
-          <div>extendRev: {{ deck.extendRev }}</div>
-          <div>id: {{ deck.id }}</div>
-          <div>lrnToday: {{ deck.lrnToday }}</div>
-          <div>mod: {{ deck.mod }}</div>
-          <div>mod: {{ new Date(deck.mod * 1000).toLocaleString() }}</div>
-          <div>name: {{ deck.name }}</div>
-          <div>newToday: {{ deck.newToday }}</div>
-          <div>revToday: {{ deck.revToday }}</div>
-          <div>timeToday: {{ deck.timeToday }}</div>
-          <div>usn: {{ deck.usn }}</div>
-        </div>
+        <ReviewContainer :card="card" :note="note" :deck="deck" />
       </div>
 
       <ButtonsReview
@@ -114,9 +58,13 @@ import { wankidb } from '@/plugins/wankidb/db.js'
 import { ToastType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
 import Promise from '@/components/Promise.vue'
+import ReviewDebug from '@/components/ReviewDebug.vue'
+import ReviewContainer from '@/components/ReviewContainer.vue'
 
 export default {
   components: {
+    ReviewContainer,
+    ReviewDebug,
     Promise,
     MainContent,
     InformationHeaderReview,
@@ -130,6 +78,7 @@ export default {
 
   data() {
     return {
+      debug: false,
       deckid: 1,
       deck: null,
       card: null,
@@ -142,7 +91,6 @@ export default {
   },
 
   async created() {
-    console.log('load')
     this.timer = createTimer({
       duration: 60,
       callback: (timerDuration, timerText) => {

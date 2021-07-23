@@ -130,3 +130,39 @@ export function finishTask(id) {
     }),
   )
 }
+
+export async function playAudio(uint8) {
+  const blob = new Blob([uint8])
+
+  if (!blob) {
+    throw new Error('File is empty')
+  }
+
+  const url = await URL.createObjectURL(blob)
+  const audio = new Audio()
+  audio.src = url
+  await audio.play()
+}
+
+const regexMedia = /\[(?<type>[^:]+):(?<media>[^\]]+)]/gm
+export function getMediaFromNote(string) {
+  const regex = regexMedia
+  let m
+  let matches = []
+
+  while ((m = regex.exec(string)) !== null) {
+    if (m.index === regex.lastIndex) {
+      regex.lastIndex++
+    }
+    matches.push(m.groups)
+  }
+
+  return matches
+}
+
+export function replaceMediaFromNote(string, replace = '') {
+  if (typeof string === 'string') {
+    return string.replace(regexMedia, replace)
+  }
+  return string
+}
