@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "esbuild:install": " node ./node_modules/esbuild/install.js",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"

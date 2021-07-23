@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col jusctify-center fixed z-50 right-2 top-16">
+  <div class="flex flex-col jusctify-center fixed z-50 right-2 top-24">
     <transition-group name="list" tag="div">
       <div
         v-for="(toast, index) in toasts"
