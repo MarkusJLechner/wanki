@@ -14,8 +14,12 @@ self.onmessage = async (event) => {
   self.postMessage([tasks, null])
 
   console.time('decompress')
-  const decompressed = await new Promise((resolve) => {
-    resolve(unzipSync(new Uint8Array(fileBuffer)))
+  const decompressed = await new Promise((resolve, reject) => {
+    try {
+      resolve(unzipSync(new Uint8Array(fileBuffer)))
+    } catch (e) {
+      reject(e)
+    }
   })
   console.timeEnd('decompress')
 

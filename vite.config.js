@@ -4,6 +4,9 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

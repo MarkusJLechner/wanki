@@ -84,7 +84,6 @@ export default {
   mounted() {
     document.addEventListener('touchstart', this.onTouchdown)
     document.addEventListener('touchmove', this.onTouchmove)
-    document.addEventListener('touchend', this.onTouchend)
   },
 
   activated() {
@@ -94,38 +93,20 @@ export default {
   unmounted() {
     document.removeEventListener('touchstart', this.onTouchdown)
     document.removeEventListener('touchmove', this.onTouchmove)
-    document.removeEventListener('touchend', this.onTouchend)
   },
 
   methods: {
-    onTouchend(event) {
-      if (this.touch.onSlide) {
-        event.preventDefault()
-        event.stopImmediatePropagation()
-      }
-    },
-
     onTouchmove(event) {
       if (!this.touch.init || this.openState) {
         return
       }
-      // todo remove me
       const { clientX, clientY } = this.getClientPos(event)
       this.touch.clientX = clientX
       this.touch.clientY = clientY
       this.touch.distanceX = Math.abs(this.touch.initClientX - clientX)
       this.touch.distanceY = Math.abs(this.touch.initClientY - clientY)
 
-      if (!this.touch.onSlide) {
-        this.touch.initSlideClientX = clientX
-        this.touch.initSlideClientY = clientY
-      }
-
       if (this.touch.distanceX > this.touch.threshold) {
-        this.touch.onSlide = true
-      }
-
-      if (this.touch.onSlide) {
         this.open()
         this.touch.init = false
       }
@@ -144,7 +125,6 @@ export default {
       }
       const { clientX, clientY } = this.getClientPos(event)
       this.touch.init = clientX < this.slideXPosition
-      this.touch.onSlide = false
       const { width: screenWidth, height: screenHeight } = window.screen
 
       this.touch.initClientX = clientX
