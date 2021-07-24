@@ -17,7 +17,7 @@
 
 <script>
 import { watch } from 'vue'
-import { refstorage } from './store/globalstate'
+import { clearToasts, refstorage } from './store/globalstate'
 import { persist } from '@/plugins/idb.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import BackgroundTask from '@/components/BackgroundTask.vue'
@@ -66,6 +66,8 @@ export default {
       //}
 
       this.transitionName = transitionName || 'fade'
+
+      clearToasts()
 
       next()
     })

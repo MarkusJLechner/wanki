@@ -64,7 +64,25 @@ export default {
     }
   },
 
+  watch: {
+    menu: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue) {
+          history.pushState(null, document.title, location.href)
+          window.addEventListener('popstate', this.popstateFunction)
+        } else {
+          window.removeEventListener('popstate', this.popstateFunction)
+        }
+      },
+    },
+  },
+
   methods: {
+    popstateFunction(event) {
+      history.go(2)
+      this.closeMenu()
+    },
     openMenu() {
       this.menu = !this.menu
     },

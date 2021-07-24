@@ -81,6 +81,20 @@ export default {
     }
   },
 
+  watch: {
+    openState: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue) {
+          history.pushState(null, document.title, location.href)
+          window.addEventListener('popstate', this.popstateFunction)
+        } else {
+          window.removeEventListener('popstate', this.popstateFunction)
+        }
+      },
+    },
+  },
+
   mounted() {
     document.addEventListener('touchstart', this.onTouchdown)
     document.addEventListener('touchmove', this.onTouchmove)
@@ -96,6 +110,11 @@ export default {
   },
 
   methods: {
+    popstateFunction(event) {
+      history.go(2)
+      this.close()
+    },
+
     onTouchmove(event) {
       if (!this.touch.init || this.openState) {
         return

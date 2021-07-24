@@ -15,11 +15,22 @@
     />
     <transition name="fade">
       <ul v-if="show" class="relative mr-2 -mb-1">
-        <li v-for="(item, index) in modelValue" :key="index">
-          <span class="bg-gray-800 py-1 px-2 z-20 rounded text-white">{{
-            item.text
-          }}</span
-          ><ButtonRound small :icon="item.icon" />
+        <li
+          v-for="(item, index) in modelValue"
+          :key="index"
+          @click="onClickItem(item)"
+        >
+          <Component
+            :is="item.href ? 'a' : 'div'"
+            class="block"
+            target="_blank"
+            :href="item.href"
+          >
+            <span
+              class="bg-gray-800 py-1 px-2 z-20 rounded text-white select-none"
+              >{{ item.text }}</span
+            ><ButtonRound small :icon="item.icon" />
+          </Component>
         </li>
       </ul>
     </transition>
@@ -52,9 +63,32 @@ export default {
     }
   },
 
+  watch: {
+    show: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue) {
+          history.pushState(null, document.title, location.href)
+          window.addEventListener('popstate', this.popstateFunction)
+        } else {
+          window.removeEventListener('popstate', this.popstateFunction)
+        }
+      },
+    },
+  },
+
   methods: {
     onClick() {
       this.show = !this.show
+    },
+
+    onClickItem(item) {
+      this.show = false
+    },
+
+    popstateFunction(event) {
+      history.go(2)
+      this.show = false
     },
   },
 }

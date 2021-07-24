@@ -141,7 +141,11 @@ export default {
       inputRename: '',
       modalOptionsItem: null,
       optionsFloating: [
-        { text: 'Get shared deck', icon: 'fas fa-cloud-download-alt' },
+        {
+          text: 'Get shared deck',
+          icon: 'fas fa-cloud-download-alt',
+          href: 'https://ankiweb.net/shared/decks/',
+        },
         { text: 'Create deck', icon: 'fas fa-folder-plus' },
         { text: 'Add note', icon: 'fas fa-plus' },
       ],

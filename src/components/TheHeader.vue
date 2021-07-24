@@ -3,8 +3,7 @@
     class="
       flex
       bg-gray-300
-      dark:bg-gray-700
-      dark:text-white
+      dark:bg-gray-700 dark:text-white
       text-gray-900
       items-center
       py-1
@@ -54,6 +53,7 @@ export default {
           component: shallowRef(SidepanelHeader),
           type: 'block',
           class: 'w-full h-14 mb-2 bg-gray-300 dark:bg-gray-800 bg-opacity-40',
+          route: '/',
         },
         { icon: 'fas fa-list', text: 'Decks', route: '/' },
         { icon: 'fas fa-search', text: 'Card Browser', route: 'browser' },

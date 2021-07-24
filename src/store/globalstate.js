@@ -78,3 +78,7 @@ export const addToast = ({ type, text, timeout = 3 }) => {
     toasts.value = toasts.value.filter((toast) => toast.id !== id)
   }, timeout * 1000)
 }
+
+export const clearToasts = () => {
+  toasts.value = []
+}

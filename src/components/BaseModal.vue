@@ -166,11 +166,23 @@ export default {
         this.show = newValue
         this.$emit('visible', newValue)
         modalOpened.value = newValue
+
+        if (newValue) {
+          history.pushState(null, document.title, location.href)
+          window.addEventListener('popstate', this.popstateFunction)
+        } else {
+          window.removeEventListener('popstate', this.popstateFunction)
+        }
       },
     },
   },
 
   methods: {
+    popstateFunction(event) {
+      history.go(2)
+      this.onClose()
+    },
+
     open() {
       this.$emit('open')
       this.$emit('update:modelValue', true)
