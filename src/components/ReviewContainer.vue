@@ -1,19 +1,18 @@
 <template>
   <div
-    v-for="(field, index) in getFields()"
+    v-for="(field, index) in fields"
     :key="index"
-    class="text-5xl text-yellow-300"
+    class="text-3xl text-yellow-300"
   >
-    <span v-html="field" />
+    <span v-html="field.text" />
+    <div v-for="(blob, ii) in field.blobs" :key="ii">
+      <audio controls="controls" :src="[blob]" type="audio/mp3" autoplay />
+    </div>
   </div>
 </template>
 
 <script>
-import {
-  getMediaFromNote,
-  playAudio,
-  replaceMediaFromNote,
-} from '@/plugins/global.js'
+import { getMediaFromNote, replaceMediaFromNote } from '@/plugins/global.js'
 
 export default {
   name: 'ReviewContainer',
@@ -33,6 +32,12 @@ export default {
     },
   },
 
+  data() {
+    return {
+      fields: [],
+    }
+  },
+
   watch: {
     note() {
       this.mountNote()
@@ -40,29 +45,44 @@ export default {
   },
 
   methods: {
-    getFields() {
+    async mountNote() {
       if (!this.note) {
-        return []
+        this.fields = []
+        return
       }
 
-      return replaceMediaFromNote(this.note.flds)
-        .split('\u001fa')
-        .filter(Boolean)
+      const fields = this.note.flds.split('\u001f')
+
+      for (let i = 0; i < fields.length; i++) {
+        this.fields[i] = await this.getMedia(fields[i])
+      }
     },
 
-    mountNote() {
-      console.log(this.note)
-
-      const mediaList = getMediaFromNote(this.getFields())
+    async getMedia(field) {
+      const blobs = []
+      const promises = []
+      const mediaList = getMediaFromNote(field)
       mediaList.forEach((mediaObj) => {
-        wankidb.media.get({ name: mediaObj.media }).then((dbObj) => {
-          console.log(dbObj)
-          playAudio(dbObj.file)
-        })
+        promises.push(
+          wankidb.media.get({ name: mediaObj.media }).then((dbObj) => {
+            if (dbObj) {
+              blobs.push(
+                URL.createObjectURL(
+                  new Blob([dbObj.file], { type: 'audio/mp3' }),
+                ),
+              )
+            }
+          }),
+        )
       })
+
+      await Promise.all(promises)
+
+      return {
+        text: replaceMediaFromNote(field),
+        blobs,
+      }
     },
   },
 }
 </script>
-
-<style scoped></style>

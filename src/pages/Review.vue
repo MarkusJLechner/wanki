@@ -57,7 +57,6 @@ import { addToast } from '@/store/globalstate.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { ToastType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
-import Promise from '@/components/Promise.vue'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 
@@ -65,7 +64,6 @@ export default {
   components: {
     ReviewContainer,
     ReviewDebug,
-    Promise,
     MainContent,
     InformationHeaderReview,
     ButtonsReview,
@@ -119,7 +117,11 @@ export default {
 
   methods: {
     async loadFirstCard() {
-      this.card = await wankidb.cards.get({ did: this.deckid })
+      const allElement = await wankidb.cards
+        .where({ did: this.deckid })
+        .toArray()
+
+      this.card = allElement[~~(allElement.length * Math.random())]
       await this.loadNote()
 
       console.log(this.card)
@@ -136,7 +138,7 @@ export default {
         return []
       }
 
-      return this.note.flds.split('\u001fa')
+      return this.note.flds.split('\u001f')
     },
 
     async loadCard(cardId) {

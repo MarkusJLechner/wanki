@@ -104,7 +104,7 @@ export default {
         return []
       }
 
-      return this.note.flds.split('\u001fa')
+      return this.note.flds.split('\u001f')
     },
   },
 }
