@@ -19,6 +19,7 @@ import Advanced from 'pages/Settings/Advanced.vue'
 import Appearance from 'pages/Settings/Appearance.vue'
 import Gestures from 'pages/Settings/Gestures.vue'
 import Reviewing from 'pages/Settings/Reviewing.vue'
+import Shared from '@/pages/Shared.vue'
 
 const routes = [
   {
@@ -43,6 +44,12 @@ const routes = [
     path: '/support',
     name: 'Support',
     component: Support,
+    // component: () => import('pages/Support.vue'),
+  },
+  {
+    path: '/shared',
+    name: 'shared',
+    component: Shared,
     // component: () => import('pages/Support.vue'),
   },
   {

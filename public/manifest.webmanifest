@@ -7,6 +7,16 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "share_target": {
+    "action": "/#/shared",
+    "enctype": "multipart/form-data",
+    "method": "POST",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
   "icons": [
     {
       "src": "images/icons/icon-72x72.png",

@@ -179,7 +179,6 @@ export default {
 
   methods: {
     popstateFunction(event) {
-      history.go(2)
       this.onClose()
     },
 
@@ -203,6 +202,7 @@ export default {
     },
 
     closeModal() {
+      history.go(2)
       this.$emit('update:modelValue', false)
       this.show = false
     },
