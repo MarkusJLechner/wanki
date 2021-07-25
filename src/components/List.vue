@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="w-full flex flex-col text-lg overflow-y-auto"
+    class="w-full flex flex-col text-lg"
     :class="{
       'py-2': !noGutters,
       'text-gray-600 dark:text-gray-400': isAnyLoading(),

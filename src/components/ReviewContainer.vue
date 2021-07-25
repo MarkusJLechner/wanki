@@ -12,7 +12,11 @@
 </template>
 
 <script>
-import { getMediaFromNote, replaceMediaFromNote } from '@/plugins/global.js'
+import {
+  getMediaFromNote,
+  replaceMediaFromNote,
+  replaceAsync,
+} from '@/plugins/global.js'
 
 export default {
   name: 'ReviewContainer',
@@ -66,11 +70,7 @@ export default {
         promises.push(
           wankidb.media.get({ name: mediaObj.media }).then((dbObj) => {
             if (dbObj) {
-              blobs.push(
-                URL.createObjectURL(
-                  new Blob([dbObj.file], { type: 'audio/mp3' }),
-                ),
-              )
+              blobs.push(URL.createObjectURL(new Blob([dbObj.file])))
             }
           }),
         )
@@ -78,10 +78,28 @@ export default {
 
       await Promise.all(promises)
 
+      const cleanedField = replaceMediaFromNote(field)
+
       return {
-        text: replaceMediaFromNote(field),
+        text: await this.replaceImages(cleanedField),
         blobs,
       }
+    },
+
+    async replaceImages(field) {
+      field = await replaceAsync(
+        field,
+        /src\s*=\s*"(?<src>.+?)"/gm,
+        async (src) => {
+          src = src.slice(5, -1)
+          const media = await wankidb.media.get({ name: src })
+          const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
+          console.log(url)
+          return `src="${url}"`
+        },
+      )
+
+      return field
     },
   },
 }

@@ -168,7 +168,7 @@ export default {
         modalOpened.value = newValue
 
         if (newValue) {
-          history.pushState(null, document.title, location.href)
+          history.pushState(history.state, document.title, location.href)
           window.addEventListener('popstate', this.popstateFunction)
         } else {
           window.removeEventListener('popstate', this.popstateFunction)
