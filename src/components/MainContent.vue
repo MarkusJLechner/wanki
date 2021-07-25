@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow flex overflow-y-auto">
+  <div v-keep-scroll="'maincontent'" class="flex-grow flex overflow-y-auto">
     <div
       class="
         pulldown-element
@@ -41,7 +41,6 @@ export default {
 
   mounted() {
     if (this.pullToRefresh) {
-      console.log('init me')
       this.initPullToRefresh()
     }
   },

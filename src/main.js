@@ -11,11 +11,13 @@ import autofocus from '@/plugins/directives/autofocus.js'
 
 import '@/plugins/collection.js'
 import '@/plugins/scheduler.js'
+import keepScroll from '@/plugins/directives/keepScroll.js'
 
 const app = createApp(App)
 app.config.devtools = true
 app.use(router)
 app.use(store)
+app.directive('keep-scroll', keepScroll)
 app.directive('long-press', longPress)
 app.directive('autofocus', autofocus)
 app.directive('ripple', ripple)

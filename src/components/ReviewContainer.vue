@@ -94,7 +94,6 @@ export default {
           src = src.slice(5, -1)
           const media = await wankidb.media.get({ name: src })
           const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
-          console.log(url)
           return `src="${url}"`
         },
       )
