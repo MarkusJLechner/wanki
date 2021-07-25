@@ -2,7 +2,7 @@
   <div>
     <transition name="fade" appear>
       <div
-        v-if="menu"
+        v-if="show"
         class="
           fixed
           z-20
@@ -12,15 +12,15 @@
           transition-opacity
         "
         aria-hidden="true"
-        @mousedown.stop.prevent="closeMenu()"
-        @touchstart.stop.prevent="closeMenu()"
+        @mousedown.stop.prevent="onClose()"
+        @touchstart.stop.prevent="onClose()"
       ></div>
     </transition>
-    <ButtonIcon icon="fas fa-ellipsis-v" @click="openMenu">
+    <ButtonIcon icon="fas fa-ellipsis-v" @click="onOpen">
       <template #content>
         <transition name="slide-open">
           <div
-            v-if="menu"
+            v-if="show"
             class="
               dark:bg-gray-700
               bg-gray-200
@@ -45,6 +45,7 @@
 <script>
 import ButtonIcon from 'components/ButtonIcon.vue'
 import List from 'components/List.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   components: { List, ButtonIcon },
@@ -60,35 +61,32 @@ export default {
 
   data() {
     return {
-      menu: false,
+      show: false,
     }
   },
 
-  watch: {
-    menu: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue) {
-          history.pushState(history.state, document.title, location.href)
-          window.addEventListener('popstate', this.popstateFunction)
-        } else {
-          window.removeEventListener('popstate', this.popstateFunction)
-        }
-      },
-    },
+  mounted() {
+    onBeforeRouteLeave(() => {
+      if (this.show) {
+        this.onClose()
+        return false
+      }
+
+      return true
+    })
   },
 
   methods: {
-    popstateFunction(event) {
-      history.go(2)
-      this.closeMenu()
-    },
-    openMenu() {
-      this.menu = !this.menu
+    onOpen() {
+      if (this.show) {
+        this.onClose()
+      } else {
+        this.show = true
+      }
     },
 
-    closeMenu() {
-      this.menu = false
+    onClose() {
+      this.show = false
     },
 
     onClickItem(item) {

@@ -98,6 +98,7 @@
 <script>
 import ButtonActions from '@/components/ButtonActions.vue'
 import { modalOpened } from '@/store/globalstate.js'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   components: { ButtonActions },
@@ -166,22 +167,22 @@ export default {
         this.show = newValue
         this.$emit('visible', newValue)
         modalOpened.value = newValue
-
-        if (newValue) {
-          history.pushState(history.state, document.title, location.href)
-          window.addEventListener('popstate', this.popstateFunction)
-        } else {
-          window.removeEventListener('popstate', this.popstateFunction)
-        }
       },
     },
   },
 
-  methods: {
-    popstateFunction(event) {
-      this.onClose()
-    },
+  mounted() {
+    onBeforeRouteLeave(() => {
+      if (this.show) {
+        this.onClose()
+        return false
+      }
 
+      return true
+    })
+  },
+
+  methods: {
     open() {
       this.$emit('open')
       this.$emit('update:modelValue', true)
@@ -202,7 +203,6 @@ export default {
     },
 
     closeModal() {
-      history.go(2)
       this.$emit('update:modelValue', false)
       this.show = false
     },

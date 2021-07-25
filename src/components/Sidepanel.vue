@@ -4,7 +4,7 @@
 
     <transition name="fade">
       <div
-        v-if="openState"
+        v-if="show"
         class="
           bg-gray-900 bg-opacity-50
           z-20
@@ -15,12 +15,12 @@
           left-0
           backdrop-grayscale backdrop-filter
         "
-        @click="close()"
+        @click="onClose()"
       ></div>
     </transition>
     <nav
       ref="slide"
-      :class="{ open: openState }"
+      :class="{ open: show }"
       class="
         slide-parent
         fixed
@@ -45,6 +45,7 @@
 <script>
 import ButtonIcon from 'components/ButtonIcon.vue'
 import List from 'components/List.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   components: {
@@ -62,7 +63,7 @@ export default {
   data() {
     return {
       slideXPosition: 52,
-      openState: false,
+      show: false,
       touch: {
         threshold: 50,
         screenWidth: 0,
@@ -81,27 +82,22 @@ export default {
     }
   },
 
-  watch: {
-    openState: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue) {
-          history.pushState(history.state, document.title, location.href)
-          window.addEventListener('popstate', this.popstateFunction)
-        } else {
-          window.removeEventListener('popstate', this.popstateFunction)
-        }
-      },
-    },
-  },
-
   mounted() {
     document.addEventListener('touchstart', this.onTouchdown)
     document.addEventListener('touchmove', this.onTouchmove)
+
+    onBeforeRouteLeave(() => {
+      if (this.show) {
+        this.onClose()
+        return false
+      }
+
+      return true
+    })
   },
 
   activated() {
-    this.openState = false
+    this.onClose()
   },
 
   unmounted() {
@@ -110,13 +106,8 @@ export default {
   },
 
   methods: {
-    popstateFunction(event) {
-      history.go(2)
-      this.close()
-    },
-
     onTouchmove(event) {
-      if (!this.touch.init || this.openState) {
+      if (!this.touch.init || this.show) {
         return
       }
       const { clientX, clientY } = this.getClientPos(event)
@@ -126,7 +117,7 @@ export default {
       this.touch.distanceY = Math.abs(this.touch.initClientY - clientY)
 
       if (this.touch.distanceX > this.touch.threshold) {
-        this.open()
+        this.onOpen()
         this.touch.init = false
       }
     },
@@ -139,7 +130,7 @@ export default {
     },
 
     onTouchdown(event) {
-      if (this.openState) {
+      if (this.show) {
         return
       }
       const { clientX, clientY } = this.getClientPos(event)
@@ -153,25 +144,25 @@ export default {
     },
 
     toggle() {
-      if (this.openState) {
-        this.close()
+      if (this.show) {
+        this.onClose()
       } else {
-        this.open()
+        this.onOpen()
       }
     },
 
-    open() {
-      this.openState = true
+    onOpen() {
+      this.show = true
     },
 
     onClick(item) {
       if (!item.doNotClose) {
-        this.close()
+        this.onClose()
       }
     },
 
-    close() {
-      this.openState = false
+    onClose() {
+      this.show = false
     },
   },
 }

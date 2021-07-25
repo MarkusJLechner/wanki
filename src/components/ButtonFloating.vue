@@ -11,7 +11,7 @@
         bg-gray-900 bg-opacity-50
         backdrop-grayscale backdrop-filter
       "
-      @click="show = false"
+      @click="onClose()"
     />
     <transition name="fade">
       <ul v-if="show" class="relative mr-2 -mb-1">
@@ -47,6 +47,7 @@
 
 <script>
 import ButtonRound from '@/components/ButtonRound.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 export default {
   name: 'ButtonFloating',
   components: { ButtonRound },
@@ -63,31 +64,31 @@ export default {
     }
   },
 
-  watch: {
-    show: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue) {
-          history.pushState(history.state, document.title, location.href)
-          window.addEventListener('popstate', this.popstateFunction)
-        } else {
-          window.removeEventListener('popstate', this.popstateFunction)
-        }
-      },
-    },
+  mounted() {
+    onBeforeRouteLeave(() => {
+      if (this.show) {
+        this.onClose()
+        return false
+      }
+
+      return true
+    })
   },
 
   methods: {
     onClick() {
-      this.show = !this.show
+      if (this.show) {
+        this.onClose()
+      } else {
+        this.show = true
+      }
     },
 
     onClickItem(item) {
-      this.show = false
+      this.onClose()
     },
 
-    popstateFunction(event) {
-      history.go(2)
+    onClose() {
       this.show = false
     },
   },
