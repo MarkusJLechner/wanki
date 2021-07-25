@@ -7,7 +7,7 @@
         v-if="openState"
         class="
           bg-gray-900 bg-opacity-50
-          z-10
+          z-20
           fixed
           w-full
           h-full
@@ -61,7 +61,7 @@ export default {
 
   data() {
     return {
-      slideXPosition: 42,
+      slideXPosition: 52,
       openState: false,
       touch: {
         threshold: 50,
