@@ -1,4 +1,7 @@
 function setPosition(el, binding) {
+  if (binding.value === null) {
+    return
+  }
   const id = binding.value + window.location.hash
   let storedPosition = localStorage.getItem(id)
   if (storedPosition) {
@@ -8,44 +11,36 @@ function setPosition(el, binding) {
   }
 }
 
+let scrollFn
+
 export default {
-  created(el, binding, vnode, prevVnode) {
-    console.log('created')
-  },
-  beforeUpdate() {
-    console.log('beforeUpdate')
-  },
   updated(el, binding) {
     setPosition(el, binding)
-    const vm = binding.instance
-    console.log(vm)
-  },
-  beforeUnmount() {
-    console.log('beforeUnmount')
-  },
-  unmounted() {
-    console.log('unmounted')
   },
 
   beforeMount(el, binding) {
+    if (binding.value === null) {
+      return
+    }
     const id = binding.value
-    el.addEventListener(
-      'scroll',
-      function (event) {
-        localStorage.setItem(
-          id + window.location.hash,
-          JSON.stringify({
-            left: event.target.scrollLeft,
-            top: event.target.scrollTop,
-          }),
-        )
-        event.target.setAttribute(
-          'data-vue-keep-scroll-position',
-          event.target.scrollLeft + '-' + event.target.scrollTop,
-        )
-      },
-      { passive: true },
-    )
+
+    scrollFn = (event) => {
+      localStorage.setItem(
+        id + window.location.hash,
+        JSON.stringify({
+          left: event.target.scrollLeft,
+          top: event.target.scrollTop,
+        }),
+      )
+    }
+
+    el.addEventListener('scroll', scrollFn, { passive: true })
+  },
+
+  unmounted(el) {
+    if (scrollFn) {
+      el.removeEventListener('scroll', scrollFn)
+    }
   },
 
   mounted(el, binding) {

@@ -15,7 +15,10 @@
 
     <ButtonFloating :model-value="optionsFloating" />
 
-    <MainContent :pull-to-refresh="() => pullToRefresh()">
+    <MainContent
+      v-keep-scroll="'overview'"
+      :pull-to-refresh="() => pullToRefresh()"
+    >
       <ModalImport v-model="showModalImport" @close="closeImport" />
 
       <span v-if="loading" class="p-4"

@@ -6,6 +6,8 @@
       opacity-90
       bg-black/30
       left-0
+      right-0
+      px-2
       -mt-3
       fixed
       h-64

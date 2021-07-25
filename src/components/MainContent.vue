@@ -1,5 +1,5 @@
 <template>
-  <div v-keep-scroll="'maincontent'" class="flex-grow flex overflow-y-auto">
+  <div class="flex-grow flex overflow-y-auto">
     <div
       class="
         pulldown-element
