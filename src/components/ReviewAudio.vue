@@ -1,24 +1,30 @@
 <template>
-  <audio
-    v-if="blobFile"
-    ref="audio"
-    class="w-full"
-    :controls="audioContols"
-    @ended="onEnded"
-    @playing="onPlay"
-  />
-  <ButtonIcon
-    v-if="!useNativeAudioControls"
-    :icon="computedIcon"
-    class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
-    @click="startAudio"
-  />
+  <div v-if="blobFile">
+    <div v-if="mediaType !== 'audio/mp3'">
+      <img :src="blobFile" class="w-52" />
+    </div>
+    <audio
+      v-else
+      ref="audio"
+      class="w-full"
+      :controls="audioContols"
+      @ended="onEnded"
+      @playing="onPlay"
+    />
+    <ButtonIcon
+      v-if="!useNativeAudioControls"
+      :icon="computedIcon"
+      class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
+      @click="startAudio"
+    />
+  </div>
 </template>
 
 <script>
 import { refstorage } from '@/store/globalstate.js'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 import ButtonIcon from '@/components/ButtonIcon.vue'
+import { getFileMimeType } from '@/plugins/global.js'
 
 export default {
   name: 'ReviewAudio',
@@ -51,6 +57,7 @@ export default {
       isPlaying: false,
       playPromise: null,
       notFound: false,
+      mediaType: 'audio/mp3',
     }
   },
 
@@ -110,7 +117,13 @@ export default {
       if (this.dbMediaString) {
         await wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
           if (dbObj) {
-            this.blobFile = URL.createObjectURL(new Blob([dbObj.file]))
+            const blob = new Blob([dbObj.file])
+            const type = getFileMimeType(dbObj.file)
+
+            console.log({ type, blob, fileMediaGet: dbObj.file })
+            this.mediaType = type
+
+            this.blobFile = URL.createObjectURL(blob)
           } else {
             this.notFound = true
             this.blobFile = null
@@ -145,7 +158,7 @@ export default {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.load()
       this.playPromise = this.$refs.audio.play().catch((e) => {
-        console.error(e)
+        console.error([this.blobFile], e)
       })
       await this.playPromise
       this.playPromise = null

@@ -13,7 +13,6 @@
       <ReviewAudio
         v-for="(file, index) in computedSoundList"
         :key="file.name"
-        :autoplay="index === 0"
         :db-media-string="file.media"
       />
     </div>
@@ -140,7 +139,9 @@ export default {
     },
 
     getMediaList(field) {
-      return getMediaFromNote(field)
+      const media = getMediaFromNote(field)
+      console.log(media)
+      return media
     },
 
     async replaceImages(field) {
