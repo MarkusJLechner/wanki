@@ -4,16 +4,17 @@
     class="
       text-xs
       opacity-90
-      bg-black/30
+      bg-black/60
       left-0
       right-0
-      px-2
+      px-6
       -mt-3
       fixed
       h-64
       bottom-32
       overflow-y-auto
       z-20
+      backdrop-blur
     "
   >
     <div class="text-yellow-500">Deck ID: {{ deck.id }}</div>
@@ -56,6 +57,15 @@
       <div>mid: {{ note.mid }}</div>
       <div>mod: {{ note.mod }}</div>
       <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
+      <Promise :promise="card.model">
+        <template #default="{ result: model, loading }">
+          <div class="text-blue-300 font-bold">MODEL:</div>
+          <div v-if="loading">loading</div>
+          <div v-else>
+            <div>model: {{ model.id }}</div>
+          </div>
+        </template>
+      </Promise>
     </div>
     <div class="text-blue-300 font-bold">DECK:</div>
     <div v-if="deck">

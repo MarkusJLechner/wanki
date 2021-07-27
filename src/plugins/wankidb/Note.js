@@ -89,4 +89,8 @@ export class Note extends BaseTable {
   addTag(tag) {
     this.tags = (this.tags + ` ${tag}`).trim()
   }
+
+  get model() {
+    return wankidb.models.get({ id: this.mid })
+  }
 }

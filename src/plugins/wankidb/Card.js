@@ -156,6 +156,34 @@ export class Card extends BaseTable {
     return wankidb.notes.get({ id: this.nid })
   }
 
+  get model() {
+    return (async () => {
+      const note = await this.note
+      return note.model
+    })()
+  }
+
+  get template() {
+    return (async () => {
+      const model = await this.model
+      return model.tmpls[this.ord]
+    })()
+  }
+
+  get fields() {
+    return (async () => {
+      const model = await this.model
+      return model.flds
+    })()
+  }
+
+  get css() {
+    return (async () => {
+      const model = await this.model
+      return model.css
+    })()
+  }
+
   increaseRepetition() {
     this.reps++
   }

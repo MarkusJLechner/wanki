@@ -4,6 +4,7 @@ import { Col } from '@/plugins/wankidb/Col.js'
 import { Deck } from '@/plugins/wankidb/Deck.js'
 import { Revlog } from '@/plugins/wankidb/Revlog.js'
 import { Note } from '@/plugins/wankidb/Note.js'
+import { Model } from '@/plugins/wankidb/Model.js'
 import { wankidb as db } from '@/plugins/wankidb/db.js'
 
 export default {
@@ -13,5 +14,6 @@ export default {
   Grave,
   Deck,
   Note,
+  Model,
   Revlog,
 }
