@@ -1,66 +1,60 @@
 <template>
-  <ul
-    class="w-full flex flex-col text-lg"
+  <li
+    v-long-press="() => onLongPress(item)"
+    v-ripple="{ disable: noRipple }"
+    class="
+      select-none
+      cursor-pointer
+      relative
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      flex
+      w-full
+      items-center
+      text-left
+      mt-0
+      mb-0
+      min-h-[3rem]
+      flex flex-col
+    "
+    :style="'display: block; ' + item.style"
     :class="{
-      'py-2': !noGutters,
-      'text-gray-600 dark:text-gray-400': isAnyLoading(),
+      seperator: item.type === 'seperator',
+      [item.class]: item.class,
+      'my-2': getSubText(item),
+      'py-3 px-4': dense,
+      'py-4 px-4': !dense,
+      [$attrs.class]: !!$attrs.class,
     }"
-    @[isAnyLoading()].capture.stop.prevent
+    @click.prevent="!item.children && onClick(item)"
   >
-    <li
-      v-for="(item, index) in value"
-      :key="index"
-      v-long-press="() => onLongPress(item)"
-      v-ripple
-      class="
-        select-none
-        cursor-pointer
-        relative
-        focus:outline-none focus:ring-2 focus:ring-blue-500
-        flex
-        w-full
-        items-center
-        text-left
-        mt-0
-        mb-0
-        min-h-[3rem]
-      "
-      :style="item.style"
-      :class="{
-        seperator: item.type === 'seperator',
-        [item.class]: item.class,
-        'my-2': getSubText(item),
-        'py-3 px-4': dense,
-        'py-4 px-4': !dense,
-      }"
-      @click.prevent="onClick(item)"
-    >
-        <component :is="item.component" v-if="item.component" />
-        <hr
-          v-if="item.type === 'seperator'"
-          class="border-1 border-gray-900 dark:border-gray-500 w-full"
-        />
+    <div v-if="render" class="w-full flex">
+      <slot name="before" />
+      <component :is="item.component" v-if="item.component" />
+      <hr
+        v-if="item.type === 'seperator'"
+        class="border-1 border-gray-900 dark:border-gray-500 w-full"
+      />
 
-        <slot name="prefix-item" :item="item" />
+      <slot name="prefix-item" :item="item" />
 
-        <i
-          v-if="getIcon(item)"
-          class="pr-4"
-          :class="{ [getIcon(item)]: getIcon(item) }"
-        />
-        <div class="flex flex-grow items-center">
-          <span v-if="getText(item)" class="flex flex-col">
-            {{ getText(item) }}
-            <span
-              v-if="getSubText(item)"
-              class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
-              >{{ getSubText(item) }}</span
-            >
-          </span>
+      <i
+        v-if="getIcon(item)"
+        class="pr-4"
+        :class="{ [getIcon(item)]: getIcon(item) }"
+      />
+      <div class="flex flex-grow items-center">
+        <span v-if="getText(item)" class="flex flex-col">
+          {{ getText(item) }}
+          <span
+            v-if="getSubText(item)"
+            class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            >{{ getSubText(item) }}</span
+          >
+        </span>
 
-          <div v-if="callFn(item, 'loading')" class="px-2">
-            <i class="text-black dark:text-white fas fa-spinner fa-spin" />
-          </div>
+        <div v-if="callFn(item, 'loading')" class="px-2">
+          <i class="text-black dark:text-white fas fa-spinner fa-spin" />
+        </div>
       </div>
 
       <div v-if="hasBoolean(item)">
@@ -69,9 +63,24 @@
 
       <slot name="suffix-item" :item="item" />
 
-      <ListHr v-if="!noSeparation && index < value.length - 1" />
-    </li>
-  </ul>
+      <hr
+        v-if="!noSeparation"
+        class="
+          -bottom-0
+          -ml-4
+          -mr-4
+          absolute
+          border-1 border-gray-900
+          dark:border-gray-500
+          left-0
+          right-0
+          block
+        "
+      />
+    </div>
+
+    <slot name="after" :item="item" />
+  </li>
 
   <ModalRadio
     :model-value="!!radio"
@@ -87,24 +96,22 @@
 import { defineAsyncComponent } from 'vue'
 import InputBoolean from 'components/InputBoolean.vue'
 import { refstorage } from 'store/globalstate.js'
-import ListHr from '@/components/ListHr.vue'
 const ModalRadio = defineAsyncComponent(() =>
   import('components/ModalRadio.vue'),
 )
 
 export default {
-  name: 'List',
+  name: 'ListLi',
 
   components: {
-    ListHr,
     InputBoolean,
     ModalRadio,
   },
 
   props: {
-    value: {
-      type: Array,
-      default: () => [],
+    item: {
+      type: Object,
+      default: () => {},
     },
 
     noGutters: {
@@ -122,9 +129,24 @@ export default {
       default: false,
     },
 
+    render: {
+      type: Boolean,
+      default: true,
+    },
+
     itemTextKey: {
       type: String,
       default: 'text',
+    },
+
+    noRipple: {
+      type: Boolean,
+      default: false,
+    },
+
+    isLoading: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -138,7 +160,7 @@ export default {
 
   methods: {
     isAnyLoading() {
-      return this.value.some((v) => this.callFn(v, 'loading')) ? 'click' : null
+      return this.isLoading ? 'click' : null
     },
 
     onLongPress(item) {

@@ -25,19 +25,21 @@
         >Loading decks <LoadingIcon class="ml-2" />
       </span>
 
-      <List
-        v-else-if="decks.length"
-        no-gutters
-        :value="decks"
-        @item="onDeck"
-        @long-press="onMenu"
-      >
-        <template #suffix-item="{ item }">
-          <NumberDue :value="item.newToday?.[1]" color="blue" />
-          <NumberDue :value="item.revToday?.[1]" color="red" />
-          <NumberDue :value="item.lrnToday?.[1]" color="green" />
-        </template>
-      </List>
+      <div v-else-if="decks && decks.children && decks.children.length">
+        <ListTree
+          no-gutters
+          :model-value="decks"
+          item-text-key="id"
+          @item="onDeck"
+          @long-press="onMenu"
+        >
+          <template #suffix-item="{ item }">
+            <NumberDue :value="item.newToday?.[1]" color="blue" />
+            <NumberDue :value="item.revToday?.[1]" color="red" />
+            <NumberDue :value="item.lrnToday?.[1]" color="green" />
+          </template>
+        </ListTree>
+      </div>
 
       <span v-else class="p-4 leading-10 block"
         >No decks available. Download
@@ -109,11 +111,13 @@ import { exportDeck } from '@/plugins/exporter.js'
 import MainContent from '@/components/MainContent.vue'
 import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
+import ListTree from '@/components/ListTree.vue'
 
 export default {
   name: 'Overview',
 
   components: {
+    ListTree,
     ButtonFloating,
     ButtonIconReload,
     MainContent,
@@ -191,7 +195,7 @@ export default {
 
     // await this.updateList()
 
-    this.updateDeckList()
+    await this.updateDeckList()
     const vm = this
     wankidb.decks.hook('creating', function () {
       console.log('creating')
@@ -229,10 +233,35 @@ export default {
       const decks = await wankidb.decks.toArray()
       this.decks = decks.map((deck) => {
         return {
-          text: deck.name,
+          text: deck.name.split('::'),
           ...deck,
         }
       })
+
+      const mapper = {}
+      let root = { children: [] }
+
+      for (const deck of this.decks) {
+        let splits = deck.name.split('::'),
+          path = ''
+
+        splits.reduce((parent, id, i) => {
+          path += `${id}`
+
+          if (!mapper[path]) {
+            const o = { id, deck }
+            mapper[path] = o // set the new object with unique path
+            parent.children = parent.children || []
+            parent.children.push(o)
+          }
+
+          return mapper[path]
+        }, root)
+      }
+
+      this.decks = root // .children
+
+      console.log(root)
     },
 
     async fetchAllDecks() {
@@ -274,7 +303,7 @@ export default {
     onDeck(item) {
       console.log(item)
 
-      this.$router.push({ path: '/review/on', query: { deckid: item.id } })
+      this.$router.push({ path: '/review/on', query: { deckid: item.deck.id } })
     },
 
     onMenu(item) {

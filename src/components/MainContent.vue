@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow flex overflow-y-auto">
+  <div class="flex-grow flex overflow-y-auto w-full">
     <div
       class="
         pulldown-element
