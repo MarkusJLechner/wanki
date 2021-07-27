@@ -2,8 +2,6 @@
   <hr
     class="
       -bottom-0
-      -ml-4
-      -mr-4
       absolute
       border-1 border-gray-900
       dark:border-gray-500
