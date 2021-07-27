@@ -2,6 +2,7 @@ import { openDB } from 'idb/with-async-ittr.js'
 import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql.js'
 
 import WorkerBulkPut from '@/plugins/workers/wankidbBulkPut.js?worker'
+import { wankidb } from '@/plugins/wankidb/db.js'
 
 export const persist = () => {
   return navigator.storage.persist().then(function (persistent) {
@@ -130,7 +131,27 @@ export const importDeck = async (decompressedFile) => {
   const work = ({ table, data }) => {
     workerPromises.push(
       new Promise((resolve, reject) => {
-        const worka = new WorkerBulkPut()
+        // const worka = new WorkerBulkPut()
+
+        ;(async () => {
+          console.time('- ' + table)
+          await wankidb.open()
+          await wankidb[table]
+            .bulkPut(data)
+            .then(() => {
+              workerList[table] = true
+              resolve(workerList)
+            })
+            .catch((e) => {
+              reject(e.message)
+            })
+            .finally(() => {
+              console.timeEnd('- ' + table)
+            })
+        })()
+
+        /*
+
         workerList[table] = false
         worka.onerror = function (e) {
           reject(e)
@@ -143,6 +164,8 @@ export const importDeck = async (decompressedFile) => {
           workerList[table] = true
           resolve(workerList)
         }
+
+         */
       }),
     )
   }

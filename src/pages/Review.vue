@@ -31,12 +31,7 @@
       <div id="review-container" class="flex-grow p-3 relative">
         <ReviewDebug v-if="debug" :card="card" :note="note" :deck="deck" />
 
-        <ReviewContainer
-          :show-answer="showAnswer"
-          :card="card"
-          :note="note"
-          :deck="deck"
-        />
+        <ReviewContainer :show-answer="showAnswer" :card="card" />
       </div>
 
       <ButtonsReview

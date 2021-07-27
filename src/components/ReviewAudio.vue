@@ -2,10 +2,8 @@
   <audio
     v-if="blobFile"
     ref="audio"
+    class="w-full"
     :controls="audioContols"
-    :src="[blobFile]"
-    preload="none"
-    type="audio/mp3"
     @ended="onEnded"
     @playing="onPlay"
   />
@@ -83,13 +81,16 @@ export default {
   },
 
   watch: {
-    blobFile: {
-      immediate: false,
-      async handler() {
-        if (this.autoplay) {
-          await this.startAudio()
-        }
-      },
+    blob() {
+      this.loadAudio()
+    },
+
+    objectUrl() {
+      this.loadAudio()
+    },
+
+    dbMediaString() {
+      this.loadAudio()
     },
   },
 
@@ -98,7 +99,8 @@ export default {
   },
 
   methods: {
-    loadAudio() {
+    async loadAudio() {
+      this.blobFile = null
       if (this.blob) {
         this.blobFile = URL.createObjectURL(new Blob([this.blob]))
       }
@@ -106,18 +108,24 @@ export default {
         this.blobFile = this.objectUrl
       }
       if (this.dbMediaString) {
-        return wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
+        await wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
           if (dbObj) {
             this.blobFile = URL.createObjectURL(new Blob([dbObj.file]))
           } else {
             this.notFound = true
+            this.blobFile = null
           }
         })
+      }
+
+      if (this.autoplay) {
+        await this.startAudio()
       }
     },
 
     onEnded() {
       this.isPlaying = false
+      this.$emit('ended')
     },
 
     onPlay() {
@@ -133,10 +141,14 @@ export default {
       if (this.playPromise) {
         await this.playPromise
       }
-      this.playPromise = this.$refs.audio.play().catch((e) => console.error(e))
-      await this.playPromise
+      this.$refs.audio.src = [this.blobFile]
       this.$refs.audio.currentTime = 0
-      await this.$refs.audio.play()
+      this.$refs.audio.load()
+      this.playPromise = this.$refs.audio.play().catch((e) => {
+        console.error(e)
+      })
+      await this.playPromise
+      this.playPromise = null
       this.isPlaying = true
     },
   },

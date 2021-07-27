@@ -144,7 +144,7 @@ export async function playAudio(uint8) {
   await audio.play()
 }
 
-const regexMedia = /\[(?<type>[^:]+):(?<media>[^\]]+)]/gm
+const regexMedia = /\[(?<type>[^:\[\]]+):(?<media>[^\]]+)]/gm
 export function getMediaFromNote(string) {
   const regex = regexMedia
   let m

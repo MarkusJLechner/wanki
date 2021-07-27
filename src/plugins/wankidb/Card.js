@@ -173,7 +173,13 @@ export class Card extends BaseTable {
   get fields() {
     return (async () => {
       const model = await this.model
-      return model.flds
+      const noteFields = (await this.note).flds.split('\u001f')
+      return model.flds.map((modelFields, index) => {
+        return {
+          ...modelFields,
+          fieldValue: noteFields[index],
+        }
+      })
     })()
   }
 

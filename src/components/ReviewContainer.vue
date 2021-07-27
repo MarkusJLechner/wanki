@@ -1,17 +1,21 @@
 <template>
-  <div>
-    <div v-html="computedStyle" />
-    <span v-if="!showAnswer" class="card" v-html="fieldQuestion" />
-    <span v-else class="card" v-html="fieldAnswer" />
-  </div>
+  <div class="relative w-full h-full">
+    <IFrameContainer
+      :body-class="computedDarkTheme"
+      class="w-full h-full"
+      :css="computedStyle"
+    >
+      <span v-if="!showAnswer" class="card question" v-html="fieldQuestion" />
+      <span v-else class="card answer" v-html="fieldAnswer" />
+    </IFrameContainer>
 
-  <div
-    v-for="(field, index) in fields"
-    :key="index"
-    class="text-3xl text-yellow-300"
-  >
-    <div v-for="(file, ii) in field.files" :key="ii">
-      <ReviewAudio :db-media-string="file" />
+    <div class="absolute bottom-0 w-full">
+      <ReviewAudio
+        v-for="(file, index) in computedSoundList"
+        :key="file.name"
+        :autoplay="index === 0"
+        :db-media-string="file.media"
+      />
     </div>
   </div>
 </template>
@@ -23,26 +27,18 @@ import {
   replaceAsync,
 } from '@/plugins/global.js'
 import ReviewAudio from '@/components/ReviewAudio.vue'
+import IFrameContainer from '@/components/IFrameContainer.js'
+import { refstorage } from '@/store/globalstate.js'
 
 export default {
   name: 'ReviewContainer',
 
-  components: { ReviewAudio },
+  components: { IFrameContainer, ReviewAudio },
 
   props: {
     card: {
       type: Object,
-      default: () => {},
-    },
-
-    note: {
-      type: Object,
-      default: () => {},
-    },
-
-    deck: {
-      type: Object,
-      default: () => {},
+      default: null,
     },
 
     showAnswer: {
@@ -53,43 +49,49 @@ export default {
 
   data() {
     return {
-      fields: [],
       fieldQuestion: '',
       fieldAnswer: '',
       cardStyle: '',
+      soundListQuestion: [],
+      soundListAnswer: [],
     }
   },
 
   computed: {
+    computedSoundList() {
+      return this.showAnswer ? this.soundListAnswer : this.soundListQuestion
+    },
+
+    computedDarkTheme() {
+      return refstorage.get('darkTheme', true) ? 'dark' : ''
+    },
+
     computedStyle() {
-      return `<style>${this.cardStyle}</style>`
+      return `<style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0;  }
+        body img { max-width: 100%; }
+        .card { background-color: inherit !important; }
+        .dark .card { color: white; }
+        ${this.cardStyle}
+      </style>`
     },
   },
 
   watch: {
-    note() {
+    card() {
       this.mountNote()
     },
   },
 
   methods: {
     async mountNote() {
-      if (!this.note) {
-        this.fields = []
-        return
-      }
-
-      const fieldValues = this.note.flds.split('\u001f')
-
       const template = await this.card.template
       const model = await this.card.model
-      let fields = await this.card.fields
-      fields = fields.map((f, i) => {
-        return {
-          ...f,
-          fieldValue: fieldValues[i],
-        }
-      })
+      const fields = await this.card.fields
+
+      window.card = await this.card
+      window.note = await this.card.note
+      window.model = await this.card.model
 
       this.fieldQuestion = this.parseTemplate(template.qfmt, fields)
       this.fieldAnswer = this.parseTemplate(template.afmt, [
@@ -97,20 +99,22 @@ export default {
         ...fields,
       ])
 
+      this.soundListQuestion = this.getMediaList(this.fieldQuestion)
+      this.soundListAnswer = this.getMediaList(this.fieldAnswer)
+
       this.fieldQuestion = await this.replaceImages(this.fieldQuestion)
+      this.fieldQuestion = replaceMediaFromNote(this.fieldQuestion)
       this.fieldAnswer = await this.replaceImages(this.fieldAnswer)
+      this.fieldAnswer = replaceMediaFromNote(this.fieldAnswer)
 
       this.cardStyle = model.css
-
-      console.log({ template, fields, fieldValues })
-
-      for (let i = 0; i < fieldValues.length; i++) {
-        this.fields[i] = await this.getMedia(fieldValues[i])
-      }
     },
 
     parseTemplate(templateString, fields) {
-      console.log('parse', { templateString, fields })
+      // remove type: tags
+      templateString = templateString.replaceAll(/({{type:[^}]+}})/gm, '')
+      // remove all special tags, like furigana: kanji: etc
+      templateString = templateString.replaceAll(/{{[^:}]+:([^}]+}})/gm, '{{$1')
       const regex = /{{(?<field>.*?)}}/gm
       let m
       let matches = []
@@ -132,37 +136,11 @@ export default {
         }
       })
 
-      console.log({ matches, templateString })
-
       return templateString
     },
 
-    async getMedia(field) {
-      const blobs = []
-      const files = []
-      const promises = []
-      const mediaList = getMediaFromNote(field)
-      mediaList.forEach((mediaObj) => {
-        files.push(mediaObj.media)
-
-        promises.push(
-          wankidb.media.get({ name: mediaObj.media }).then((dbObj) => {
-            if (dbObj) {
-              blobs.push(URL.createObjectURL(new Blob([dbObj.file])))
-            }
-          }),
-        )
-      })
-
-      await Promise.all(promises)
-
-      const cleanedField = replaceMediaFromNote(field)
-
-      return {
-        text: await this.replaceImages(cleanedField),
-        blobs,
-        files,
-      }
+    getMediaList(field) {
+      return getMediaFromNote(field)
     },
 
     async replaceImages(field) {
@@ -173,7 +151,7 @@ export default {
           src = src.slice(5, -1)
           const media = await wankidb.media.get({ name: src })
           const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
-          return `src="${url}"`
+          return `src="${url}" onerror="this.src = '';this.onerror='';" `
         },
       )
 
