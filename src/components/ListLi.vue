@@ -16,7 +16,7 @@
       min-h-[3rem]
       flex flex-col
     "
-    :style="'display: block; ' + item.style"
+    :style="$attrs.style + 'display: block; ' + item.style"
     :class="{
       seperator: item.type === 'seperator',
       [item.class]: item.class,
@@ -25,7 +25,7 @@
       'py-4 px-4': !dense,
       [$attrs.class]: !!$attrs.class,
     }"
-    @click.prevent="!item.children && onClick(item)"
+    @click="onClick(item)"
   >
     <div v-if="render" class="w-full flex">
       <slot name="before" />

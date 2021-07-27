@@ -35,32 +35,32 @@
       }"
       @click.prevent="onClick(item)"
     >
-        <component :is="item.component" v-if="item.component" />
-        <hr
-          v-if="item.type === 'seperator'"
-          class="border-1 border-gray-900 dark:border-gray-500 w-full"
-        />
+      <component :is="item.component" v-if="item.component" />
+      <hr
+        v-if="item.type === 'seperator'"
+        class="border-1 border-gray-900 dark:border-gray-500 w-full"
+      />
 
-        <slot name="prefix-item" :item="item" />
+      <slot name="prefix-item" :item="item" />
 
-        <i
-          v-if="getIcon(item)"
-          class="pr-4"
-          :class="{ [getIcon(item)]: getIcon(item) }"
-        />
-        <div class="flex flex-grow items-center">
-          <span v-if="getText(item)" class="flex flex-col">
-            {{ getText(item) }}
-            <span
-              v-if="getSubText(item)"
-              class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
-              >{{ getSubText(item) }}</span
-            >
-          </span>
+      <i
+        v-if="getIcon(item)"
+        class="pr-4"
+        :class="{ [getIcon(item)]: getIcon(item) }"
+      />
+      <div class="flex flex-grow items-center">
+        <span v-if="getText(item)" class="flex flex-col">
+          {{ getText(item) }}
+          <span
+            v-if="getSubText(item)"
+            class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            >{{ getSubText(item) }}</span
+          >
+        </span>
 
-          <div v-if="callFn(item, 'loading')" class="px-2">
-            <i class="text-black dark:text-white fas fa-spinner fa-spin" />
-          </div>
+        <div v-if="callFn(item, 'loading')" class="px-2">
+          <i class="text-black dark:text-white fas fa-spinner fa-spin" />
+        </div>
       </div>
 
       <div v-if="hasBoolean(item)">

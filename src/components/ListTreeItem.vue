@@ -4,12 +4,14 @@
     :dense="dense"
     :no-separation="noSeparation"
     :item-text-key="itemTextKey"
-    :no-ripple="isFolder"
-    :class="{
-      'pb-0': isOpen,
-    }"
+    :no-ripple="root || (!root && isOpen)"
     :render="!root"
     :item="item"
+    :style="!!(level - 1) ? `padding-left: ${level * 20}px !important;` : ''"
+    class=""
+    :class="{
+      [$attrs.class]: !!$attrs.class,
+    }"
     @item="$emit('item', $event)"
     @long-press="$emit('long-press', $event)"
   >
@@ -20,54 +22,42 @@
       <ButtonIcon
         v-if="isFolder"
         :icon="isOpen ? 'fas fa-angle-down' : 'fas fa-angle-right'"
-        class="w-10 h-10 -ml-3 -mt-1 -mb-3"
-        @click="toggle"
+        class="w-10 h-10 -ml-3 -mt-1 -mb-3 z-10"
+        @touchstart.stop
+        @mousedown.stop
+        @click.stop="toggle"
       />
     </template>
-    <template #after>
-      <transition name="slide-right">
-        <ul
-          v-show="isOpen"
-          v-if="isFolder"
-          class="relative pt-0"
-          :class="{
-            'mt-4': !root,
-          }"
-        >
-          <ListHr v-if="isFolder && !root" class="top-0" />
-          <ListTreeItem
-            v-for="(child, index) in item.children"
-            :key="index"
-            :no-gutters="noGutters"
-            :dense="dense"
-            :no-separation="index >= item.children.length - 1"
-            class="pr-0"
-            :class="{
-              'pl-4': !root,
-              'pl-0': root,
-            }"
-            :item="child"
-            :item-text-key="itemTextKey"
-            @item="$emit('item', $event)"
-            @long-press="$emit('long-press', $event)"
-          >
-            <template v-for="(_, name) in $slots" #[name]="slotData"
-              ><slot :name="name" v-bind="slotData"
-            /></template>
-          </ListTreeItem>
-        </ul>
-      </transition>
-    </template>
   </ListLi>
+
+  <transition name="slide-right">
+    <ul v-show="isOpen" v-if="isFolder" class="relative pt-0">
+      <ListTreeItem
+        v-for="(child, index) in item.children"
+        :key="index"
+        :no-gutters="noGutters"
+        :dense="dense"
+        :level="level + 1"
+        :no-separation="index >= item.children.length - 1"
+        :item="child"
+        :item-text-key="itemTextKey"
+        @item="$emit('item', $event)"
+        @long-press="$emit('long-press', $event)"
+      >
+        <template v-for="(_, name) in $slots" #[name]="slotData"
+          ><slot :name="name" v-bind="slotData"
+        /></template>
+      </ListTreeItem>
+    </ul>
+  </transition>
 </template>
 
 <script>
 import ListLi from '@/components/ListLi.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
-import ListHr from '@/components/ListHr.vue'
 export default {
   name: 'ListTreeItem',
-  components: { ListHr, ButtonIcon, ListLi },
+  components: { ButtonIcon, ListLi },
   props: {
     item: {
       type: Object,
@@ -77,6 +67,11 @@ export default {
     itemTextKey: {
       type: String,
       default: 'text',
+    },
+
+    level: {
+      type: Number,
+      default: 0,
     },
 
     noGutters: {

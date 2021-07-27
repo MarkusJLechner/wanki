@@ -7,9 +7,6 @@ function setProps(modifiers, props) {
 
 const Ripple = {
   mounted: function (el, binding) {
-    if (typeof binding.value === 'object' && binding.value.disable) {
-      return
-    }
     // Default values.
     const props = {
       event: ['mousedown', 'touchstart'],
@@ -31,7 +28,7 @@ const Ripple = {
     let onClick = false
 
     let bg = Ripple.color || 'rgba(0, 0, 0, 0.2)'
-    if (typeof binding.value !== 'object') {
+    if (typeof binding.value !== 'object' && binding.value) {
       bg = binding.value
     }
 
@@ -58,6 +55,9 @@ const Ripple = {
     )
 
     function rippler(event, el) {
+      if (typeof binding.value === 'object' && binding.value.disable) {
+        return
+      }
       initx = event.clientX || event.touches[0].clientX
       inity = event.clientY || event.touches[0].clientY
       destx = initx

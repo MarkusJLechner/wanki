@@ -5,6 +5,7 @@
       :no-gutters="noGutters"
       :dense="dense"
       class="py-0"
+      :level="0"
       :no-separation="noSeparation"
       :item-text-key="itemTextKey"
       :item="modelValue"
