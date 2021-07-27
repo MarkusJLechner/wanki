@@ -8,9 +8,9 @@
     :render="!root"
     :item="item"
     :style="!!(level - 1) ? `padding-left: ${level * 20}px !important;` : ''"
-    class=""
     :class="{
       [$attrs.class]: !!$attrs.class,
+      ' bg-gray-700 ': level > 1,
     }"
     @item="$emit('item', $event)"
     @long-press="$emit('long-press', $event)"
@@ -48,6 +48,7 @@
           ><slot :name="name" v-bind="slotData"
         /></template>
       </ListTreeItem>
+      <ListHr />
     </ul>
   </transition>
 </template>
@@ -55,9 +56,10 @@
 <script>
 import ListLi from '@/components/ListLi.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
+import ListHr from '@/components/ListHr.vue'
 export default {
   name: 'ListTreeItem',
-  components: { ButtonIcon, ListLi },
+  components: { ListHr, ButtonIcon, ListLi },
   props: {
     item: {
       type: Object,

@@ -11,4 +11,7 @@ export const defaultSettings = {
       items: [{ text: 'Use current deck', value: 'current-deck' }],
     },
   },
+  reviewing: {
+    audioControls: { key: 'setting/reviewing/audioControls', default: true },
+  },
 }

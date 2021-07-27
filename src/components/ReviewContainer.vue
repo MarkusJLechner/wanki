@@ -5,8 +5,8 @@
     class="text-3xl text-yellow-300"
   >
     <span v-html="field.text" />
-    <div v-for="(blob, ii) in field.blobs" :key="ii">
-      <audio controls="controls" :src="[blob]" type="audio/mp3" autoplay />
+    <div v-for="(file, ii) in field.files" :key="ii">
+      <ReviewAudio :db-media-string="file" />
     </div>
   </div>
 </template>
@@ -17,10 +17,11 @@ import {
   replaceMediaFromNote,
   replaceAsync,
 } from '@/plugins/global.js'
+import ReviewAudio from '@/components/ReviewAudio.vue'
 
 export default {
   name: 'ReviewContainer',
-
+  components: { ReviewAudio },
   props: {
     card: {
       type: Object,
@@ -64,9 +65,12 @@ export default {
 
     async getMedia(field) {
       const blobs = []
+      const files = []
       const promises = []
       const mediaList = getMediaFromNote(field)
       mediaList.forEach((mediaObj) => {
+        files.push(mediaObj.media)
+
         promises.push(
           wankidb.media.get({ name: mediaObj.media }).then((dbObj) => {
             if (dbObj) {
@@ -83,6 +87,7 @@ export default {
       return {
         text: await this.replaceImages(cleanedField),
         blobs,
+        files,
       }
     },
 

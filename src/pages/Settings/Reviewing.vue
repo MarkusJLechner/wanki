@@ -15,7 +15,13 @@ export default {
 
   data() {
     return {
-      listItems: [],
+      listItems: [
+        {
+          text: 'Show native Audio-Controls',
+          subtext: 'Native controls have more functionality',
+          toggle: 'setting/reviewing/audioControls',
+        },
+      ],
     }
   },
 }
