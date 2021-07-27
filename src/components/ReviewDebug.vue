@@ -62,7 +62,21 @@
           <div class="text-blue-300 font-bold">MODEL:</div>
           <div v-if="loading">loading</div>
           <div v-else>
-            <div>model: {{ model.id }}</div>
+            <div>id: {{ model.id }}</div>
+            <div>vers: {{ model.vers }}</div>
+            <div>name: {{ model.name }}</div>
+            <div>tags: {{ model.tags }}</div>
+            <div>did: {{ model.did }}</div>
+            <div>usn: {{ model.usn }}</div>
+            <div>req: {{ model.req }}</div>
+            <div>flds: {{ model.flds }}</div>
+            <div>sortf: {{ model.sortf }}</div>
+            <div>tmpls: {{ model.tmpls }}</div>
+            <div>mod: {{ model.mod }}</div>
+            <div>latexPost: {{ model.latexPost }}</div>
+            <div>type: {{ model.type }}</div>
+            <div>css: {{ model.css }}</div>
+            <div>latexPre: {{ model.latexPre }}</div>
           </div>
         </template>
       </Promise>

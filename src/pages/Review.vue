@@ -31,7 +31,12 @@
       <div id="review-container" class="flex-grow p-3 relative">
         <ReviewDebug v-if="debug" :card="card" :note="note" :deck="deck" />
 
-        <ReviewContainer :card="card" :note="note" :deck="deck" />
+        <ReviewContainer
+          :show-answer="showAnswer"
+          :card="card"
+          :note="note"
+          :deck="deck"
+        />
       </div>
 
       <ButtonsReview
@@ -163,6 +168,7 @@ export default {
       }
       try {
         await answerCard(this.card, ease)
+        await this.loadFirstCard()
       } catch (e) {
         console.error(e)
       }

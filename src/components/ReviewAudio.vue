@@ -85,33 +85,37 @@ export default {
   watch: {
     blobFile: {
       immediate: false,
-      handler() {
+      async handler() {
         if (this.autoplay) {
-          this.startAudio()
+          await this.startAudio()
         }
       },
     },
   },
 
   mounted() {
-    if (this.blob) {
-      this.blobFile = URL.createObjectURL(new Blob([this.blob]))
-    }
-    if (this.objectUrl) {
-      this.blobFile = this.objectUrl
-    }
-    if (this.dbMediaString) {
-      wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
-        if (dbObj) {
-          this.blobFile = URL.createObjectURL(new Blob([dbObj.file]))
-        } else {
-          this.notFound = true
-        }
-      })
-    }
+    this.loadAudio()
   },
 
   methods: {
+    loadAudio() {
+      if (this.blob) {
+        this.blobFile = URL.createObjectURL(new Blob([this.blob]))
+      }
+      if (this.objectUrl) {
+        this.blobFile = this.objectUrl
+      }
+      if (this.dbMediaString) {
+        return wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
+          if (dbObj) {
+            this.blobFile = URL.createObjectURL(new Blob([dbObj.file]))
+          } else {
+            this.notFound = true
+          }
+        })
+      }
+    },
+
     onEnded() {
       this.isPlaying = false
     },
@@ -126,10 +130,13 @@ export default {
       if (!this.hasRefAudio) {
         return
       }
+      if (this.playPromise) {
+        await this.playPromise
+      }
       this.playPromise = this.$refs.audio.play().catch((e) => console.error(e))
       await this.playPromise
       this.$refs.audio.currentTime = 0
-      this.$refs.audio.play()
+      await this.$refs.audio.play()
       this.isPlaying = true
     },
   },
