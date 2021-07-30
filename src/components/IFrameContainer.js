@@ -24,11 +24,13 @@ export default {
     onMounted(() => {
       iframeBody.value = iframeRef.value.contentDocument.body
       iframeHead.value = iframeRef.value.contentDocument.head
+
       const el = document.createElement('div')
       iframeBody.value.appendChild(el)
       iframeStyle.value = document.createElement('style')
       iframeStyle.value.innerHTML = props.css
       iframeHead.value.appendChild(iframeStyle.value)
+
       if (props.bodyClass) {
         iframeBody.value.setAttribute('class', props.bodyClass)
       }

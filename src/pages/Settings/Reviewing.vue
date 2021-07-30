@@ -31,6 +31,11 @@ export default {
           toggle: defaultSettings.reviewing.autoPlayAudio.key,
         },
         {
+          text: 'Align Audio buttons right',
+          subtext: 'Easier to reach with the right hand',
+          toggle: defaultSettings.reviewing.alignAudioButtonsRight.key,
+        },
+        {
           text: 'Audio start delay',
           subtext: 'Time in milliseconds',
           kind: 'textfield',

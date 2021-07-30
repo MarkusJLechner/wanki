@@ -14,6 +14,10 @@ export const defaultSettings = {
   reviewing: {
     audioControls: { key: 'setting.reviewing.audioControls', default: true },
     autoPlayAudio: { key: 'setting.reviewing.autoPlayAudio', default: true },
+    alignAudioButtonsRight: {
+      key: 'setting.reviewing.alignAudioButtonsRight',
+      default: true,
+    },
     autoPlayAudioDelay: {
       key: 'setting.reviewing.autoPlayAudioDelay',
       valueType: 'number',

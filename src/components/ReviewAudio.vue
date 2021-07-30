@@ -1,22 +1,22 @@
 <template>
   <div v-if="blobFile">
-    <div v-if="mediaType !== 'audio/mp3'">
-      <img :src="blobFile" class="w-52" />
+    <div v-if="!isAudio">
+      <img alt="image" :src="blobFile" class="w-52" />
     </div>
-    <audio
-      v-else
-      ref="audio"
-      class="w-full"
-      :controls="audioContols"
-      @ended="onEnded"
-      @playing="onPlay"
-    />
-    <ButtonIcon
-      v-if="!useNativeAudioControls"
-      :icon="computedIcon"
-      class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
-      @click="playLoadedAudio"
-    />
+    <div v-else>
+      <audio
+        ref="audio"
+        class="w-full"
+        :controls="audioContols"
+        @ended="onEnded"
+      />
+      <ButtonIcon
+        v-if="!useNativeAudioControls"
+        :icon="computedIcon"
+        class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
+        @click="doPlayAudio"
+      />
+    </div>
   </div>
 </template>
 
@@ -62,6 +62,10 @@ export default {
   },
 
   computed: {
+    isAudio() {
+      return this.mediaType === 'audio/mp3'
+    },
+
     computedIcon() {
       if (this.isPlaying) {
         return 'fas fa-pause'
@@ -111,7 +115,6 @@ export default {
     },
 
     autoplay(newValue, oldValue) {
-      console.log(newValue, oldValue)
       if (!oldValue && newValue) {
         this.playLoadedAudio()
       }
@@ -148,16 +151,18 @@ export default {
         })
       }
 
+      if (!this.isAudio) {
+        setTimeout(() => {
+          this.onEnded()
+        }, 200)
+      }
+
       await this.playLoadedAudio()
     },
 
     onEnded() {
       this.isPlaying = false
       this.$emit('ended')
-    },
-
-    onPlay() {
-      this.isPlaying = true
     },
 
     async playLoadedAudio() {
@@ -170,17 +175,24 @@ export default {
         await this.playPromise
       }
       this.$refs.audio.src = [this.blobFile]
-      this.$refs.audio.currentTime = 0
       this.$refs.audio.load()
       if (this.autoplay && this.useAutoPlayAudio) {
         await sleep(+this.getAudioStartDelay)
-        this.playPromise = this.$refs.audio.play().catch((e) => {
+        await this.doPlayAudio().catch((e) => {
           console.error([this.blobFile], e)
         })
-        await this.playPromise
       }
       this.playPromise = null
+    },
+
+    async doPlayAudio() {
+      if (!this.$refs.audio) {
+        return
+      }
       this.isPlaying = true
+      this.$refs.audio.currentTime = 0
+      this.playPromise = this.$refs.audio.play()
+      await this.playPromise
     },
   },
 }

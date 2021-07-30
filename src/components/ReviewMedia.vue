@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    class="flex gap-3 overflow-x-auto"
+    :class="{ 'flex-row-reverse': useAlignAudioButtonsRight }"
+  >
     <ReviewAudio
       v-for="(file, index) in mediaList"
       :key="file.name"
@@ -12,6 +15,8 @@
 
 <script>
 import ReviewAudio from '@/components/ReviewAudio.vue'
+import { refstorage } from '@/store/globalstate.js'
+import { defaultSettings } from '@/plugins/defaultSettings.js'
 export default {
   name: 'ReviewMedia',
   components: { ReviewAudio },
@@ -28,7 +33,13 @@ export default {
     }
   },
 
-  computed: {},
+  computed: {
+    useAlignAudioButtonsRight() {
+      return refstorage.getSetting(
+        defaultSettings.reviewing.alignAudioButtonsRight,
+      )
+    },
+  },
 
   watch: {
     mediaList() {

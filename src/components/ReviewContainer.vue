@@ -1,25 +1,26 @@
 <template>
+  <div class="h-full w-full left-0 top-0 absolute z-10">
+    <div class="fixed bottom-28 right-4 w-full">
+      <ReviewMedia :media-list="computedSoundList" />
+    </div>
+  </div>
   <div class="relative w-full h-full">
     <IFrameContainer
       :body-class="computedDarkTheme"
-      class="w-full h-full"
+      class="w-full"
       :css="computedStyle"
     >
       <span v-if="!showAnswer" class="card question" v-html="fieldQuestion" />
       <span v-else class="card answer" v-html="fieldAnswer" />
     </IFrameContainer>
-
-    <div class="absolute bottom-0 w-full">
-      <ReviewMedia :media-list="computedSoundList" />
-    </div>
   </div>
 </template>
 
 <script>
 import {
   getMediaFromNote,
-  replaceMediaFromNote,
   replaceAsync,
+  replaceMediaFromNote,
 } from '@/plugins/global.js'
 import IFrameContainer from '@/components/IFrameContainer.js'
 import { refstorage } from '@/store/globalstate.js'
@@ -76,9 +77,29 @@ export default {
     card() {
       this.mountNote()
     },
+
+    showAnswer() {
+      this.setIFrameHeight(true)
+    },
+  },
+
+  mounted() {
+    setInterval(() => {
+      this.setIFrameHeight()
+    }, 500)
   },
 
   methods: {
+    setIFrameHeight(reset = false) {
+      const iframe = document.querySelector('iframe')
+      if (reset) {
+        iframe.height = '0'
+      }
+      this.$nextTick(() => {
+        iframe.height = '' + iframe.contentWindow.document.body.scrollHeight
+      })
+    },
+
     async mountNote() {
       const template = await this.card.template
       const model = await this.card.model
@@ -103,6 +124,8 @@ export default {
       this.fieldAnswer = replaceMediaFromNote(this.fieldAnswer)
 
       this.cardStyle = model.css
+
+      this.setIFrameHeight()
     },
 
     parseTemplate(templateString, fields) {
@@ -136,7 +159,6 @@ export default {
 
     getMediaList(field) {
       const media = getMediaFromNote(field)
-      console.log(media)
       return media
     },
 
