@@ -10,11 +10,7 @@
     </IFrameContainer>
 
     <div class="absolute bottom-0 w-full">
-      <ReviewAudio
-        v-for="(file, index) in computedSoundList"
-        :key="file.name"
-        :db-media-string="file.media"
-      />
+      <ReviewMedia :media-list="computedSoundList" />
     </div>
   </div>
 </template>
@@ -25,14 +21,14 @@ import {
   replaceMediaFromNote,
   replaceAsync,
 } from '@/plugins/global.js'
-import ReviewAudio from '@/components/ReviewAudio.vue'
 import IFrameContainer from '@/components/IFrameContainer.js'
 import { refstorage } from '@/store/globalstate.js'
+import ReviewMedia from '@/components/ReviewMedia.vue'
 
 export default {
   name: 'ReviewContainer',
 
-  components: { IFrameContainer, ReviewAudio },
+  components: { ReviewMedia, IFrameContainer },
 
   props: {
     card: {

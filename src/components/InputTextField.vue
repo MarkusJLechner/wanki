@@ -3,12 +3,13 @@
     <label
       v-if="!!label"
       class="block text-gray-700 dark:text-gray-300 text-sm mb-2"
-      for="username"
+      :for="uid"
     >
       {{ label }}
     </label>
     <input
-      id="username"
+      :id="uid"
+      :autofocus="autofocus"
       class="
         shadow
         appearance-none
@@ -19,12 +20,11 @@
         px-3
         text-gray-700
         leading-tight
-        focus:outline-none
-        focus:shadow-outline
+        focus:outline-none focus:shadow-outline
       "
-      type="text"
+      :type="type"
       :autocomplete="autocomplete"
-      placeholder="Username"
+      :placeholder="placeholder"
       :value="modelValue"
       :disabled="disabled"
       @keydown.enter="$emit('enter')"
@@ -34,12 +34,14 @@
 </template>
 
 <script>
+import { nanoid } from 'nanoid'
+
 export default {
   name: 'InputTextField',
 
   props: {
     modelValue: {
-      type: String,
+      type: [Number, String],
       default: '',
     },
 
@@ -53,6 +55,21 @@ export default {
       default: false,
     },
 
+    autofocus: {
+      type: Boolean,
+      default: false,
+    },
+
+    type: {
+      type: String,
+      default: 'text',
+    },
+
+    placeholder: {
+      type: String,
+      default: '',
+    },
+
     autocomplete: {
       type: String,
       default: 'off',
@@ -60,5 +77,11 @@ export default {
   },
 
   emits: ['update:modelValue', 'enter'],
+
+  computed: {
+    uid() {
+      return nanoid(3)
+    },
+  },
 }
 </script>

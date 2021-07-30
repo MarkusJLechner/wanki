@@ -256,3 +256,7 @@ export async function replaceAsync(str, regex, asyncFn) {
   const data = await Promise.all(promises)
   return str.replace(regex, () => data.shift())
 }
+
+export const resolveObjectPath = (object, path, defaultValue) => {
+  return path.split('.').reduce((o, p) => (o ? o[p] : defaultValue), object)
+}

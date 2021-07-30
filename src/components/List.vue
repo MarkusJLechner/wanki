@@ -67,6 +67,10 @@
         <InputBoolean :model-value="getBoolean(item)" />
       </div>
 
+      <div v-if="hasText(item)" class="opacity-60">
+        {{ getValueText(item) }}
+      </div>
+
       <slot name="suffix-item" :item="item" />
 
       <ListHr v-if="!noSeparation && index < value.length - 1" />
@@ -81,6 +85,16 @@
     :default-value="radio?.default"
     @close="radio = null"
   />
+
+  <ModalTextfield
+    :model-value="!!textfield"
+    :title="textfield?.title"
+    :storage-key="textfield?.key"
+    :type="textfield?.type"
+    :label="textfield?.label"
+    :placeholder="textfield?.placeholder"
+    @close="textfield = null"
+  />
 </template>
 
 <script>
@@ -88,6 +102,7 @@ import { defineAsyncComponent } from 'vue'
 import InputBoolean from 'components/InputBoolean.vue'
 import { refstorage } from 'store/globalstate.js'
 import ListHr from '@/components/ListHr.vue'
+import ModalTextfield from '@/components/ModalTextfield.vue'
 const ModalRadio = defineAsyncComponent(() =>
   import('components/ModalRadio.vue'),
 )
@@ -96,6 +111,7 @@ export default {
   name: 'List',
 
   components: {
+    ModalTextfield,
     ListHr,
     InputBoolean,
     ModalRadio,
@@ -133,6 +149,7 @@ export default {
   data() {
     return {
       radio: null,
+      textfield: null,
     }
   },
 
@@ -168,10 +185,14 @@ export default {
 
     getBoolean(item) {
       if (item.toggle) {
-        return !!refstorage.get(item.toggle, !!item.toggleDefault)
+        return !!refstorage.get(item.toggle)
       }
 
       return this.callFn(item, 'boolean')
+    },
+
+    getValueText(item) {
+      return refstorage.get(item.key)
     },
 
     hasBoolean(item) {
@@ -182,6 +203,12 @@ export default {
       return (
         typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
       )
+    },
+
+    hasText(item) {
+      if (item.kind && item.kind === 'textfield') {
+        return true
+      }
     },
 
     callFn(item, key) {
@@ -200,6 +227,10 @@ export default {
 
       if (item.radio) {
         this.radio = item.radio
+      }
+
+      if (item.kind === 'textfield') {
+        this.textfield = item
       }
 
       if (item.toggle) {

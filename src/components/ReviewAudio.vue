@@ -15,7 +15,7 @@
       v-if="!useNativeAudioControls"
       :icon="computedIcon"
       class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
-      @click="startAudio"
+      @click="playLoadedAudio"
     />
   </div>
 </template>
@@ -24,7 +24,7 @@
 import { refstorage } from '@/store/globalstate.js'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 import ButtonIcon from '@/components/ButtonIcon.vue'
-import { getFileMimeType } from '@/plugins/global.js'
+import { getFileMimeType, sleep } from '@/plugins/global.js'
 
 export default {
   name: 'ReviewAudio',
@@ -78,6 +78,16 @@ export default {
       return refstorage.getSetting(defaultSettings.reviewing.audioControls)
     },
 
+    useAutoPlayAudio() {
+      return refstorage.getSetting(defaultSettings.reviewing.autoPlayAudio)
+    },
+
+    getAudioStartDelay() {
+      return +refstorage.getSetting(
+        defaultSettings.reviewing.autoPlayAudioDelay,
+      )
+    },
+
     audioContols() {
       return this.useNativeAudioControls ? 'controls' : undefined
     },
@@ -98,6 +108,13 @@ export default {
 
     dbMediaString() {
       this.loadAudio()
+    },
+
+    autoplay(newValue, oldValue) {
+      console.log(newValue, oldValue)
+      if (!oldValue && newValue) {
+        this.playLoadedAudio()
+      }
     },
   },
 
@@ -131,9 +148,7 @@ export default {
         })
       }
 
-      if (this.autoplay) {
-        await this.startAudio()
-      }
+      await this.playLoadedAudio()
     },
 
     onEnded() {
@@ -145,7 +160,7 @@ export default {
       this.isPlaying = true
     },
 
-    async startAudio() {
+    async playLoadedAudio() {
       await this.$nextTick
 
       if (!this.hasRefAudio) {
@@ -157,10 +172,13 @@ export default {
       this.$refs.audio.src = [this.blobFile]
       this.$refs.audio.currentTime = 0
       this.$refs.audio.load()
-      this.playPromise = this.$refs.audio.play().catch((e) => {
-        console.error([this.blobFile], e)
-      })
-      await this.playPromise
+      if (this.autoplay && this.useAutoPlayAudio) {
+        await sleep(+this.getAudioStartDelay)
+        this.playPromise = this.$refs.audio.play().catch((e) => {
+          console.error([this.blobFile], e)
+        })
+        await this.playPromise
+      }
       this.playPromise = null
       this.isPlaying = true
     },

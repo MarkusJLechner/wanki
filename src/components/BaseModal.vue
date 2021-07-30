@@ -74,7 +74,7 @@
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
             class="overflow-y-auto flex-grow"
-            :class="{ 'p-4': !noGutters }"
+            :class="{ 'p-4': !noGutters, [contentClass]: !!contentClass }"
           >
             <slot />
           </div>
@@ -132,6 +132,11 @@ export default {
     confirm: {
       type: [Boolean, String],
       default: undefined,
+    },
+
+    contentClass: {
+      type: String,
+      default: '',
     },
 
     disableConfirm: {

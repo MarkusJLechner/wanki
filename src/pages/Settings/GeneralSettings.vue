@@ -49,19 +49,19 @@ export default {
         {
           text: 'Fetch media on sync',
           subtext: 'Automatically fetch missing media when syncing',
-          toggle: 'setting/general/fetch-sync',
+          toggle: 'setting.general.fetch-sync',
         },
         {
           text: 'Automatic synchronization',
           subtext:
             'Sync automatically on app start/exit if the last sync was more than 10 minutes ago',
-          toggle: 'setting/general/automatic-sync',
+          toggle: 'setting.general.automatic-sync',
           toggleDefault: true,
         },
         {
           text: 'Display synchronization status',
           subtext: 'Change the sync icon when changes can be uploaded',
-          toggle: 'setting/general/display-sync-status',
+          toggle: 'setting.general.display-sync-status',
           toggleDefault: true,
         },
       ],
@@ -71,7 +71,7 @@ export default {
           text: 'Deck for new cards',
           radio: {
             title: 'Deck for new cards',
-            key: 'setting/general/use-card',
+            key: 'setting.general.use-card',
             default: 'current-deck',
             items: [
               {
@@ -87,7 +87,7 @@ export default {
           icon: 'fas fa-language',
           radio: {
             title: 'Language',
-            key: 'setting/general/language',
+            key: 'setting.general.language',
             default: 'english',
             items: [
               { text: 'English', value: 'english' },
@@ -100,14 +100,13 @@ export default {
           text: 'Share feature usage',
           subtext:
             'You can contribute to Wanki by helping the development team see which features people use',
-          toggle: 'setting/general/share/feature',
-          toggleDefault: true,
+          toggle: 'setting.general.share.feature',
         },
         {
           text: 'Error reporting mode',
           radio: {
             title: 'Error reporting mode',
-            key: 'setting/general/error-reporting',
+            key: 'setting.general.error-reporting',
             default: 'always',
             items: [
               {
@@ -126,7 +125,7 @@ export default {
           text: 'Notify when',
           radio: {
             title: 'Error reporting mode',
-            key: 'setting/general/notify',
+            key: 'setting.general.notify',
             default: 'never',
             items: [
               { text: 'Never notify', value: 'never' },
@@ -144,12 +143,11 @@ export default {
         },
         {
           text: 'Vibrate',
-          toggle: 'setting/general/vibrate',
+          toggle: 'setting.general.vibrate',
         },
         {
           text: 'Blink light',
-          toggle: 'setting/general/blink-light',
-          toggleDefault: true,
+          toggle: 'setting.general.blink-light',
         },
       ],
     }
