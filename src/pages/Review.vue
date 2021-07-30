@@ -29,7 +29,7 @@
       <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
       <div id="review-container" class="flex-grow p-3 relative">
-        <ReviewDebug v-if="debug" :card="card" :note="note" :deck="deck" />
+        <ReviewDebug v-if="debug" :card="card" :deck="deck" />
 
         <ReviewContainer :show-answer="showAnswer" :card="card" />
       </div>
@@ -128,28 +128,8 @@ export default {
         .offset(randPage)
         .limit(5)
         .first()
-      await this.loadNote()
 
       console.log(this.card)
-    },
-
-    async loadNote() {
-      if (this.card) {
-        this.note = await this.card.note
-      }
-    },
-
-    getFields() {
-      if (!this.note) {
-        return []
-      }
-
-      return this.note.flds.split('\u001f')
-    },
-
-    async loadCard(cardId) {
-      this.card = await wankidb.cards.get({ id: cardId })
-      await this.loadNote()
     },
 
     onClickOptions(item) {
