@@ -83,21 +83,28 @@ export default {
     },
   },
 
-  mounted() {
-    setInterval(() => {
-      this.setIFrameHeight()
-    }, 500)
-  },
-
   methods: {
     setIFrameHeight(reset = false) {
-      const iframe = document.querySelector('iframe')
       if (reset) {
-        iframe.height = '0'
+        this.setIframeHeight(0)
       }
       this.$nextTick(() => {
-        iframe.height = '' + iframe.contentWindow.document.body.scrollHeight
+        this.setIframeHeight()
       })
+
+      setInterval(() => {
+        this.setIframeHeight()
+      }, 200)
+    },
+
+    setIframeHeight(height) {
+      const iframe = document.querySelector('iframe')
+      iframe.height = '' + (height ?? this.getIframeHeight())
+    },
+
+    getIframeHeight() {
+      return document.querySelector('iframe').contentWindow.document.body
+        .scrollHeight
     },
 
     async mountNote() {
@@ -158,8 +165,15 @@ export default {
     },
 
     getMediaList(field) {
-      const media = getMediaFromNote(field)
-      return media
+      return getMediaFromNote(field)
+    },
+
+    preloadImage(url) {
+      const img = new Image()
+      img.src = url
+      img.onerror = function () {
+        return false
+      }
     },
 
     async replaceImages(field) {
@@ -170,6 +184,7 @@ export default {
           src = src.slice(5, -1)
           const media = await wankidb.media.get({ name: src })
           const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
+          this.preloadImage(url)
           return `src="${url}" onerror="this.src = '';this.onerror='';" `
         },
       )

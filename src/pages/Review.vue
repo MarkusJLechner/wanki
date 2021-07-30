@@ -35,6 +35,7 @@
       </div>
 
       <ButtonsReview
+        class="z-20"
         :show-rating="showAnswer"
         @show="onShow"
         @rating="onRating"
@@ -117,11 +118,16 @@ export default {
 
   methods: {
     async loadFirstCard() {
-      const allElement = await wankidb.cards
-        .where({ did: this.deckid })
-        .toArray()
+      const count = await wankidb.cards.where({ did: this.deckid }).count()
+      const pages = count / 5
+      const randPage = Math.floor(pages * Math.random())
+      console.log('load random', { count, pages, randPage })
 
-      this.card = allElement[~~(allElement.length * Math.random())]
+      this.card = await wankidb.cards
+        .where({ did: this.deckid })
+        .offset(randPage)
+        .limit(5)
+        .first()
       await this.loadNote()
 
       console.log(this.card)
@@ -156,7 +162,6 @@ export default {
 
     async onRating(ease) {
       this.timer.reset()
-      this.showAnswer = false
 
       if (!this.card) {
         return
@@ -164,6 +169,8 @@ export default {
       try {
         await answerCard(this.card, ease)
         await this.loadFirstCard()
+
+        this.showAnswer = false
       } catch (e) {
         console.error(e)
       }
