@@ -156,6 +156,10 @@ export class Card extends BaseTable {
     return wankidb.notes.get({ id: this.nid })
   }
 
+  get deck() {
+    return wankidb.decks.get({ id: this.did })
+  }
+
   get model() {
     return (async () => {
       const note = await this.note
@@ -166,15 +170,19 @@ export class Card extends BaseTable {
   get template() {
     return (async () => {
       const model = await this.model
-      return model.tmpls[this.ord]
+      return model?.tmpls[this.ord]
     })()
   }
 
   get fields() {
     return (async () => {
       const model = await this.model
-      const noteFields = (await this.note).flds.split('\u001f')
-      return model.flds.map((modelFields, index) => {
+      const note = await this.note
+      if (!note) {
+        return []
+      }
+      const noteFields = note.flds.split('\u001f')
+      return model?.flds.map((modelFields, index) => {
         return {
           ...modelFields,
           fieldValue: noteFields[index],

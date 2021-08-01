@@ -1,9 +1,9 @@
 <template>
-  <div v-if="blobFile">
+  <div v-if="blobFile" class="w-full">
     <div v-if="!isAudio">
-      <img alt="image" :src="blobFile" class="w-52" />
+      <img loading="lazy" alt="image" :src="blobFile" class="w-52" />
     </div>
-    <div v-else>
+    <div v-else class="w-full">
       <audio
         ref="audio"
         class="w-full"

@@ -1,6 +1,6 @@
 <template>
   <div class="h-full w-full left-0 top-0 absolute z-10">
-    <div class="fixed bottom-28 right-4 w-full">
+    <div class="fixed bottom-28 px-4 w-full">
       <ReviewMedia :media-list="computedSoundList" />
     </div>
   </div>
@@ -63,13 +63,37 @@ export default {
     },
 
     computedStyle() {
-      return `<style>
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0;  }
-        body img { max-width: 100%; }
+      return /* language=css */ `
+        html, body {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          padding-bottom: 100px;
+        }
+        body img {
+          max-width: 100%;
+          width: 100%;
+          max-height: 370px;
+          object-fit: contain;
+        }
+        hr {
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 6px;
+          border-color: #20202052;
+        }
+        hr .dark {
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 6px;
+          border-color: #ffffff52;
+        }
         .card { background-color: inherit !important; }
         .dark .card { color: white; }
         ${this.cardStyle}
-      </style>`
+      `
     },
   },
 
@@ -92,18 +116,18 @@ export default {
         this.setIframeHeight()
       })
 
-      setInterval(() => {
+      setTimeout(() => {
         this.setIframeHeight()
-      }, 200)
+      }, 500)
     },
 
-    setIframeHeight(height) {
+    setIframeHeight(height = undefined) {
       const iframe = document.querySelector('iframe')
-      iframe.height = '' + (height ?? this.getIframeHeight())
+      iframe.height = '' + (height ?? this.getIframeHeight()) || '100%'
     },
 
     getIframeHeight() {
-      return document.querySelector('iframe').contentWindow.document.body
+      return document.querySelector('iframe')?.contentWindow.document.body
         .scrollHeight
     },
 
@@ -140,6 +164,21 @@ export default {
       templateString = templateString.replaceAll(/({{type:[^}]+}})/gm, '')
       // remove all special tags, like furigana: kanji: etc
       templateString = templateString.replaceAll(/{{[^:}]+:([^}]+}})/gm, '{{$1')
+
+      console.log('before', templateString)
+
+      templateString = templateString.replaceAll(
+        /{{#(?<type>[^}]+)}}\s?(?<content>[\S\s]+?){{\/(\1)}}/gm,
+        (match, type, content) => {
+          const hasEmptyField = fields.some(
+            (field) => type === field.name && field.fieldValue === '',
+          )
+          return hasEmptyField ? '' : content
+        },
+      )
+
+      console.log('after', templateString)
+
       const regex = /{{(?<field>.*?)}}/gm
       let m
       let matches = []
@@ -184,8 +223,9 @@ export default {
           src = src.slice(5, -1)
           const media = await wankidb.media.get({ name: src })
           const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
+          console.log('url src', url)
           this.preloadImage(url)
-          return `src="${url}" onerror="this.src = '';this.onerror='';" `
+          return `loading="lazy" src="${url}" onerror="this.src = '';this.onerror='';" `
         },
       )
 

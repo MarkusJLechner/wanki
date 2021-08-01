@@ -91,6 +91,12 @@ export class Note extends BaseTable {
   }
 
   get model() {
-    return wankidb.models.get({ id: this.mid })
+    return (async () => {
+      let model = await wankidb.models.get({ id: this.mid })
+      if (!model) {
+        model = await wankidb.models.get({ id: '' + this.mid })
+      }
+      return model
+    })()
   }
 }
