@@ -77,18 +77,10 @@ Simply pull the repository and run
 ````bash
 npm install
 ````
-or
-````bash
-yarn install
-````
 
 After installed, run
 ````bash
 npm run dev
-````
-or
-````bash
-yarn dev
 ````
 and go to `http://localhost:3000`
 

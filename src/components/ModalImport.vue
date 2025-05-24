@@ -45,7 +45,8 @@
   </BaseModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/BaseModal.vue'
 import {
   addTask,
@@ -59,178 +60,184 @@ import { importDeck, persist } from '@/plugins/idb.js'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 
-let decompressedFile = null
+interface Progress {
+  label: string;
+  value: number;
+  total: number;
+  tasks: string[];
+}
 
-export default {
-  components: { ProgressBar, LoadingIcon, InputFile, BaseModal },
+interface State {
+  init: string;
+  loading: string;
+  loaded: string;
+  imported: string;
+  notFound: string;
+  error: string;
+}
 
-  props: {
-    accept: {
-      type: String,
-      default: '.apkg',
-    },
+interface Props {
+  accept?: string;
+  modelValue?: boolean;
+}
 
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-  },
+const props = withDefaults(defineProps<Props>(), {
+  accept: '.apkg',
+  modelValue: false
+})
 
-  emits: ['close', 'update:model-value'],
+const emit = defineEmits<{
+  (e: 'close'): void;
+  (e: 'update:model-value', value: boolean): void;
+}>()
 
-  data() {
-    return {
-      progress: {
-        label: 'In Progress',
-        value: 0,
-        total: 0,
-        tasks: [],
-      },
-      error: null,
-      loadingOnImport: false,
-      state: {
-        init: 'init',
-        loading: 'loading',
-        loaded: 'loaded',
-        imported: 'imported',
-        notFound: 'notFound',
-        error: 'error',
-      },
-      currentState: 'init',
-      loaded: {},
-      renderingFiles: [],
+let decompressedFile: any = null
+
+const progress = ref<Progress>({
+  label: 'In Progress',
+  value: 0,
+  total: 0,
+  tasks: [],
+})
+
+const error = ref<string | null>(null)
+const loadingOnImport = ref(false)
+const state: State = {
+  init: 'init',
+  loading: 'loading',
+  loaded: 'loaded',
+  imported: 'imported',
+  notFound: 'notFound',
+  error: 'error',
+}
+const currentState = ref('init')
+const loaded = ref({})
+const renderingFiles = ref<Array<any>>([])
+const files = ref<Array<any>>([])
+
+const canClose = computed((): boolean => {
+  return currentState.value === state.init
+})
+
+const cancelText = computed((): string => {
+  return canClose.value ? 'Close' : 'Do in Background'
+})
+
+const getStateText = computed((): string => {
+  switch (currentState.value) {
+    case state.init:
+      return 'Select .apkg file...'
+    case state.loaded:
+      return 'Successfully parsed file'
+    case state.loading:
+      return 'Parsing file...'
+    case state.imported:
+      return 'Imported'
+    case state.notFound:
+      return 'Not valid file, missing the anki data'
+    case state.error:
+      return 'Error while reading .apkg file. Click to select another file'
+    default:
+      return 'Unknown state'
+  }
+})
+
+watch(() => props.modelValue, (newValue) => {
+  if (newValue) {
+    currentState.value = state.init
+    error.value = null
+    files.value = []
+    renderingFiles.value = []
+    decompressedFile = null
+    progress.value = {
+      label: 'In Progress',
+      value: 0,
+      total: 0,
+      tasks: [],
     }
-  },
+  }
+})
 
-  computed: {
-    cancelText() {
-      return this.canClose ? 'Close' : 'Do in Background'
-    },
+function onClose(): void {
+  console.log('close')
+  emit('close')
+}
 
-    canClose() {
-      return this.currentState === this.state.init
-    },
+async function onInitImport(importFiles: any[]): Promise<void> {
+  loadingOnImport.value = true
+  error.value = null
+  files.value = []
+  renderingFiles.value = []
+  currentState.value = state.init
 
-    getStateText() {
-      switch (this.currentState) {
-        case this.state.init:
-          return 'Select .apkg file...'
-        case this.state.loaded:
-          return 'Successfully parsed file'
-        case this.state.loading:
-          return 'Parsing file...'
-        case this.state.imported:
-          return 'Imported'
-        case this.state.notFound:
-          return 'Not valid file, missing the anki data'
-        case this.state.error:
-          return 'Error while reading .apkg file. Click to select another file'
-        default:
-          return 'Unknown state'
-      }
-    },
-  },
+  try {
+    currentState.value = state.loading
 
-  watch: {
-    modelValue(newValue) {
-      if (newValue) {
-        this.currentState = this.state.init
-        this.error = null
-        this.files = []
-        this.renderingFiles = []
-        decompressedFile = null
-        this.progress = {
-          value: 0,
-          total: 0,
-          tasks: [],
-        }
-      }
-    },
-  },
+    const taskId = addTask({
+      id: 'import-progress',
+      text: 'Import in progress',
+      color: 'yellow',
+      loading: true,
+    })
 
-  methods: {
-    onClose() {
-      console.log('close')
-      this.$emit('close')
-    },
+    progress.value.label = 'Open file'
+    progress.value.tasks = ['Move to memory']
+    progress.value.total = 1
 
-    async onInitImport(files) {
-      this.loadingOnImport = true
-      this.error = null
-      this.files = []
-      this.renderingFiles = []
-      this.currentState = this.state.init
+    const file = importFiles.length ? importFiles[0] : await promptFile(props.accept)
 
-      try {
-        this.currentState = this.state.loading
+    progress.value.label = 'Decompressing'
+    const { promise, worker } = decompressFile(file)
+    const workListener = (event: MessageEvent) => {
+      console.log(event.data[0])
+      progress.value.value = 3 - event.data[0].length
+      progress.value.total = 3
+      progress.value.tasks = event.data[0]
+    }
+    worker.addEventListener('message', workListener)
+    decompressedFile = await promise
+    worker.removeEventListener('message', workListener)
 
-        const taskId = addTask({
-          id: 'import-progress',
-          text: 'Import in progress',
-          color: 'yellow',
-          loading: true,
-        })
+    onImport(taskId)
+  } catch (e: any) {
+    currentState.value = state.error
+    console.error(e)
+    error.value = e.message
+  }
+}
 
-        this.progress.label = 'Open file'
-        this.progress.tasks = ['Move to memory']
-        this.progress.total = 1
+async function onImport(taskId: string): Promise<void> {
+  if (!decompressedFile) {
+    return
+  }
 
-        const file = files.length ? files[0] : await promptFile(this.accept)
+  await persist()
 
-        this.progress.label = 'Decompressing'
-        const { promise, worker } = decompressFile(file)
-        const workListener = (event) => {
-          console.log(event.data[0])
-          this.progress.value = 3 - event.data[0].length
-          this.progress.total = 3
-          this.progress.tasks = event.data[0]
-        }
-        worker.addEventListener('message', workListener)
-        decompressedFile = await promise
-        worker.removeEventListener('message', workListener)
+  progress.value.label = 'Importing'
+  progress.value.tasks = ['Prepare import...']
+  const progressObj = await importDeck(decompressedFile)
+  await promiseProgress(progressObj, ({ percent, total, value, payload }: any) => {
+    progress.value.value = value
+    progress.value.total = total
+    if (payload) {
+      progress.value.tasks = Object.entries(payload)
+        .filter((e) => !e[1])
+        .map((e) => e[0])
+    }
+  }).then(() => {
+    console.log('complete')
+  })
 
-        this.onImport(taskId)
-      } catch (e) {
-        this.currentState = this.state.error
-        console.error(e)
-        this.error = e.message
-      }
-    },
+  finishTask(taskId)
 
-    async onImport(taskId) {
-      if (!decompressedFile) {
-        return
-      }
+  loadingOnImport.value = false
 
-      await persist()
+  decompressedFile = null
 
-      this.progress.label = 'Importing'
-      this.progress.tasks = ['Prepare import...']
-      const progress = await importDeck(decompressedFile)
-      await promiseProgress(progress, ({ percent, total, value, payload }) => {
-        this.progress.value = value
-        this.progress.total = total
-        if (payload) {
-          this.progress.tasks = Object.entries(payload)
-            .filter((e) => !e[1])
-            .map((e) => e[0])
-        }
-      }).then(() => {
-        console.log('complete')
-      })
+  onClose()
 
-      finishTask(taskId)
+  document.dispatchEvent(new Event('page/overview/update'))
 
-      this.loadingOnImport = false
-
-      decompressedFile = null
-
-      this.onClose()
-
-      document.dispatchEvent(new Event('page/overview/update'))
-
-      this.currentState = this.state.init
-    },
-  },
+  currentState.value = state.init
 }
 </script>

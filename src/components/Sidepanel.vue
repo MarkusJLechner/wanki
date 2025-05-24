@@ -42,130 +42,137 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, onActivated } from 'vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import List from '@/components/List.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
-export default {
-  components: {
-    List,
-    ButtonIcon,
-  },
-
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-  },
-
-  data() {
-    return {
-      slideXPosition: 52,
-      show: false,
-      touch: {
-        threshold: 50,
-        screenWidth: 0,
-        screenHeight: 0,
-        init: false,
-        onSlide: false,
-        initSlideClientX: 0,
-        initSlideClientY: 0,
-        initClientX: 0,
-        initClientY: 0,
-        clientX: 0,
-        clientY: 0,
-        distanceX: 0,
-        distanceY: 0,
-      },
-    }
-  },
-
-  mounted() {
-    document.addEventListener('touchstart', this.onTouchdown)
-    document.addEventListener('touchmove', this.onTouchmove)
-
-    onBeforeRouteLeave(() => {
-      if (this.show) {
-        this.onClose()
-        return false
-      }
-
-      return true
-    })
-  },
-
-  activated() {
-    this.onClose()
-  },
-
-  unmounted() {
-    document.removeEventListener('touchstart', this.onTouchdown)
-    document.removeEventListener('touchmove', this.onTouchmove)
-  },
-
-  methods: {
-    onTouchmove(event) {
-      if (!this.touch.init || this.show) {
-        return
-      }
-      const { clientX, clientY } = this.getClientPos(event)
-      this.touch.clientX = clientX
-      this.touch.clientY = clientY
-      this.touch.distanceX = Math.abs(this.touch.initClientX - clientX)
-      this.touch.distanceY = Math.abs(this.touch.initClientY - clientY)
-
-      if (this.touch.distanceX > this.touch.threshold) {
-        this.onOpen()
-        this.touch.init = false
-      }
-    },
-
-    getClientPos(event) {
-      let { clientX, clientY } = event.touches[0]
-      clientX = Math.floor(clientX)
-      clientY = Math.floor(clientY)
-      return { clientX, clientY }
-    },
-
-    onTouchdown(event) {
-      if (this.show) {
-        return
-      }
-      const { clientX, clientY } = this.getClientPos(event)
-      this.touch.init = clientX < this.slideXPosition
-      const { width: screenWidth, height: screenHeight } = window.screen
-
-      this.touch.initClientX = clientX
-      this.touch.initClientY = clientY
-      this.touch.screenWidth = screenWidth
-      this.touch.screenHeight = screenHeight
-    },
-
-    toggle() {
-      if (this.show) {
-        this.onClose()
-      } else {
-        this.onOpen()
-      }
-    },
-
-    onOpen() {
-      this.show = true
-    },
-
-    onClick(item) {
-      if (!item.doNotClose) {
-        this.onClose()
-      }
-    },
-
-    onClose() {
-      this.show = false
-    },
-  },
+interface TouchState {
+  threshold: number
+  screenWidth: number
+  screenHeight: number
+  init: boolean
+  onSlide: boolean
+  initSlideClientX: number
+  initSlideClientY: number
+  initClientX: number
+  initClientY: number
+  clientX: number
+  clientY: number
+  distanceX: number
+  distanceY: number
 }
+
+interface Props {
+  items?: any[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => []
+})
+
+const slideXPosition = ref(52)
+const show = ref(false)
+const slide = ref<HTMLElement | null>(null)
+
+const touch = ref<TouchState>({
+  threshold: 50,
+  screenWidth: 0,
+  screenHeight: 0,
+  init: false,
+  onSlide: false,
+  initSlideClientX: 0,
+  initSlideClientY: 0,
+  initClientX: 0,
+  initClientY: 0,
+  clientX: 0,
+  clientY: 0,
+  distanceX: 0,
+  distanceY: 0
+})
+
+const onTouchmove = (event: TouchEvent) => {
+  if (!touch.value.init || show.value) {
+    return
+  }
+  const { clientX, clientY } = getClientPos(event)
+  touch.value.clientX = clientX
+  touch.value.clientY = clientY
+  touch.value.distanceX = Math.abs(touch.value.initClientX - clientX)
+  touch.value.distanceY = Math.abs(touch.value.initClientY - clientY)
+
+  if (touch.value.distanceX > touch.value.threshold) {
+    onOpen()
+    touch.value.init = false
+  }
+}
+
+const getClientPos = (event: TouchEvent) => {
+  let { clientX, clientY } = event.touches[0]
+  clientX = Math.floor(clientX)
+  clientY = Math.floor(clientY)
+  return { clientX, clientY }
+}
+
+const onTouchdown = (event: TouchEvent) => {
+  if (show.value) {
+    return
+  }
+  const { clientX, clientY } = getClientPos(event)
+  touch.value.init = clientX < slideXPosition.value
+  const { width: screenWidth, height: screenHeight } = window.screen
+
+  touch.value.initClientX = clientX
+  touch.value.initClientY = clientY
+  touch.value.screenWidth = screenWidth
+  touch.value.screenHeight = screenHeight
+}
+
+const toggle = () => {
+  if (show.value) {
+    onClose()
+  } else {
+    onOpen()
+  }
+}
+
+const onOpen = () => {
+  show.value = true
+}
+
+const onClick = (item: any) => {
+  if (!item.doNotClose) {
+    onClose()
+  }
+}
+
+const onClose = () => {
+  show.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('touchstart', onTouchdown)
+  document.addEventListener('touchmove', onTouchmove)
+
+  onBeforeRouteLeave(() => {
+    if (show.value) {
+      onClose()
+      return false
+    }
+
+    return true
+  })
+})
+
+onActivated(() => {
+  onClose()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('touchstart', onTouchdown)
+  document.removeEventListener('touchmove', onTouchmove)
+})
 </script>
 
 <style scoped>

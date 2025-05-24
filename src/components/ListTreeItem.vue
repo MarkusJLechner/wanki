@@ -53,71 +53,46 @@
   </transition>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import ListLi from '@/components/ListLi.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ListHr from '@/components/ListHr.vue'
-export default {
-  name: 'ListTreeItem',
-  components: { ListHr, ButtonIcon, ListLi },
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
 
-    itemTextKey: {
-      type: String,
-      default: 'text',
-    },
+interface Props {
+  item: Record<string, any>;
+  itemTextKey?: string;
+  level?: number;
+  noGutters?: boolean;
+  dense?: boolean;
+  noSeparation?: boolean;
+  root?: boolean;
+}
 
-    level: {
-      type: Number,
-      default: 0,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  itemTextKey: 'text',
+  level: 0,
+  noGutters: false,
+  dense: false,
+  noSeparation: false,
+  root: false
+})
 
-    noGutters: {
-      type: Boolean,
-      default: false,
-    },
+defineEmits<{
+  (e: 'item', item: Record<string, any>): void;
+  (e: 'long-press', item: Record<string, any>): void;
+}>()
 
-    dense: {
-      type: Boolean,
-      default: false,
-    },
+const isOpen = ref(props.root)
 
-    noSeparation: {
-      type: Boolean,
-      default: false,
-    },
+const isFolder = computed((): boolean => {
+  return !!props.item?.children && !!props.item.children?.length
+})
 
-    root: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
-  emits: ['item', 'long-press'],
-
-  data() {
-    return {
-      isOpen: this.root,
-    }
-  },
-
-  computed: {
-    isFolder() {
-      return !!this.item?.children && !!this.item.children?.length
-    },
-  },
-
-  methods: {
-    toggle() {
-      if (this.isFolder) {
-        this.isOpen = !this.isOpen
-      }
-    },
-  },
+function toggle(): void {
+  if (isFolder.value) {
+    isOpen.value = !isOpen.value
+  }
 }
 </script>
 

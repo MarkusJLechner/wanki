@@ -2,42 +2,32 @@
   <slot :result="result" :catch="error" :loading="loading" />
 </template>
 
-<script>
-export default {
-  name: 'Promise',
+<script setup lang="ts">
+import { ref, watch } from 'vue'
 
-  props: {
-    promise: {
-      type: Promise,
-      default: null,
-    },
-  },
-
-  data() {
-    return {
-      result: null,
-      error: null,
-      loading: false,
-    }
-  },
-
-  watch: {
-    promise: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue) {
-          this.loading = true
-          newValue
-            .then((result) => (this.result = result))
-            .catch((error) => (this.error = error))
-            .finally(() => (this.loading = false))
-        } else {
-          this.result = null
-          this.error = null
-          this.loading = false
-        }
-      },
-    },
-  },
+interface Props {
+  promise?: Promise<any> | null;
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  promise: null
+})
+
+const result = ref<any>(null)
+const error = ref<any>(null)
+const loading = ref(false)
+
+watch(() => props.promise, (newValue) => {
+  if (newValue) {
+    loading.value = true
+    newValue
+      .then((res) => (result.value = res))
+      .catch((err) => (error.value = err))
+      .finally(() => (loading.value = false))
+  } else {
+    result.value = null
+    error.value = null
+    loading.value = false
+  }
+}, { immediate: true })
 </script>

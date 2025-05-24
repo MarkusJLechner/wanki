@@ -12,8 +12,6 @@
   />
 </template>
 
-<script>
-export default {
-  name: 'ListHr',
-}
+<script setup lang="ts">
+// No props or functionality needed
 </script>

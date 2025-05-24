@@ -79,157 +79,127 @@
   />
 </template>
 
-<script>
-import { defineAsyncComponent } from 'vue'
+<script setup lang="ts">
+import { defineAsyncComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
+
 const ModalRadio = defineAsyncComponent(() =>
   import('@/components/ModalRadio.vue'),
 )
 
-export default {
-  name: 'ListLi',
+interface Props {
+  item: Record<string, any>;
+  noGutters?: boolean;
+  dense?: boolean;
+  noSeparation?: boolean;
+  render?: boolean;
+  itemTextKey?: string;
+  noRipple?: boolean;
+  isLoading?: boolean;
+}
 
-  components: {
-    ListHr,
-    InputBoolean,
-    ModalRadio,
-  },
+const props = withDefaults(defineProps<Props>(), {
+  item: () => ({}),
+  noGutters: false,
+  dense: false,
+  noSeparation: false,
+  render: true,
+  itemTextKey: 'text',
+  noRipple: false,
+  isLoading: false
+})
 
-  props: {
-    item: {
-      type: Object,
-      default: () => {},
-    },
+const emit = defineEmits<{
+  (e: 'item', item: Record<string, any>): void;
+  (e: 'long-press', item: Record<string, any>): void;
+}>()
 
-    noGutters: {
-      type: Boolean,
-      default: false,
-    },
+const router = useRouter()
+const radio = ref<Record<string, any> | null>(null)
 
-    dense: {
-      type: Boolean,
-      default: false,
-    },
+function isAnyLoading(): string | null {
+  return props.isLoading ? 'click' : null
+}
 
-    noSeparation: {
-      type: Boolean,
-      default: false,
-    },
+function onLongPress(item: Record<string, any>): void {
+  if (isAnyLoading()) {
+    return
+  }
 
-    render: {
-      type: Boolean,
-      default: true,
-    },
+  emit('long-press', item)
+}
 
-    itemTextKey: {
-      type: String,
-      default: 'text',
-    },
+function getIcon(item: Record<string, any>): any {
+  return callFn(item, 'icon')
+}
 
-    noRipple: {
-      type: Boolean,
-      default: false,
-    },
+function getText(item: Record<string, any>): any {
+  return callFn(item, props.itemTextKey)
+}
 
-    isLoading: {
-      type: Boolean,
-      default: false,
-    },
-  },
+function getSubText(item: Record<string, any>): any {
+  if (item.radio && item.radio.key) {
+    const key = refstorage.get(item.radio.key, item.radio.default)
+    return item.radio.items.find((item: Record<string, any>) => item.value === key)?.text
+  }
 
-  emits: ['item', 'long-press'],
+  return callFn(item, 'subtext')
+}
 
-  data() {
-    return {
-      radio: null,
-    }
-  },
+function getBoolean(item: Record<string, any>): boolean {
+  if (item.toggle) {
+    return !!refstorage.get(item.toggle, !!item.toggleDefault)
+  }
 
-  methods: {
-    isAnyLoading() {
-      return this.isLoading ? 'click' : null
-    },
+  return callFn(item, 'boolean')
+}
 
-    onLongPress(item) {
-      if (this.isAnyLoading()) {
-        return
-      }
+function hasBoolean(item: Record<string, any>): boolean {
+  if (item.toggle) {
+    return true
+  }
 
-      this.$emit('long-press', item)
-    },
+  return (
+    typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
+  )
+}
 
-    getIcon(item) {
-      return this.callFn(item, 'icon')
-    },
+function callFn(item: Record<string, any>, key: string): any {
+  if (typeof item[key] === 'function') {
+    return item[key]()
+  }
+  return item[key]
+}
 
-    getText(item) {
-      return this.callFn(item, this.itemTextKey)
-    },
+function onClick(item: Record<string, any>): void {
+  if (isAnyLoading()) {
+    return
+  }
 
-    getSubText(item) {
-      if (item.radio && item.radio.key) {
-        const key = refstorage.get(item.radio.key, item.radio.default)
-        return item.radio.items.find((item) => item.value === key)?.text
-      }
+  emit('item', item)
 
-      return this.callFn(item, 'subtext')
-    },
+  if (item.radio) {
+    radio.value = item.radio
+  }
 
-    getBoolean(item) {
-      if (item.toggle) {
-        return !!refstorage.get(item.toggle, !!item.toggleDefault)
-      }
+  if (item.toggle) {
+    refstorage.toggle(item.toggle)
+  }
 
-      return this.callFn(item, 'boolean')
-    },
+  if (item.click) {
+    item.click(item)
+  }
 
-    hasBoolean(item) {
-      if (item.toggle) {
-        return true
-      }
+  if (item.route) {
+    router.push({ path: item.route })
+  }
 
-      return (
-        typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
-      )
-    },
-
-    callFn(item, key) {
-      if (typeof item[key] === 'function') {
-        return item[key]()
-      }
-      return item[key]
-    },
-
-    onClick(item) {
-      if (this.isAnyLoading()) {
-        return
-      }
-
-      this.$emit('item', item)
-
-      if (item.radio) {
-        this.radio = item.radio
-      }
-
-      if (item.toggle) {
-        refstorage.toggle(item.toggle)
-      }
-
-      if (item.click) {
-        item.click(item)
-      }
-
-      if (item.route) {
-        this.$router.push({ path: item.route })
-      }
-
-      if (item.dispatch) {
-        item.dispatch(item)
-      }
-    },
-  },
+  if (item.dispatch) {
+    item.dispatch(item)
+  }
 }
 </script>
 

@@ -81,65 +81,49 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
-export default {
-  name: 'ProgressBar',
-  components: { LoadingIcon },
-  props: {
-    label: {
-      type: String,
-      default: 'In Progress',
-    },
 
-    value: {
-      type: Number,
-      default: 0,
-    },
+type ColorType = 'red' | 'pink' | 'yellow' | 'green'
 
-    tasks: {
-      type: Array,
-      default: () => [],
-    },
-
-    color: {
-      type: String,
-      default: 'yellow',
-      validator(value) {
-        return ['red', 'pink', 'yellow', 'green'].indexOf(value) !== -1
-      },
-    },
-
-    total: {
-      type: Number,
-      default: 10,
-    },
-  },
-
-  computed: {
-    computedColor() {
-      if (!this.inProgress) {
-        return 'green'
-      }
-      return this.color
-    },
-
-    inProgress() {
-      return this.progress < 100
-    },
-
-    progress() {
-      if (this.total === 0) {
-        return 0
-      }
-      let progress = Math.round((this.value / this.total) * 100)
-      if (Number.isNaN(this.value / this.total)) {
-        progress = 0
-      }
-      return progress
-    },
-  },
+interface Props {
+  label?: string;
+  value?: number;
+  tasks?: string[];
+  color?: ColorType;
+  total?: number;
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  label: 'In Progress',
+  value: 0,
+  tasks: () => [],
+  color: 'yellow',
+  total: 10
+})
+
+const progress = computed((): number => {
+  if (props.total === 0) {
+    return 0
+  }
+  let progressValue = Math.round((props.value / props.total) * 100)
+  if (Number.isNaN(props.value / props.total)) {
+    progressValue = 0
+  }
+  return progressValue
+})
+
+const inProgress = computed((): boolean => {
+  return progress.value < 100
+})
+
+const computedColor = computed((): ColorType => {
+  if (!inProgress.value) {
+    return 'green'
+  }
+  return props.color as ColorType
+})
 </script>
 
 <style scoped></style>

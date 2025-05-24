@@ -19,44 +19,29 @@
   </ul>
 </template>
 
-<script>
-import List from '@/components/List.vue'
+<script setup lang="ts">
 import ListTreeItem from '@/components/ListTreeItem.vue'
 
-export default {
-  name: 'ListTree',
-
-  components: { ListTreeItem },
-
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => {},
-    },
-
-    itemTextKey: {
-      type: String,
-      default: 'text',
-    },
-
-    noGutters: {
-      type: Boolean,
-      default: false,
-    },
-
-    dense: {
-      type: Boolean,
-      default: false,
-    },
-
-    noSeparation: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
-  emits: ['item', 'long-press'],
+interface Props {
+  modelValue: Record<string, any>;
+  itemTextKey?: string;
+  noGutters?: boolean;
+  dense?: boolean;
+  noSeparation?: boolean;
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => ({}),
+  itemTextKey: 'text',
+  noGutters: false,
+  dense: false,
+  noSeparation: false
+})
+
+defineEmits<{
+  (e: 'item', item: Record<string, any>): void;
+  (e: 'long-press', item: Record<string, any>): void;
+}>()
 </script>
 
 <style scoped></style>

@@ -9,54 +9,47 @@
   </BaseModal>
 </template>
 
-<script>
+<script setup lang="ts">
 import BaseModal from '@/components/BaseModal.vue'
 
-export default {
-  name: 'ModalDelete',
+interface Action {
+  type?: string;
+  text?: string;
+  emit?: string;
+}
 
-  components: { BaseModal },
+interface Props {
+  modelValue?: boolean;
+  title?: string;
+  items?: Record<string, any> | null;
+  actions?: Action[];
+}
 
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  title: 'Delete',
+  items: null,
+  actions: () => [
+    {
+      type: 'spacer',
     },
-
-    title: {
-      type: String,
-      default: 'Delete',
+    {
+      text: 'Cancel',
+      emit: 'close',
     },
-
-    items: {
-      type: Object,
-      default: null,
+    {
+      text: 'Delete',
+      emit: 'confirm',
     },
+  ]
+})
 
-    actions: {
-      type: Array,
-      default: () => [
-        {
-          type: 'spacer',
-        },
-        {
-          text: 'Cancel',
-          emit: 'close',
-        },
-        {
-          text: 'Delete',
-          emit: 'confirm',
-        },
-      ],
-    },
-  },
+const emit = defineEmits<{
+  (e: 'item', item: Record<string, any>): void;
+  (e: 'close'): void;
+}>()
 
-  emits: ['item', 'close'],
-
-  methods: {
-    onClickItem(item) {
-      this.$emit('item', item)
-    },
-  },
+function onClickItem(item: Record<string, any>): void {
+  emit('item', item)
 }
 </script>
