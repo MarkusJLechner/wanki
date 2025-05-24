@@ -11,7 +11,14 @@ const parseType = (value, type) => {
     return +value
   }
   if (type === 'boolean') {
-    return !!JSON.parse(type)
+    if (typeof value === 'boolean') {
+      return value
+    }
+    try {
+      return !!JSON.parse(value)
+    } catch (e) {
+      return value === 'true'
+    }
   }
   return value
 }
