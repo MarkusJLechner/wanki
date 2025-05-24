@@ -61,7 +61,6 @@
             text-left
             overflow-hidden
             shadow-xl
-            transform
             p-1
             min-w-[20rem]
             transition-all

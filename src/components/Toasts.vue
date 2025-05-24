@@ -12,7 +12,7 @@
           py-2
           px-3
           shadow-md
-          backdrop-blur-sm
+          backdrop-blur-xs
           mb-2
         "
         :class="{

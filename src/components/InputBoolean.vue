@@ -23,7 +23,6 @@
           h-6
           rounded-full
           shadow-md
-          transform
           duration-200
           ease-in-out
         "

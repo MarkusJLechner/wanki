@@ -11,9 +11,9 @@
       :id="uid"
       :autofocus="autofocus"
       class="
-        shadow-sm
+        shadow-xs
         appearance-none
-        border
+        border border-gray-200
         rounded-sm
         w-full
         py-2
