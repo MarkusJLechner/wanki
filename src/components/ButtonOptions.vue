@@ -7,8 +7,8 @@
           fixed
           z-20
           inset-0
-          bg-gray-900 bg-opacity-50
-          backdrop-grayscale backdrop-filter
+          bg-gray-900/50
+          backdrop-grayscale
           transition-opacity
         "
         aria-hidden="true"

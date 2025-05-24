@@ -6,9 +6,9 @@
         fixed
         z-20
         inset-0
-        bg-gray-900 bg-opacity-50
+        bg-gray-900/50
         transition-opacity
-        backdrop-grayscale backdrop-filter
+        backdrop-grayscale
       "
       aria-hidden="true"
       @click.stop="onClose"

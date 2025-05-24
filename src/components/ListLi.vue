@@ -6,7 +6,7 @@
       select-none
       cursor-pointer
       relative
-      focus:outline-none focus:ring-2 focus:ring-blue-500
+      focus:outline-hidden focus:ring-2 focus:ring-blue-500
       flex
       w-full
       items-center

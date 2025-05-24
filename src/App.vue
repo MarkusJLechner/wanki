@@ -44,7 +44,7 @@ export default {
       }
     })
 
-    if (refstorage.get('darkTheme', false)) {
+    if (refstorage.get('darkTheme', true)) {
       document.querySelector('html').classList.add('dark')
     } else {
       document.querySelector('html').classList.remove('dark')
