@@ -12,14 +12,13 @@
           py-2
           px-3
           shadow-md
-          bg-opacity-70
           backdrop-filter backdrop-blur
           mb-2
         "
         :class="{
-          'bg-blue-500 border-blue-700': toast.type === 'info',
-          'bg-red-500 border-red-700': toast.type === 'error',
-          'bg-green-500 border-green-700': toast.type === 'success',
+          'bg-blue-500/70 border-blue-700': toast.type === 'info',
+          'bg-red-500/70 border-red-700': toast.type === 'error',
+          'bg-green-500/70 border-green-700': toast.type === 'success',
         }"
         @click="removeToast(index)"
       >

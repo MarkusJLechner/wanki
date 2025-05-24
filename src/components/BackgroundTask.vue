@@ -3,10 +3,9 @@
     v-if="tasks.length"
     class="
       backdrop-grayscale backdrop-filter
-      bg-gray-700
+      bg-gray-700/40
       text-sm
       pointer-events-none
-      bg-opacity-40
       fixed
       rounded-tl-lg
       z-30

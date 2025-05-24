@@ -8,7 +8,7 @@
         h-full
         left-0
         top-0
-        bg-gray-900 bg-opacity-50
+        bg-gray-900/50
         backdrop-grayscale backdrop-filter
       "
       @click="onClose()"

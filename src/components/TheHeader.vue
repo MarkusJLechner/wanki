@@ -52,7 +52,7 @@ export default {
         {
           component: shallowRef(SidepanelHeader),
           type: 'block',
-          class: 'w-full h-14 mb-2 bg-gray-300 dark:bg-gray-800 bg-opacity-40',
+          class: 'w-full h-14 mb-2 bg-gray-300/40 dark:bg-gray-800/40',
           route: '/',
         },
         { icon: 'fas fa-list', text: 'Decks', route: '/' },

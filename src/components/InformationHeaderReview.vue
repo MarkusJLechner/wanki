@@ -6,9 +6,8 @@
       sticky
       flex
       justify-between
-      dark:bg-gray-800
-      bg-gray-400 bg-opacity-20
-      dark:bg-opacity-50
+      dark:bg-gray-800/50
+      bg-gray-400/20
       px-3
       py-1
       text-sm

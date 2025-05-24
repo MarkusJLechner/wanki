@@ -6,7 +6,7 @@
       <div
         v-if="show"
         class="
-          bg-gray-900 bg-opacity-50
+          bg-gray-900/50
           z-20
           fixed
           w-full

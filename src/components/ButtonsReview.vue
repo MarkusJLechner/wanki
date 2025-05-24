@@ -6,9 +6,8 @@
       sticky
       bottom-0
       w-full
-      bg-opacity-50 bg-gray-500
+      bg-gray-500/50
       backdrop-filter backdrop-blur
-      bg-opacity-30
       review-height
     "
     :class="{
@@ -31,12 +30,12 @@
         :key="index"
         v-ripple
         role="button"
-        class="flex justify-center items-center text-white bg-opacity-50"
+        class="flex justify-center items-center text-white"
         :class="{
-          'bg-red-500': button.color === 'red',
-          'bg-gray-500': button.color === 'gray',
-          'bg-green-500': button.color === 'green',
-          'bg-blue-500': button.color === 'blue',
+          'bg-red-500/50': button.color === 'red',
+          'bg-gray-500/50': button.color === 'gray',
+          'bg-green-500/50': button.color === 'green',
+          'bg-blue-500/50': button.color === 'blue',
         }"
         @click="onClickRating(button.emit)"
       >
