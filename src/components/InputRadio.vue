@@ -27,55 +27,57 @@
   </List>
 </template>
 
-<script>
+<script setup lang="ts">
+import { watch, onMounted } from 'vue'
 import List from '@/components/List.vue'
 
-export default {
-  components: { List },
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-
-    value: {
-      type: String,
-      default: null,
-    },
-  },
-
-  watch: {
-    value() {
-      this.initValue()
-    },
-  },
-
-  mounted() {
-    this.initValue()
-  },
-
-  methods: {
-    initValue() {
-      const selected = this.items.findIndex((item) => item.value === this.value)
-      this.$emit(
-        'update:items',
-        this.items.map((item, index) => {
-          item.selected = index === selected
-          return item
-        }),
-      )
-    },
-
-    onClick(item) {
-      const selected = this.items.indexOf(item)
-      this.$emit(
-        'update:items',
-        this.items.map((item, index) => {
-          item.selected = index === selected
-          return item
-        }),
-      )
-    },
-  },
+interface Item {
+  value: string
+  selected?: boolean
+  [key: string]: any
 }
+
+interface Props {
+  items: Item[]
+  value?: string | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  value: null
+})
+
+const emit = defineEmits<{
+  (e: 'update:items', items: Item[]): void
+}>()
+
+const initValue = () => {
+  const selected = props.items.findIndex((item) => item.value === props.value)
+  emit(
+    'update:items',
+    props.items.map((item, index) => {
+      item.selected = index === selected
+      return item
+    }),
+  )
+}
+
+const onClick = (item: Item) => {
+  const selected = props.items.indexOf(item)
+  emit(
+    'update:items',
+    props.items.map((item, index) => {
+      item.selected = index === selected
+      return item
+    }),
+  )
+}
+
+watch(() => props.value, () => {
+  initValue()
+})
+
+onMounted(() => {
+  initValue()
+})
 </script>
