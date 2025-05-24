@@ -11,7 +11,7 @@
       px-3
       py-1
       text-sm
-      backdrop-filter backdrop-blur
+      backdrop-blur-sm
     "
   >
     <div class="flex">

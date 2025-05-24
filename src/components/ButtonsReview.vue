@@ -7,7 +7,7 @@
       bottom-0
       w-full
       bg-gray-500/50
-      backdrop-filter backdrop-blur
+      backdrop-blur-sm
       review-height
     "
     :class="{

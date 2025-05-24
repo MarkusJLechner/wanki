@@ -14,7 +14,7 @@
       bottom-32
       overflow-y-auto
       z-20
-      backdrop-blur
+      backdrop-blur-sm
     "
   >
     <div class="text-yellow-500">Deck ID: {{ deck.id }}</div>

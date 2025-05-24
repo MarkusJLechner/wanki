@@ -18,7 +18,7 @@
       dark:bg-gray-700
       items-center
       hover:bg-gray-50
-      focus:outline-none
+      focus:outline-hidden
       focus:ring-2 focus:ring-blue-500
     "
     style="min-height: 40px"

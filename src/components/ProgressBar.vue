@@ -38,7 +38,7 @@
       </div>
     </div>
     <div
-      class="overflow-hidden h-2 mb-1 text-xs flex rounded"
+      class="overflow-hidden h-2 mb-1 text-xs flex rounded-sm"
       :class="{
         'bg-yellow-200': computedColor === 'yellow',
         'bg-pink-200': computedColor === 'pink',
