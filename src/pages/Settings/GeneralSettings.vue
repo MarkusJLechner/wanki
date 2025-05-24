@@ -22,12 +22,12 @@
 </template>
 
 <script>
-import TheHeader from 'components/TheHeader.vue'
-import List from 'components/List.vue'
-import Group from 'components/Group.vue'
-import MainContent from 'components/MainContent.vue'
-import FlexSpacer from 'components/FlexSpacer.vue'
-import ThemeSwitcher from 'components/ThemeSwitcher.vue'
+import TheHeader from '@/components/TheHeader.vue'
+import List from '@/components/List.vue'
+import Group from '@/components/Group.vue'
+import MainContent from '@/components/MainContent.vue'
+import FlexSpacer from '@/components/FlexSpacer.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 
 export default {
   components: {

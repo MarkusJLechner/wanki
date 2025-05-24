@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import Spacer from 'components/Spacer.vue'
-import Button from 'components/Button.vue'
+import Spacer from '@/components/Spacer.vue'
+import Button from '@/components/Button.vue'
 
 export default {
   props: {

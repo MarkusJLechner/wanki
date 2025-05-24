@@ -1,4 +1,4 @@
-import { refstorage } from 'store/globalstate.js'
+import { refstorage } from '@/store/globalstate.js'
 import { defaultSettings } from './defaultSettings.js'
 
 export const vibrate = (pattern = 30) => {

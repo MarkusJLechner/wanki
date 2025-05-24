@@ -93,13 +93,13 @@
 </template>
 
 <script>
-import List from 'components/List.vue'
-import ModalImport from 'components/ModalImport.vue'
-import TheHeader from 'components/TheHeader.vue'
-import FlexSpacer from 'components/FlexSpacer.vue'
-import ThemeSwitcher from 'components/ThemeSwitcher.vue'
+import List from '@/components/List.vue'
+import ModalImport from '@/components/ModalImport.vue'
+import TheHeader from '@/components/TheHeader.vue'
+import FlexSpacer from '@/components/FlexSpacer.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import { idbDecks, saveDirtySql } from '@/plugins/idb.js'
-import ButtonOptions from 'components/ButtonOptions.vue'
+import ButtonOptions from '@/components/ButtonOptions.vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import NumberDue from '@/components/NumberDue.vue'
 import ModalOptions from '@/components/ModalOptions.vue'

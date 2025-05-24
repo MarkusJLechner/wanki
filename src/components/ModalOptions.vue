@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import BaseModal from 'components/BaseModal.vue'
-import List from 'components/List.vue'
+import BaseModal from '@/components/BaseModal.vue'
+import List from '@/components/List.vue'
 
 export default {
   components: { List, BaseModal },

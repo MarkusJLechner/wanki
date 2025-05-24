@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import ButtonIcon from 'components/ButtonIcon.vue'
-import List from 'components/List.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import List from '@/components/List.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export default {

@@ -45,9 +45,9 @@
 </template>
 
 <script>
-import TheHeader from 'components/TheHeader.vue'
-import FlexSpacer from 'components/FlexSpacer.vue'
-import ThemeSwitcher from 'components/ThemeSwitcher.vue'
+import TheHeader from '@/components/TheHeader.vue'
+import FlexSpacer from '@/components/FlexSpacer.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import ButtonOptions from '@/components/ButtonOptions.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ButtonsReview from '@/components/ButtonsReview.vue'

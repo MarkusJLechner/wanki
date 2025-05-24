@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import ButtonIcon from 'components/ButtonIcon.vue'
-import { refstorage } from 'store/globalstate'
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import { refstorage } from '@/store/globalstate'
 import { watch } from 'vue'
 
 export default {

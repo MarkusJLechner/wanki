@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import BaseModal from 'components/BaseModal.vue'
-import { refstorage } from 'store/globalstate.js'
+import BaseModal from '@/components/BaseModal.vue'
+import { refstorage } from '@/store/globalstate.js'
 import InputTextField from '@/components/InputTextField.vue'
 
 export default {

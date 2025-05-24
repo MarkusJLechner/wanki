@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const resolve = (dir) => {
+  return path.resolve(__dirname, dir)
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,13 +16,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      pages: resolve(__dirname, '/src/pages'),
-      components: resolve(__dirname, '/src/components'),
-      plugins: resolve(__dirname, '/src/plugins'),
-      router: resolve(__dirname, '/src/router'),
-      store: resolve(__dirname, '/src/store'),
-      assets: resolve(__dirname, '/src/assets'),
+      '@': resolve('./src'),
+      pages: resolve('./src/pages'),
+      components: resolve('./src/components'),
+      plugins: resolve('./src/plugins'),
+      router: resolve('./src/router'),
+      store: resolve('./src/store'),
+      assets: resolve('./src/assets'),
     },
   },
 

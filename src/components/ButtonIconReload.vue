@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ButtonIcon from 'components/ButtonIcon.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 
 export default {
   name: 'ButtonIconReload',

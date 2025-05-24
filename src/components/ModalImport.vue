@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import BaseModal from 'components/BaseModal.vue'
+import BaseModal from '@/components/BaseModal.vue'
 import {
   addTask,
   finishTask,

@@ -1,5 +1,5 @@
-System.config({
+export default {
   paths: {
     '@/*': './src/*',
   },
-})
+}

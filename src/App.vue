@@ -17,7 +17,7 @@
 
 <script>
 import { watch } from 'vue'
-import { clearToasts, refstorage } from './store/globalstate'
+import { clearToasts, refstorage } from '@/store/globalstate'
 import { persist } from '@/plugins/idb.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import BackgroundTask from '@/components/BackgroundTask.vue'

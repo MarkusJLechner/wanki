@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import TheHeader from 'components/TheHeader.vue'
-import FlexSpacer from 'components/FlexSpacer.vue'
-import ThemeSwitcher from 'components/ThemeSwitcher.vue'
-import List from 'components/List.vue'
-import MainContent from 'components/MainContent.vue'
+import TheHeader from '@/components/TheHeader.vue'
+import FlexSpacer from '@/components/FlexSpacer.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
+import List from '@/components/List.vue'
+import MainContent from '@/components/MainContent.vue'
 
 export default {
   components: { MainContent, List, ThemeSwitcher, FlexSpacer, TheHeader },

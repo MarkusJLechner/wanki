@@ -81,11 +81,11 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
-import InputBoolean from 'components/InputBoolean.vue'
-import { refstorage } from 'store/globalstate.js'
+import InputBoolean from '@/components/InputBoolean.vue'
+import { refstorage } from '@/store/globalstate.js'
 import ListHr from '@/components/ListHr.vue'
 const ModalRadio = defineAsyncComponent(() =>
-  import('components/ModalRadio.vue'),
+  import('@/components/ModalRadio.vue'),
 )
 
 export default {

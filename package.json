@@ -2,6 +2,7 @@
   "name": "wanki",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "esbuild:install": " node ./node_modules/esbuild/install.js",
     "dev": "vite",

@@ -8,7 +8,7 @@
 
 <script>
 import TheHeader from '@/components/TheHeader.vue'
-import List from 'components/List.vue'
+import List from '@/components/List.vue'
 
 export default {
   components: { List, TheHeader },
