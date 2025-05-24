@@ -112,6 +112,11 @@ export const addToast = ({ type, text, timeout = 3 }) => {
   }, timeout * 1000)
 }
 
+
+export const removeToast = (id) => {
+  toasts.value = toasts.value.filter((toast) => toast.id !== id)
+}
+
 export const clearToasts = () => {
   toasts.value = []
 }

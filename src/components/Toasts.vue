@@ -46,10 +46,11 @@
 </template>
 
 <script>
-import { toasts } from '@/store/globalstate.js'
+import { removeToast, toasts } from "@/store/globalstate.js"
 
 export default {
   name: 'Toasts',
+  methods: { removeToast },
 
   data() {
     return {
