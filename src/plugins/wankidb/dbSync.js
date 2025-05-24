@@ -1,7 +1,7 @@
 /*  WebSocketSyncProtocol
-    An implementation of ISyncProtocol that use a WebSocket to interact with a remote server and syncronize continously and immediately when
-    any change occur on any side.
-    This sample is compatible with the corresponing WebSocketSyncServer.js - a node.js server that syncs with RAM memory only, but does it in a waterproof
+    An implementation of ISyncProtocol that use a WebSocket to interact with a remote server and synchronize continuously and immediately when
+    any change occurs on any side.
+    This sample is compatible with the corresponding WebSocketSyncServer.js - a node.js server that syncs with RAM memory only, but does it in a waterproof
     way and handles conflicts correctly. WebSocketSyncServer.js can be used as a template for implementing a sync server against a real database engine (NOSQL
     or SQL) such as mysql, mongodb, etc.
 */

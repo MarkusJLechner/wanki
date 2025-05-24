@@ -208,7 +208,7 @@ async function SyncServer(port) {
               type: 'changes',
               changes: reducedArray,
               currentRevision,
-              partial: false, // Tell client that these are the only changes we are aware of. Since our mem DB is syncronous, we got all changes in one chunk.
+              partial: false, // Tell client that these are the only changes we are aware of. Since our mem DB is synchronous, we got all changes in one chunk.
             }),
           )
 
@@ -407,7 +407,7 @@ function reduceChanges(changes) {
           case DELETE:
             switch (nextChange.type) {
               case CREATE:
-                return nextChange // A resurection occurred. Only create change is of interest.
+                return nextChange // A resurrection occurred. Only create change is of interest.
               case UPDATE:
                 return prevChange // Nothing to do. We cannot update an object that doesnt exist. Leave the delete change there.
               case DELETE:
