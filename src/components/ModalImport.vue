@@ -52,7 +52,7 @@ import {
   finishTask,
   promiseProgress,
   promptFile,
-} from 'plugins/global.js'
+} from 'plugins/global'
 import { decompressFile } from '@/plugins/importer.js'
 import InputFile from '@/components/InputFile.vue'
 import { importDeck, persist } from '@/plugins/idb.js'

@@ -15,27 +15,70 @@
   </main>
 </template>
 
-<script>
-import { watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onBeforeMount, watch } from 'vue'
+import { useRouter, RouteLocationNormalized } from 'vue-router'
 import { clearToasts, refstorage } from '@/store/globalstate'
 import { persist } from '@/plugins/idb.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import BackgroundTask from '@/components/BackgroundTask.vue'
 import Toasts from '@/components/Toasts.vue'
 
-export default {
-  components: { Toasts, BackgroundTask },
-  data() {
-    return {
-      transitionName: 'fade',
+const router = useRouter()
+const transitionName = ref('fade')
+let prevHeight = ref('')
+
+// Initialize storage
+const initStorage = async () => {
+  await persist()
+}
+
+// Transition methods
+const beforeLeave = (element: HTMLElement) => {
+  prevHeight.value = getComputedStyle(element).height
+}
+
+const enter = (element: HTMLElement) => {
+  const { height } = getComputedStyle(element)
+
+  element.style.height = prevHeight.value
+
+  setTimeout(() => {
+    element.style.height = height
+  })
+}
+
+const afterEnter = (element: HTMLElement) => {
+  element.style.height = 'auto'
+}
+
+// Setup router navigation guards
+onBeforeMount(() => {
+  router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
+    let newTransitionName = to.meta.transitionName as string || from.meta.transitionName as string
+
+    const toDepth = to.path.split('/').length
+    const fromDepth = from.path.split('/').length
+    if (toDepth !== fromDepth) {
+      newTransitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
     }
-  },
 
-  mounted() {
-    this.initStorage()
-    window.wankidb = wankidb
+    transitionName.value = newTransitionName || 'fade'
 
-    let htmlClasses = document.querySelector('html').classList
+    clearToasts()
+
+    next()
+  })
+})
+
+// Setup on component mount
+onMounted(() => {
+  initStorage()
+  // @ts-ignore - Adding wankidb to window
+  window.wankidb = wankidb
+
+  const htmlClasses = document.querySelector('html')?.classList
+  if (htmlClasses) {
     watch(refstorage.ref('darkTheme'), (value) => {
       if (value) {
         htmlClasses.add('dark')
@@ -45,54 +88,12 @@ export default {
     })
 
     if (refstorage.get('darkTheme', true)) {
-      document.querySelector('html').classList.add('dark')
+      htmlClasses.add('dark')
     } else {
-      document.querySelector('html').classList.remove('dark')
+      htmlClasses.remove('dark')
     }
-  },
-
-  created() {
-    this.$router.beforeEach((to, from, next) => {
-      let transitionName = to.meta.transitionName || from.meta.transitionName
-
-      //if (transitionName === 'slide') {
-      const toDepth = to.path.split('/').length
-      const fromDepth = from.path.split('/').length
-      if (toDepth !== fromDepth) {
-        transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-      }
-      //}
-
-      this.transitionName = transitionName || 'fade'
-
-      clearToasts()
-
-      next()
-    })
-  },
-
-  methods: {
-    async initStorage() {
-      await persist()
-    },
-
-    beforeLeave(element) {
-      this.prevHeight = getComputedStyle(element).height
-    },
-    enter(element) {
-      const { height } = getComputedStyle(element)
-
-      element.style.height = this.prevHeight
-
-      setTimeout(() => {
-        element.style.height = height
-      })
-    },
-    afterEnter(element) {
-      element.style.height = 'auto'
-    },
-  },
-}
+  }
+})
 </script>
 
 <style scoped>

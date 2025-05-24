@@ -19,36 +19,30 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ButtonRound',
+<script setup lang="ts">
+import { computed } from 'vue'
 
-  props: {
-    small: {
-      type: Boolean,
-      default: false,
-    },
-
-    icon: {
-      type: String,
-      default: 'fas fa-plus',
-    },
-  },
-
-  computed: {
-    computedSize() {
-      if (this.small) {
-        return 'font-md'
-      }
-      return 'font-lg'
-    },
-
-    computedClass() {
-      if (this.small) {
-        return 'h-11 w-11 m-2'
-      }
-      return 'h-14 w-14 m-4'
-    },
-  },
+interface Props {
+  small?: boolean
+  icon?: string
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  small: false,
+  icon: 'fas fa-plus'
+})
+
+const computedSize = computed(() => {
+  if (props.small) {
+    return 'font-md'
+  }
+  return 'font-lg'
+})
+
+const computedClass = computed(() => {
+  if (props.small) {
+    return 'h-11 w-11 m-2'
+  }
+  return 'h-14 w-14 m-4'
+})
 </script>

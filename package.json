@@ -25,9 +25,13 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.27.1",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/compiler-sfc": "^3.5.14",
     "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^13.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
@@ -37,6 +41,7 @@
     "prettier": "^3.5.3",
     "stylelint": "^16.19.1",
     "stylelint-config-standard": "^38.0.0",
+    "typescript": "^5.4.5",
     "vite": "^6.3.5"
   }
 }

@@ -21,10 +21,10 @@
 </template>
 
 <script>
-import { refstorage } from '@/store/globalstate.js'
+import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 import ButtonIcon from '@/components/ButtonIcon.vue'
-import { getFileMimeType, sleep } from '@/plugins/global.js'
+import { getFileMimeType, sleep } from '@/plugins/global'
 
 export default {
   name: 'ReviewAudio',

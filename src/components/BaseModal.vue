@@ -96,7 +96,7 @@
 
 <script>
 import ButtonActions from '@/components/ButtonActions.vue'
-import { modalOpened } from '@/store/globalstate.js'
+import { modalOpened } from '@/store/globalstate'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export default {

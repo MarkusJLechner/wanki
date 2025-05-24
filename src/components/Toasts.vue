@@ -45,19 +45,8 @@
   </div>
 </template>
 
-<script>
-import { removeToast, toasts } from "@/store/globalstate.js"
-
-export default {
-  name: 'Toasts',
-  methods: { removeToast },
-
-  data() {
-    return {
-      toasts,
-    }
-  },
-}
+<script setup lang="ts">
+import { removeToast, toasts } from "@/store/globalstate.ts"
 </script>
 
 <style scoped>

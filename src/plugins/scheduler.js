@@ -21,7 +21,7 @@ import { debug, info, log } from '@/plugins/log.js'
 import { Counts } from '@/plugins/classes/Counts.js'
 import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue.js'
 import { LrnCard } from '@/plugins/classes/LrnCard.js'
-import { addToast } from '@/store/globalstate.js'
+import { addToast } from '@/store/globalstate'
 
 const reportLimit = 99999
 const FACTOR_ADDITION_VALUES = [-150, 0, 150]

@@ -21,9 +21,9 @@ import {
   getMediaFromNote,
   replaceAsync,
   replaceMediaFromNote,
-} from '@/plugins/global.js'
+} from '@/plugins/global'
 import IFrameContainer from '@/components/IFrameContainer.js'
-import { refstorage } from '@/store/globalstate.js'
+import { refstorage } from '@/store/globalstate'
 import ReviewMedia from '@/components/ReviewMedia.vue'
 
 export default {

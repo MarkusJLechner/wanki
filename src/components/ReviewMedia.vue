@@ -15,7 +15,7 @@
 
 <script>
 import ReviewAudio from '@/components/ReviewAudio.vue'
-import { refstorage } from '@/store/globalstate.js'
+import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 export default {
   name: 'ReviewMedia',

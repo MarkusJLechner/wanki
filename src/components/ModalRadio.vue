@@ -12,7 +12,7 @@
 <script>
 import BaseModal from '@/components/BaseModal.vue'
 import InputRadio from '@/components/InputRadio.vue'
-import { refstorage } from '@/store/globalstate.js'
+import { refstorage } from '@/store/globalstate'
 
 export default {
   components: { InputRadio, BaseModal },

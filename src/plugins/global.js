@@ -1,5 +1,6 @@
-import { refstorage } from '@/store/globalstate.js'
+import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from './defaultSettings.js'
+import { resolveObjectPath } from './utils.js'
 
 export const vibrate = (pattern = 30) => {
   if (refstorage.getSetting(defaultSettings.general.vibrate)) {
@@ -257,6 +258,5 @@ export async function replaceAsync(str, regex, asyncFn) {
   return str.replace(regex, () => data.shift())
 }
 
-export const resolveObjectPath = (object, path, defaultValue) => {
-  return path.split('.').reduce((o, p) => (o ? o[p] : defaultValue), object)
-}
+// Re-export resolveObjectPath from utils.js for backward compatibility
+export { resolveObjectPath }

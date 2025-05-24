@@ -45,54 +45,47 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import ButtonRound from '@/components/ButtonRound.vue'
 import { onBeforeRouteLeave } from 'vue-router'
-export default {
-  name: 'ButtonFloating',
-  components: { ButtonRound },
-  props: {
-    modelValue: {
-      type: Array,
-      default: () => [],
-    },
-  },
 
-  data() {
-    return {
-      show: false,
-    }
-  },
-
-  mounted() {
-    onBeforeRouteLeave(() => {
-      if (this.show) {
-        this.onClose()
-        return false
-      }
-
-      return true
-    })
-  },
-
-  methods: {
-    onClick() {
-      if (this.show) {
-        this.onClose()
-      } else {
-        this.show = true
-      }
-    },
-
-    onClickItem(item) {
-      this.onClose()
-    },
-
-    onClose() {
-      this.show = false
-    },
-  },
+interface ButtonItem {
+  text: string
+  icon: string
+  href?: string
 }
+
+const props = defineProps<{
+  modelValue: ButtonItem[]
+}>()
+
+const show = ref(false)
+
+const onClick = () => {
+  if (show.value) {
+    onClose()
+  } else {
+    show.value = true
+  }
+}
+
+const onClickItem = (item: ButtonItem) => {
+  onClose()
+}
+
+const onClose = () => {
+  show.value = false
+}
+
+onBeforeRouteLeave(() => {
+  if (show.value) {
+    onClose()
+    return false
+  }
+
+  return true
+})
 </script>
 
 <style scoped>

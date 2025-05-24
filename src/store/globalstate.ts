@@ -1,28 +1,49 @@
-import { ref, watch } from 'vue'
-import { vibrate } from '../plugins/global.js'
-import { resolveObjectPath } from '../plugins/utils.js'
+import { ref, watch, Ref } from 'vue'
+import { vibrate } from '@/plugins/global.js'
+import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
 import { ToastType } from '@/plugins/conts.js'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 
-const storeItemSubscribers = {}
+interface StoreItemSubscribers {
+  [key: string]: Ref<any>
+}
 
-const parseType = (value, type) => {
+interface Setting {
+  key: string
+  default?: any
+}
+
+interface DefaultSetting {
+  default?: any
+  valueType?: 'number' | 'boolean' | string
+}
+
+interface Toast {
+  id: string
+  type: string
+  text: string
+  timeout: number
+}
+
+const storeItemSubscribers: StoreItemSubscribers = {}
+
+const parseType = (value: any, type?: string): any => {
   if (type === 'number') {
     return +value
   }
   if (type === 'boolean') {
-    return !!JSON.parse(value)
+    return !!JSON.parse(String(value))
   }
   return value
 }
 
 export const refstorage = {
-  init: (key, Default) => {
+  init: (key: string, Default?: any): void => {
     if (!storeItemSubscribers[key]) {
       const defaultSetting = refstorage.getDefaultSetting(key)?.default
       storeItemSubscribers[key] = ref(
-        JSON.parse(localStorage.getItem(key)) ??
+        JSON.parse(localStorage.getItem(key) || 'null') ??
           Default ??
           defaultSetting ??
           null,
@@ -37,7 +58,7 @@ export const refstorage = {
     }
   },
 
-  getDefaultSetting: (path) => {
+  getDefaultSetting: (path?: string): DefaultSetting | null => {
     if (!path) {
       return null
     }
@@ -48,30 +69,30 @@ export const refstorage = {
     )
   },
 
-  ref: (key) => {
+  ref: (key: string): Ref<any> => {
     refstorage.init(key)
     return storeItemSubscribers[key]
   },
 
-  getSetting: (setting) => {
+  getSetting: (setting: Setting): any => {
     const valueType = refstorage.getDefaultSetting(setting.key)?.valueType
     refstorage.init(setting.key, setting.default)
 
     return parseType(storeItemSubscribers[setting.key].value, valueType)
   },
 
-  getValueType(key, Default) {
+  getValueType(key: string, Default?: string): string | undefined {
     return this.getDefaultSetting(key)?.valueType ?? Default
   },
 
-  get: (key, Default) => {
+  get: (key: string, Default?: any): any => {
     const valueType = refstorage.getDefaultSetting(key)?.valueType
     refstorage.init(key, Default)
 
     return parseType(storeItemSubscribers[key].value, valueType)
   },
 
-  set: (key, value) => {
+  set: (key: string, value: any): void => {
     vibrate()
 
     refstorage.init(key, value)
@@ -79,7 +100,7 @@ export const refstorage = {
     storeItemSubscribers[key].value = value
   },
 
-  toggle: (key) => {
+  toggle: (key: string): void => {
     vibrate()
 
     refstorage.init(key)
@@ -93,14 +114,14 @@ refstorage.init('darkTheme', false)
 
 export const modalOpened = ref(false)
 
-export const toasts = ref([])
+export const toasts = ref<Toast[]>([])
 
-export const addToast = ({ type, text, timeout = 3 }) => {
+export const addToast = ({ type, text, timeout = 3 }: { type: string, text: string, timeout?: number }): void => {
   const id = nanoid(4)
   if (type !== ToastType.error && type !== ToastType.success) {
     type = ToastType.info
   }
-  const item = {
+  const item: Toast = {
     id,
     type,
     text,
@@ -114,10 +135,10 @@ export const addToast = ({ type, text, timeout = 3 }) => {
 }
 
 
-export const removeToast = (id) => {
+export const removeToast = (id: string): void => {
   toasts.value = toasts.value.filter((toast) => toast.id !== id)
 }
 
-export const clearToasts = () => {
+export const clearToasts = (): void => {
   toasts.value = []
 }
