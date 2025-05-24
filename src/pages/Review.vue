@@ -28,7 +28,7 @@
     <MainContent>
       <InformationHeaderReview class="" :current="2" :timer="timerText" />
 
-      <div id="review-container" class="flex-grow p-3 relative">
+      <div id="review-container" class="grow p-3 relative">
         <ReviewDebug v-if="debug" :card="card" :deck="deck" />
 
         <ReviewContainer :show-answer="showAnswer" :card="card" />

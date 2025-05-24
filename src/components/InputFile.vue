@@ -26,7 +26,7 @@
       ref="file"
       :accept="accept"
       :multiple="false"
-      class="h-[1px] opacity-0 overflow-hidden absolute w-[1px]"
+      class="h-px opacity-0 overflow-hidden absolute w-px"
       name="fields[assetsFieldHandle][]"
       type="file"
       @focus="isFocused = true"

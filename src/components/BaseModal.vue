@@ -73,7 +73,7 @@
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
-            class="overflow-y-auto flex-grow"
+            class="overflow-y-auto grow"
             :class="{ 'p-4': !noGutters, [contentClass]: !!contentClass }"
           >
             <slot />

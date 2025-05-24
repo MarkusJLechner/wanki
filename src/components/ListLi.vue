@@ -13,7 +13,7 @@
       text-left
       mt-0
       mb-0
-      min-h-[3rem]
+      min-h-12
       flex flex-col
     "
     :style="$attrs.style + 'display: block; ' + item.style"
@@ -32,7 +32,7 @@
       <component :is="item.component" v-if="item.component" />
       <hr
         v-if="item.type === 'seperator'"
-        class="border-1 border-gray-900 dark:border-gray-500 w-full"
+        class="border border-gray-900 dark:border-gray-500 w-full"
       />
 
       <slot name="prefix-item" :item="item" />
@@ -42,12 +42,12 @@
         class="pr-4"
         :class="{ [getIcon(item)]: getIcon(item) }"
       />
-      <div class="flex flex-grow items-center">
+      <div class="flex grow items-center">
         <span v-if="getText(item)" class="flex flex-col">
           {{ getText(item) }}
           <span
             v-if="getSubText(item)"
-            class="flex-grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            class="grow text-sm text-gray-600 dark:text-gray-300 pr-2"
             >{{ getSubText(item) }}</span
           >
         </span>

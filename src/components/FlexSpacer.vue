@@ -1,3 +1,3 @@
 <template>
-  <div class="flex-grow" />
+  <div class="grow" />
 </template>

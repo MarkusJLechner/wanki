@@ -27,7 +27,7 @@
               z-20
               rounded-md
               shadow-xl
-              w-[15rem]
+              w-60
               pointer-event-none
               top-0
               right-1

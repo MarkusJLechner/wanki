@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow flex overflow-y-auto w-full">
+  <div class="grow flex overflow-y-auto w-full">
     <div
       class="
         pulldown-element
@@ -19,7 +19,7 @@
       <LoadingLogo />
     </div>
 
-    <div class="refresh-content flex flex-col flex-grow relative">
+    <div class="refresh-content flex flex-col grow relative">
       <slot />
     </div>
   </div>
