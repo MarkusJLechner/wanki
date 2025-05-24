@@ -92,7 +92,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import List from '@/components/List.vue'
 import ModalImport from '@/components/ModalImport.vue'
 import TheHeader from '@/components/TheHeader.vue'
@@ -113,272 +115,246 @@ import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
 import ListTree from '@/components/ListTree.vue'
 
-export default {
-  name: 'Overview',
+const router = useRouter()
 
-  components: {
-    ListTree,
-    ButtonFloating,
-    ButtonIconReload,
-    MainContent,
-    InputTextField,
-    BaseModal,
-    ModalDelete,
-    ModalOptions,
-    NumberDue,
-    LoadingIcon,
-    ButtonOptions,
-    TheHeader,
-    List,
-    ModalImport,
-    ThemeSwitcher,
-    FlexSpacer,
+// Data properties
+const decks = ref<any[]>([])
+const idbAllDecks = ref<any>(null)
+const loading = ref(false)
+const showModalImport = ref(false)
+const showModalDelete = ref(false)
+const showModalRename = ref(false)
+const loadingOnRename = ref(false)
+const loadingOnExport = ref(false)
+const inputRename = ref('')
+const modalOptionsItem = ref<any>(null)
+const optionsFloating = ref([
+  {
+    text: 'Get shared deck',
+    icon: 'fas fa-cloud-download-alt',
+    href: 'https://ankiweb.net/shared/decks/',
   },
-
-  data() {
-    return {
-      decks: [],
-      idbAllDecks: null,
-      loading: false,
-      showModalImport: false,
-      showModalDelete: false,
-      showModalRename: false,
-      loadingOnRename: false,
-      loadingOnExport: false,
-      inputRename: '',
-      modalOptionsItem: null,
-      optionsFloating: [
-        {
-          text: 'Get shared deck',
-          icon: 'fas fa-cloud-download-alt',
-          href: 'https://ankiweb.net/shared/decks/',
-        },
-        { text: 'Create deck', icon: 'fas fa-folder-plus' },
-        { text: 'Add note', icon: 'fas fa-plus' },
-      ],
-      deckOptions: [
-        {
-          text: 'Rename',
-          dispatch: () => {
-            this.inputRename = this.modelOptionDeckTitle
-            this.showModalRename = true
-          },
-        },
-        {
-          text: 'Export',
-          loading: () => this.loadingOnExport,
-          dispatch: () => {
-            this.onExport()
-          },
-        },
-        { text: 'Delete', dispatch: () => (this.showModalDelete = true) },
-      ],
-    }
-  },
-
-  computed: {
-    modelOptionDeckId() {
-      return this.modalOptionsItem.id
-    },
-
-    modelOptionDeckDesc() {
-      return this.modalOptionsItem.desc
-    },
-
-    modelOptionDeckTitle() {
-      return this.modalOptionsItem.text
+  { text: 'Create deck', icon: 'fas fa-folder-plus' },
+  { text: 'Add note', icon: 'fas fa-plus' },
+])
+const deckOptions = ref([
+  {
+    text: 'Rename',
+    dispatch: () => {
+      inputRename.value = modelOptionDeckTitle.value
+      showModalRename.value = true
     },
   },
-
-  async mounted() {
-    // await this.fetchAllDecks()
-
-    // await this.updateList()
-
-    await this.updateDeckList()
-    const vm = this
-    wankidb.decks.hook('creating', function () {
-      console.log('creating')
-      this.onsuccess = function () {
-        vm.updateDeckList()
-      }
-    })
-    wankidb.decks.hook('deleting', function () {
-      console.log('deleting')
-      this.onsuccess = function () {
-        vm.updateDeckList()
-      }
-    })
-    wankidb.decks.hook('updating', function () {
-      console.log('updating')
-      this.onsuccess = function () {
-        vm.updateDeckList()
-      }
-    })
-
-    document.addEventListener('page/overview/update', this.updateDeckList)
-  },
-
-  beforeUnmount() {
-    document.removeEventListener('page/overview/update', this.updateDeckList)
-  },
-
-  methods: {
-    pullToRefresh() {
-      console.log('refresh list')
-      this.updateDeckList()
-    },
-
-    async updateDeckList() {
-      const decks = await wankidb.decks.toArray()
-      this.decks = decks.map((deck) => {
-        return {
-          text: deck.name.split('::'),
-          ...deck,
-        }
-      })
-
-      const mapper = {}
-      let root = { children: [] }
-
-      for (const deck of this.decks) {
-        let splits = deck.name.split('::'),
-          path = ''
-
-        splits.reduce((parent, id, i) => {
-          path += `${id}`
-
-          if (!mapper[path]) {
-            const o = { id, deck }
-            mapper[path] = o // set the new object with unique path
-            parent.children = parent.children || []
-            parent.children.push(o)
-          }
-
-          return mapper[path]
-        }, root)
-      }
-
-      this.decks = root // .children
-
-      console.log(root)
-    },
-
-    async fetchAllDecks() {
-      this.idbAllDecks = await (await idbDecks).all()
-    },
-
-    async updateList() {
-      this.loading = true
-
-      await this.fetchAllDecks()
-
-      this.decks = this.idbAllDecks.map((entry) => {
-        return {
-          id: entry.id,
-          text: entry.name,
-          desc: entry.tables.col.decks[entry.id].desc,
-          decks: entry.tables.col.decks,
-        }
-      })
-
-      if (this.modalOptionsItem) {
-        this.modalOptionsItem = this.decks.find(
-          (entry) => entry.id === this.modalOptionsItem.id,
-        )
-      }
-
-      this.loading = false
-    },
-
-    onClick(item) {
-      switch (item.value) {
-        case 'import':
-          return this.onImport()
-        default:
-          break
-      }
-    },
-
-    onDeck(item) {
-      console.log(item)
-
-      this.$router.push({ path: '/review/on', query: { deckid: item.deck.id } })
-    },
-
-    onMenu(item) {
-      this.modalOptionsItem = item
-    },
-
-    onImport() {
-      this.showModalImport = true
-    },
-
-    async onDelete() {
-      await wankidb.decks.delete(this.modelOptionDeckId)
-      // await (await idbDecks).del(this.modelOptionDeckId)
-      this.showModalDelete = false
-
-      this.modalOptionsItem = null
-    },
-
-    async onExport() {
-      this.loadingOnExport = true
-      await exportDeck(this.modelOptionDeckId)
-      this.loadingOnExport = false
-    },
-
-    async onRename() {
-      this.loadingOnRename = true
-
-      console.log(sqlDbDeck(this.modelOptionDeckId))
-
-      console.time('get idb decks')
-      const decks = JSON.parse(
-        (await sqlDeck(this.modelOptionDeckId, 'select decks from col')).decks,
-      )
-      console.timeEnd('get idb decks')
-
-      console.log(this.modelOptionDeckId, decks)
-      decks[this.modelOptionDeckId].name = this.inputRename
-
-      console.log('update', { decks })
-
-      console.time('update sql collection')
-      const result = await sqlDeck(
-        this.modelOptionDeckId,
-        'UPDATE col SET decks = $decks WHERE id = 1',
-        {
-          $decks: JSON.stringify(decks),
-        },
-      )
-      console.timeEnd('update sql collection')
-
-      console.time('update idb deck parsed')
-      await (
-        await idbDecks
-      ).update(this.modelOptionDeckId, (result) => {
-        result.name = this.inputRename
-        result.tables.col.decks = decks
-        return result
-      })
-      console.timeEnd('update idb deck parsed')
-
-      console.time('save dirty collection to idb')
-      await saveDirtySql(this.modelOptionDeckId)
-      console.timeEnd('save dirty collection to idb')
-
-      console.log({ result })
-      console.log(this.inputRename)
-
-      this.showModalRename = false
-
-      this.loadingOnRename = false
-    },
-
-    closeImport() {
-      this.showModalImport = false
+  {
+    text: 'Export',
+    loading: () => loadingOnExport.value,
+    dispatch: () => {
+      onExport()
     },
   },
+  { text: 'Delete', dispatch: () => (showModalDelete.value = true) },
+])
+
+// Computed properties
+const modelOptionDeckId = computed(() => {
+  return modalOptionsItem.value?.id
+})
+
+const modelOptionDeckDesc = computed(() => {
+  return modalOptionsItem.value?.desc
+})
+
+const modelOptionDeckTitle = computed(() => {
+  return modalOptionsItem.value?.text
+})
+
+// Methods
+function pullToRefresh(): void {
+  console.log('refresh list')
+  updateDeckList()
 }
+
+async function updateDeckList(): Promise<void> {
+  const deckArray = await wankidb.decks.toArray()
+  decks.value = deckArray.map((deck: any) => {
+    return {
+      text: deck.name.split('::'),
+      ...deck,
+    }
+  })
+
+  const mapper: Record<string, any> = {}
+  let root = { children: [] }
+
+  for (const deck of decks.value) {
+    let splits = deck.name.split('::'),
+      path = ''
+
+    splits.reduce((parent: any, id: string, i: number) => {
+      path += `${id}`
+
+      if (!mapper[path]) {
+        const o = { id, deck }
+        mapper[path] = o // set the new object with unique path
+        parent.children = parent.children || []
+        parent.children.push(o)
+      }
+
+      return mapper[path]
+    }, root)
+  }
+
+  decks.value = root // .children
+
+  console.log(root)
+}
+
+async function fetchAllDecks(): Promise<void> {
+  idbAllDecks.value = await (await idbDecks).all()
+}
+
+async function updateList(): Promise<void> {
+  loading.value = true
+
+  await fetchAllDecks()
+
+  decks.value = idbAllDecks.value.map((entry: any) => {
+    return {
+      id: entry.id,
+      text: entry.name,
+      desc: entry.tables.col.decks[entry.id].desc,
+      decks: entry.tables.col.decks,
+    }
+  })
+
+  if (modalOptionsItem.value) {
+    modalOptionsItem.value = decks.value.find(
+      (entry: any) => entry.id === modalOptionsItem.value.id,
+    )
+  }
+
+  loading.value = false
+}
+
+function onClick(item: any): void {
+  switch (item.value) {
+    case 'import':
+      return onImport()
+    default:
+      break
+  }
+}
+
+function onDeck(item: any): void {
+  console.log(item)
+
+  router.push({ path: '/review/on', query: { deckid: item.deck.id } })
+}
+
+function onMenu(item: any): void {
+  modalOptionsItem.value = item
+}
+
+function onImport(): void {
+  showModalImport.value = true
+}
+
+async function onDelete(): Promise<void> {
+  await wankidb.decks.delete(modelOptionDeckId.value)
+  // await (await idbDecks).del(modelOptionDeckId.value)
+  showModalDelete.value = false
+
+  modalOptionsItem.value = null
+}
+
+async function onExport(): Promise<void> {
+  loadingOnExport.value = true
+  await exportDeck(modelOptionDeckId.value)
+  loadingOnExport.value = false
+}
+
+async function onRename(): Promise<void> {
+  loadingOnRename.value = true
+
+  console.log(sqlDbDeck(modelOptionDeckId.value))
+
+  console.time('get idb decks')
+  const decks = JSON.parse(
+    (await sqlDeck(modelOptionDeckId.value, 'select decks from col')).decks,
+  )
+  console.timeEnd('get idb decks')
+
+  console.log(modelOptionDeckId.value, decks)
+  decks[modelOptionDeckId.value].name = inputRename.value
+
+  console.log('update', { decks })
+
+  console.time('update sql collection')
+  const result = await sqlDeck(
+    modelOptionDeckId.value,
+    'UPDATE col SET decks = $decks WHERE id = 1',
+    {
+      $decks: JSON.stringify(decks),
+    },
+  )
+  console.timeEnd('update sql collection')
+
+  console.time('update idb deck parsed')
+  await (
+    await idbDecks
+  ).update(modelOptionDeckId.value, (result: any) => {
+    result.name = inputRename.value
+    result.tables.col.decks = decks
+    return result
+  })
+  console.timeEnd('update idb deck parsed')
+
+  console.time('save dirty collection to idb')
+  await saveDirtySql(modelOptionDeckId.value)
+  console.timeEnd('save dirty collection to idb')
+
+  console.log({ result })
+  console.log(inputRename.value)
+
+  showModalRename.value = false
+
+  loadingOnRename.value = false
+}
+
+function closeImport(): void {
+  showModalImport.value = false
+}
+
+// Lifecycle hooks
+onMounted(async () => {
+  // await fetchAllDecks()
+  // await updateList()
+
+  await updateDeckList()
+
+  wankidb.decks.hook('creating', function () {
+    console.log('creating')
+    this.onsuccess = function () {
+      updateDeckList()
+    }
+  })
+  wankidb.decks.hook('deleting', function () {
+    console.log('deleting')
+    this.onsuccess = function () {
+      updateDeckList()
+    }
+  })
+  wankidb.decks.hook('updating', function () {
+    console.log('updating')
+    this.onsuccess = function () {
+      updateDeckList()
+    }
+  })
+
+  document.addEventListener('page/overview/update', updateDeckList)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('page/overview/update', updateDeckList)
+})
 </script>
