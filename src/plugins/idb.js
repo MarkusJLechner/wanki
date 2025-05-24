@@ -1,4 +1,4 @@
-import { openDB } from 'idb/with-async-ittr.js'
+import { openDB } from 'idb'
 import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql.js'
 
 import WorkerBulkPut from '@/plugins/workers/wankidbBulkPut.js?worker'

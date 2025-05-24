@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -26,7 +27,7 @@ export default defineConfig({
     },
   },
 
-  plugins: [vue()],
+  plugins: [vue(), tailwindcss(),],
 
   build: {
     target: ['chrome87', 'edge88', 'es2020'],
