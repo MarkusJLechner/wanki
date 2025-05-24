@@ -18,101 +18,76 @@
   </BaseModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/BaseModal.vue'
 import { refstorage } from '@/store/globalstate'
 import InputTextField from '@/components/InputTextField.vue'
 
-export default {
-  components: { InputTextField, BaseModal },
+interface RadioItem {
+  value: string
+  text: string
+  [key: string]: any
+}
 
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: true,
-    },
+interface Props {
+  modelValue?: boolean
+  title?: string
+  radioItems?: RadioItem[]
+  type?: string | null
+  label?: string
+  placeholder?: string
+  defaultValue?: string | null
+  storageKey?: string | null
+}
 
-    title: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: true,
+  title: '',
+  radioItems: () => [],
+  type: null,
+  label: 'text',
+  placeholder: 'text',
+  defaultValue: null,
+  storageKey: null
+})
 
-    radioItems: {
-      type: Array,
-      default: () => [],
-    },
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'update:inputValue', value: string): void
+}>()
 
-    type: {
-      type: String,
-      default: null,
-    },
+const value = ref<string | null>(null)
 
-    label: {
-      type: String,
-      default: 'text',
-    },
+const computedValue = computed(() => {
+  if (props.storageKey) {
+    return refstorage.get(props.storageKey)
+  }
+  return value.value
+})
 
-    placeholder: {
-      type: String,
-      default: 'text',
-    },
+const computedType = computed(() => {
+  return refstorage.getValueType(props.storageKey)
+})
 
-    defaultValue: {
-      type: String,
-      default: null,
-    },
+watch(() => props.modelValue, (newValue) => {
+  if (newValue && props.storageKey) {
+    value.value = '' + refstorage.get(props.storageKey)
+  }
+})
 
-    storageKey: {
-      type: String,
-      default: null,
-    },
-  },
+function onInput(event: Event): void {
+  const val = (event.target as HTMLInputElement).value
+  if (props.storageKey) {
+    refstorage.set(props.storageKey, val)
+  }
 
-  emits: ['close', 'update:inputValue'],
+  value.value = val
 
-  data() {
-    return {
-      value: null,
-    }
-  },
+  emit('update:inputValue', val)
+}
 
-  computed: {
-    computedValue() {
-      if (this.storageKey) {
-        return refstorage.get(this.storageKey)
-      }
-
-      return this.value
-    },
-
-    computedType() {
-      return refstorage.getValueType(this.storageKey)
-    },
-  },
-
-  watch: {
-    modelValue(newValue) {
-      if (newValue && this.storageKey) {
-        this.value = '' + refstorage.get(this.storageKey)
-      }
-    },
-  },
-
-  methods: {
-    onInput(event) {
-      const val = event.target.value
-      if (this.storageKey) {
-        refstorage.set(this.storageKey, val)
-      }
-
-      this.value = val
-
-      this.$emit('update:inputValue', val)
-    },
-
-    onClose() {
-      this.$emit('close')
-    },
-  },
+function onClose(): void {
+  emit('close')
 }
 </script>

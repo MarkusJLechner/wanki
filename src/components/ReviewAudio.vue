@@ -20,180 +20,165 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import { getFileMimeType, sleep } from '@/plugins/global'
+import { wankidb } from '@/plugins/wankidb/db.js'
 
-export default {
-  name: 'ReviewAudio',
-  components: { ButtonIcon },
-  props: {
-    blob: {
-      type: String,
-      default: null,
-    },
+interface Props {
+  blob?: string | null
+  objectUrl?: string | null
+  dbMediaString?: string | null
+  autoplay?: boolean
+}
 
-    objectUrl: {
-      type: String,
-      default: null,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  blob: null,
+  objectUrl: null,
+  dbMediaString: null,
+  autoplay: true
+})
 
-    dbMediaString: {
-      type: String,
-      default: null,
-    },
+const emit = defineEmits<{
+  (e: 'ended'): void
+}>()
 
-    autoplay: {
-      type: Boolean,
-      default: true,
-    },
-  },
+const audio = ref<HTMLAudioElement | null>(null)
+const blobFile = ref<string | null>(null)
+const isPlaying = ref(false)
+const playPromise = ref<Promise<void> | null>(null)
+const notFound = ref(false)
+const mediaType = ref('audio/mp3')
 
-  data() {
-    return {
-      blobFile: null,
-      isPlaying: false,
-      playPromise: null,
-      notFound: false,
-      mediaType: 'audio/mp3',
-    }
-  },
+const isAudio = computed(() => {
+  return mediaType.value === 'audio/mp3'
+})
 
-  computed: {
-    isAudio() {
-      return this.mediaType === 'audio/mp3'
-    },
+const computedIcon = computed(() => {
+  if (isPlaying.value) {
+    return 'fas fa-pause'
+  }
 
-    computedIcon() {
-      if (this.isPlaying) {
-        return 'fas fa-pause'
+  if (notFound.value) {
+    return 'fas fa-question'
+  }
+
+  return 'fas fa-play'
+})
+
+const useNativeAudioControls = computed(() => {
+  return refstorage.getSetting(defaultSettings.reviewing.audioControls)
+})
+
+const useAutoPlayAudio = computed(() => {
+  return refstorage.getSetting(defaultSettings.reviewing.autoPlayAudio)
+})
+
+const getAudioStartDelay = computed(() => {
+  return +refstorage.getSetting(
+    defaultSettings.reviewing.autoPlayAudioDelay
+  )
+})
+
+const audioContols = computed(() => {
+  return useNativeAudioControls.value ? 'controls' : undefined
+})
+
+const hasRefAudio = computed(() => {
+  return !!audio.value
+})
+
+watch(() => props.blob, () => {
+  loadAudio()
+})
+
+watch(() => props.objectUrl, () => {
+  loadAudio()
+})
+
+watch(() => props.dbMediaString, () => {
+  loadAudio()
+})
+
+watch(() => props.autoplay, (newValue, oldValue) => {
+  if (!oldValue && newValue) {
+    playLoadedAudio()
+  }
+})
+
+onMounted(() => {
+  loadAudio()
+})
+
+async function loadAudio() {
+  blobFile.value = null
+  if (props.blob) {
+    blobFile.value = URL.createObjectURL(new Blob([props.blob]))
+  }
+  if (props.objectUrl) {
+    blobFile.value = props.objectUrl
+  }
+  if (props.dbMediaString) {
+    await wankidb.media.get({ name: props.dbMediaString }).then((dbObj) => {
+      if (dbObj) {
+        const blob = new Blob([dbObj.file])
+        const type = getFileMimeType(dbObj.file)
+
+        console.log({ type, blob, fileMediaGet: dbObj.file })
+        mediaType.value = type
+
+        blobFile.value = URL.createObjectURL(blob)
+      } else {
+        notFound.value = true
+        blobFile.value = null
       }
+    })
+  }
 
-      if (this.notFound) {
-        return 'fas fa-question'
-      }
+  if (!isAudio.value) {
+    setTimeout(() => {
+      onEnded()
+    }, 200)
+  }
 
-      return 'fas fa-play'
-    },
+  await playLoadedAudio()
+}
 
-    useNativeAudioControls() {
-      return refstorage.getSetting(defaultSettings.reviewing.audioControls)
-    },
+function onEnded() {
+  isPlaying.value = false
+  emit('ended')
+}
 
-    useAutoPlayAudio() {
-      return refstorage.getSetting(defaultSettings.reviewing.autoPlayAudio)
-    },
+async function playLoadedAudio() {
+  await nextTick()
 
-    getAudioStartDelay() {
-      return +refstorage.getSetting(
-        defaultSettings.reviewing.autoPlayAudioDelay,
-      )
-    },
+  if (!hasRefAudio.value) {
+    return
+  }
+  if (playPromise.value) {
+    await playPromise.value
+  }
+  audio.value!.src = blobFile.value || ''
+  audio.value!.load()
+  if (props.autoplay && useAutoPlayAudio.value) {
+    await sleep(+getAudioStartDelay.value)
+    await doPlayAudio().catch((e) => {
+      console.error([blobFile.value], e)
+    })
+  }
+  playPromise.value = null
+}
 
-    audioContols() {
-      return this.useNativeAudioControls ? 'controls' : undefined
-    },
-
-    hasRefAudio() {
-      return !!this.$refs.audio
-    },
-  },
-
-  watch: {
-    blob() {
-      this.loadAudio()
-    },
-
-    objectUrl() {
-      this.loadAudio()
-    },
-
-    dbMediaString() {
-      this.loadAudio()
-    },
-
-    autoplay(newValue, oldValue) {
-      if (!oldValue && newValue) {
-        this.playLoadedAudio()
-      }
-    },
-  },
-
-  mounted() {
-    this.loadAudio()
-  },
-
-  methods: {
-    async loadAudio() {
-      this.blobFile = null
-      if (this.blob) {
-        this.blobFile = URL.createObjectURL(new Blob([this.blob]))
-      }
-      if (this.objectUrl) {
-        this.blobFile = this.objectUrl
-      }
-      if (this.dbMediaString) {
-        await wankidb.media.get({ name: this.dbMediaString }).then((dbObj) => {
-          if (dbObj) {
-            const blob = new Blob([dbObj.file])
-            const type = getFileMimeType(dbObj.file)
-
-            console.log({ type, blob, fileMediaGet: dbObj.file })
-            this.mediaType = type
-
-            this.blobFile = URL.createObjectURL(blob)
-          } else {
-            this.notFound = true
-            this.blobFile = null
-          }
-        })
-      }
-
-      if (!this.isAudio) {
-        setTimeout(() => {
-          this.onEnded()
-        }, 200)
-      }
-
-      await this.playLoadedAudio()
-    },
-
-    onEnded() {
-      this.isPlaying = false
-      this.$emit('ended')
-    },
-
-    async playLoadedAudio() {
-      await this.$nextTick
-
-      if (!this.hasRefAudio) {
-        return
-      }
-      if (this.playPromise) {
-        await this.playPromise
-      }
-      this.$refs.audio.src = [this.blobFile]
-      this.$refs.audio.load()
-      if (this.autoplay && this.useAutoPlayAudio) {
-        await sleep(+this.getAudioStartDelay)
-        await this.doPlayAudio().catch((e) => {
-          console.error([this.blobFile], e)
-        })
-      }
-      this.playPromise = null
-    },
-
-    async doPlayAudio() {
-      if (!this.$refs.audio) {
-        return
-      }
-      this.isPlaying = true
-      this.$refs.audio.currentTime = 0
-      this.playPromise = this.$refs.audio.play()
-      await this.playPromise
-    },
-  },
+async function doPlayAudio() {
+  if (!audio.value) {
+    return
+  }
+  isPlaying.value = true
+  audio.value.currentTime = 0
+  playPromise.value = audio.value.play()
+  await playPromise.value
 }
 </script>

@@ -14,28 +14,18 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: Number,
-      default: 0,
-    },
-
-    color: {
-      type: String,
-      default: 'blue',
-    },
-
-    underline: {
-      type: Boolean,
-      default: false,
-    },
-
-    highContrast: {
-      type: Boolean,
-      default: true,
-    },
-  },
+<script setup lang="ts">
+interface Props {
+  value?: number
+  color?: string
+  underline?: boolean
+  highContrast?: boolean
 }
+
+withDefaults(defineProps<Props>(), {
+  value: 0,
+  color: 'blue',
+  underline: false,
+  highContrast: true
+})
 </script>

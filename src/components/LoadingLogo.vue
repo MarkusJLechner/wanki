@@ -28,12 +28,6 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: 'LoadingLogo',
-}
-</script>
-
 <style>
 .logo {
   animation: rotating 3.2s linear infinite;

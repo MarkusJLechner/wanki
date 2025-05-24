@@ -10,31 +10,26 @@
   </BaseModal>
 </template>
 
-<script>
+<script setup lang="ts">
 import BaseModal from '@/components/BaseModal.vue'
 import List from '@/components/List.vue'
 
-export default {
-  components: { List, BaseModal },
+interface Props {
+  modelValue?: Record<string, any> | null
+  items?: Record<string, any> | null
+}
 
-  props: {
-    modelValue: {
-      type: Object,
-      default: null,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
+  items: null
+})
 
-    items: {
-      type: Object,
-      default: null,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'item', item: any): void
+  (e: 'close'): void
+}>()
 
-  emits: ['item', 'close'],
-
-  methods: {
-    onClickItem(item) {
-      this.$emit('item', item)
-    },
-  },
+function onClickItem(item: any): void {
+  emit('item', item)
 }
 </script>

@@ -97,8 +97,9 @@
   />
 </template>
 
-<script>
-import { defineAsyncComponent } from 'vue'
+<script setup lang="ts">
+import { defineAsyncComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
@@ -107,149 +108,129 @@ const ModalRadio = defineAsyncComponent(() =>
   import('@/components/ModalRadio.vue'),
 )
 
-export default {
-  name: 'List',
-
-  components: {
-    ModalTextfield,
-    ListHr,
-    InputBoolean,
-    ModalRadio,
+const props = defineProps({
+  value: {
+    type: Array,
+    default: () => [],
   },
-
-  props: {
-    value: {
-      type: Array,
-      default: () => [],
-    },
-
-    noGutters: {
-      type: Boolean,
-      default: false,
-    },
-
-    dense: {
-      type: Boolean,
-      default: false,
-    },
-
-    noSeparation: {
-      type: Boolean,
-      default: false,
-    },
-
-    itemTextKey: {
-      type: String,
-      default: 'text',
-    },
+  noGutters: {
+    type: Boolean,
+    default: false,
   },
-
-  emits: ['item', 'long-press'],
-
-  data() {
-    return {
-      radio: null,
-      textfield: null,
-    }
+  dense: {
+    type: Boolean,
+    default: false,
   },
-
-  methods: {
-    isAnyLoading() {
-      return this.value.some((v) => this.callFn(v, 'loading')) ? 'click' : null
-    },
-
-    onLongPress(item) {
-      if (this.isAnyLoading()) {
-        return
-      }
-
-      this.$emit('long-press', item)
-    },
-
-    getIcon(item) {
-      return this.callFn(item, 'icon')
-    },
-
-    getText(item) {
-      return this.callFn(item, this.itemTextKey)
-    },
-
-    getSubText(item) {
-      if (item.radio && item.radio.key) {
-        const key = refstorage.get(item.radio.key, item.radio.default)
-        return item.radio.items.find((item) => item.value === key)?.text
-      }
-
-      return this.callFn(item, 'subtext')
-    },
-
-    getBoolean(item) {
-      if (item.toggle) {
-        return !!refstorage.get(item.toggle)
-      }
-
-      return this.callFn(item, 'boolean')
-    },
-
-    getValueText(item) {
-      return refstorage.get(item.key)
-    },
-
-    hasBoolean(item) {
-      if (item.toggle) {
-        return true
-      }
-
-      return (
-        typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
-      )
-    },
-
-    hasText(item) {
-      if (item.kind && item.kind === 'textfield') {
-        return true
-      }
-    },
-
-    callFn(item, key) {
-      if (typeof item[key] === 'function') {
-        return item[key]()
-      }
-      return item[key]
-    },
-
-    onClick(item) {
-      if (this.isAnyLoading()) {
-        return
-      }
-
-      this.$emit('item', item)
-
-      if (item.radio) {
-        this.radio = item.radio
-      }
-
-      if (item.kind === 'textfield') {
-        this.textfield = item
-      }
-
-      if (item.toggle) {
-        refstorage.toggle(item.toggle)
-      }
-
-      if (item.click) {
-        item.click(item)
-      }
-
-      if (item.route) {
-        this.$router.push({ path: item.route })
-      }
-
-      if (item.dispatch) {
-        item.dispatch(item)
-      }
-    },
+  noSeparation: {
+    type: Boolean,
+    default: false,
   },
+  itemTextKey: {
+    type: String,
+    default: 'text',
+  },
+})
+
+const emit = defineEmits(['item', 'long-press'])
+const router = useRouter()
+
+const radio = ref(null)
+const textfield = ref(null)
+
+const isAnyLoading = () => {
+  return props.value.some((v) => callFn(v, 'loading')) ? 'click' : null
+}
+
+const onLongPress = (item) => {
+  if (isAnyLoading()) {
+    return
+  }
+
+  emit('long-press', item)
+}
+
+const getIcon = (item) => {
+  return callFn(item, 'icon')
+}
+
+const getText = (item) => {
+  return callFn(item, props.itemTextKey)
+}
+
+const getSubText = (item) => {
+  if (item.radio && item.radio.key) {
+    const key = refstorage.get(item.radio.key, item.radio.default)
+    return item.radio.items.find((item) => item.value === key)?.text
+  }
+
+  return callFn(item, 'subtext')
+}
+
+const getBoolean = (item) => {
+  if (item.toggle) {
+    return !!refstorage.get(item.toggle)
+  }
+
+  return callFn(item, 'boolean')
+}
+
+const getValueText = (item) => {
+  return refstorage.get(item.key)
+}
+
+const hasBoolean = (item) => {
+  if (item.toggle) {
+    return true
+  }
+
+  return (
+    typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
+  )
+}
+
+const hasText = (item) => {
+  if (item.kind && item.kind === 'textfield') {
+    return true
+  }
+}
+
+const callFn = (item, key) => {
+  if (typeof item[key] === 'function') {
+    return item[key]()
+  }
+  return item[key]
+}
+
+const onClick = (item) => {
+  if (isAnyLoading()) {
+    return
+  }
+
+  emit('item', item)
+
+  if (item.radio) {
+    radio.value = item.radio
+  }
+
+  if (item.kind === 'textfield') {
+    textfield.value = item
+  }
+
+  if (item.toggle) {
+    refstorage.toggle(item.toggle)
+  }
+
+  if (item.click) {
+    item.click(item)
+  }
+
+  if (item.route) {
+    router.push({ path: item.route })
+  }
+
+  if (item.dispatch) {
+    item.dispatch(item)
+  }
 }
 </script>
 

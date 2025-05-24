@@ -16,7 +16,8 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, nextTick } from 'vue'
 import {
   getMediaFromNote,
   replaceAsync,
@@ -25,212 +26,220 @@ import {
 import IFrameContainer from '@/components/IFrameContainer.js'
 import { refstorage } from '@/store/globalstate'
 import ReviewMedia from '@/components/ReviewMedia.vue'
+import { wankidb } from '@/plugins/wankidb/db.js'
 
-export default {
-  name: 'ReviewContainer',
+interface Card {
+  template: Promise<any>
+  model: Promise<any>
+  fields: Promise<any[]>
+  note: Promise<any>
+  [key: string]: any
+}
 
-  components: { ReviewMedia, IFrameContainer },
+interface Props {
+  card?: Card | null
+  showAnswer?: boolean
+}
 
-  props: {
-    card: {
-      type: Object,
-      default: null,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  card: null,
+  showAnswer: false
+})
 
-    showAnswer: {
-      type: Boolean,
-      default: false,
-    },
-  },
+const fieldQuestion = ref('')
+const fieldAnswer = ref('')
+const cardStyle = ref('')
+const soundListQuestion = ref<any[]>([])
+const soundListAnswer = ref<any[]>([])
 
-  data() {
-    return {
-      fieldQuestion: '',
-      fieldAnswer: '',
-      cardStyle: '',
-      soundListQuestion: [],
-      soundListAnswer: [],
+const computedSoundList = computed(() => {
+  return props.showAnswer ? soundListAnswer.value : soundListQuestion.value
+})
+
+const computedDarkTheme = computed(() => {
+  return refstorage.get('darkTheme', true) ? 'dark' : ''
+})
+
+const computedStyle = computed(() => {
+  return /* language=css */ `
+    html, body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
     }
-  },
+    body {
+      padding-bottom: 100px;
+    }
+    body img {
+      max-width: 100%;
+      width: 100%;
+      max-height: 370px;
+      object-fit: contain;
+    }
+    hr {
+      border-width: 2px;
+      border-style: solid;
+      border-radius: 6px;
+      border-color: #20202052;
+    }
+    hr .dark {
+      border-width: 2px;
+      border-style: solid;
+      border-radius: 6px;
+      border-color: #ffffff52;
+    }
+    .card { background-color: inherit !important; }
+    .dark .card { color: white; }
+    ${cardStyle.value}
+  `
+})
 
-  computed: {
-    computedSoundList() {
-      return this.showAnswer ? this.soundListAnswer : this.soundListQuestion
-    },
+watch(() => props.card, () => {
+  if (props.card) {
+    mountNote()
+  }
+})
 
-    computedDarkTheme() {
-      return refstorage.get('darkTheme', true) ? 'dark' : ''
-    },
+watch(() => props.showAnswer, () => {
+  setIFrameHeight(true)
+})
 
-    computedStyle() {
-      return /* language=css */ `
-        html, body {
-          width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-        body {
-          padding-bottom: 100px;
-        }
-        body img {
-          max-width: 100%;
-          width: 100%;
-          max-height: 370px;
-          object-fit: contain;
-        }
-        hr {
-          border-width: 2px;
-          border-style: solid;
-          border-radius: 6px;
-          border-color: #20202052;
-        }
-        hr .dark {
-          border-width: 2px;
-          border-style: solid;
-          border-radius: 6px;
-          border-color: #ffffff52;
-        }
-        .card { background-color: inherit !important; }
-        .dark .card { color: white; }
-        ${this.cardStyle}
-      `
-    },
-  },
+function setIFrameHeight(reset = false) {
+  if (reset) {
+    setIframeHeight(0)
+  }
+  nextTick(() => {
+    setIframeHeight()
+  })
 
-  watch: {
-    card() {
-      this.mountNote()
-    },
+  setTimeout(() => {
+    setIframeHeight()
+  }, 500)
+}
 
-    showAnswer() {
-      this.setIFrameHeight(true)
-    },
-  },
+function setIframeHeight(height?: number) {
+  const iframe = document.querySelector('iframe')
+  if (iframe) {
+    iframe.height = '' + (height ?? getIframeHeight()) || '100%'
+  }
+}
 
-  methods: {
-    setIFrameHeight(reset = false) {
-      if (reset) {
-        this.setIframeHeight(0)
-      }
-      this.$nextTick(() => {
-        this.setIframeHeight()
-      })
+function getIframeHeight() {
+  return document.querySelector('iframe')?.contentWindow?.document.body
+    ?.scrollHeight
+}
 
-      setTimeout(() => {
-        this.setIframeHeight()
-      }, 500)
-    },
+async function mountNote() {
+  if (!props.card) return
 
-    setIframeHeight(height = undefined) {
-      const iframe = document.querySelector('iframe')
-      iframe.height = '' + (height ?? this.getIframeHeight()) || '100%'
-    },
+  const template = await props.card.template
+  const model = await props.card.model
+  const fields = await props.card.fields
 
-    getIframeHeight() {
-      return document.querySelector('iframe')?.contentWindow.document.body
-        .scrollHeight
-    },
+  window.card = await props.card
+  window.note = await props.card.note
+  window.model = await props.card.model
 
-    async mountNote() {
-      const template = await this.card.template
-      const model = await this.card.model
-      const fields = await this.card.fields
+  fieldQuestion.value = parseTemplate(template.qfmt, fields)
+  fieldAnswer.value = parseTemplate(template.afmt, [
+    { name: 'FrontSide', fieldValue: fieldQuestion.value },
+    ...fields,
+  ])
 
-      window.card = await this.card
-      window.note = await this.card.note
-      window.model = await this.card.model
+  soundListQuestion.value = getMediaList(fieldQuestion.value)
+  soundListAnswer.value = getMediaList(fieldAnswer.value)
 
-      this.fieldQuestion = this.parseTemplate(template.qfmt, fields)
-      this.fieldAnswer = this.parseTemplate(template.afmt, [
-        { name: 'FrontSide', fieldValue: this.fieldQuestion },
-        ...fields,
-      ])
+  fieldQuestion.value = await replaceImages(fieldQuestion.value)
+  fieldQuestion.value = replaceMediaFromNote(fieldQuestion.value)
+  fieldAnswer.value = await replaceImages(fieldAnswer.value)
+  fieldAnswer.value = replaceMediaFromNote(fieldAnswer.value)
 
-      this.soundListQuestion = this.getMediaList(this.fieldQuestion)
-      this.soundListAnswer = this.getMediaList(this.fieldAnswer)
+  cardStyle.value = model.css
 
-      this.fieldQuestion = await this.replaceImages(this.fieldQuestion)
-      this.fieldQuestion = replaceMediaFromNote(this.fieldQuestion)
-      this.fieldAnswer = await this.replaceImages(this.fieldAnswer)
-      this.fieldAnswer = replaceMediaFromNote(this.fieldAnswer)
+  setIFrameHeight()
+}
 
-      this.cardStyle = model.css
+function parseTemplate(templateString: string, fields: any[]) {
+  // remove type: tags
+  templateString = templateString.replaceAll(/({{type:[^}]+}})/gm, '')
+  // remove all special tags, like furigana: kanji: etc
+  templateString = templateString.replaceAll(/{{[^:}]+:([^}]+}})/gm, '{{$1')
 
-      this.setIFrameHeight()
-    },
+  console.log('before', templateString)
 
-    parseTemplate(templateString, fields) {
-      // remove type: tags
-      templateString = templateString.replaceAll(/({{type:[^}]+}})/gm, '')
-      // remove all special tags, like furigana: kanji: etc
-      templateString = templateString.replaceAll(/{{[^:}]+:([^}]+}})/gm, '{{$1')
-
-      console.log('before', templateString)
-
-      templateString = templateString.replaceAll(
-        /{{#(?<type>[^}]+)}}\s?(?<content>[\S\s]+?){{\/(\1)}}/gm,
-        (match, type, content) => {
-          const hasEmptyField = fields.some(
-            (field) => type === field.name && field.fieldValue === '',
-          )
-          return hasEmptyField ? '' : content
-        },
+  templateString = templateString.replaceAll(
+    /{{#(?<type>[^}]+)}}\s?(?<content>[\S\s]+?){{\/(\1)}}/gm,
+    (match, type, content) => {
+      const hasEmptyField = fields.some(
+        (field) => type === field.name && field.fieldValue === '',
       )
+      return hasEmptyField ? '' : content
+    },
+  )
 
-      console.log('after', templateString)
+  console.log('after', templateString)
 
-      const regex = /{{(?<field>.*?)}}/gm
-      let m
-      let matches = []
-      while ((m = regex.exec(templateString)) !== null) {
-        if (m.index === regex.lastIndex) {
-          regex.lastIndex++
-        }
-        matches.push(m)
+  const regex = /{{(?<field>.*?)}}/gm
+  let m
+  let matches = []
+  while ((m = regex.exec(templateString)) !== null) {
+    if (m.index === regex.lastIndex) {
+      regex.lastIndex++
+    }
+    matches.push(m)
+  }
+
+  matches.forEach((match) => {
+    const templateField = match.groups?.field
+    if (templateField) {
+      const field = fields.find((f) => f.name === templateField)
+      if (field) {
+        templateString = templateString.replaceAll(
+          `{{${templateField}}}`,
+          field.fieldValue,
+        )
       }
+    }
+  })
 
-      matches.forEach((match) => {
-        const templateField = match.groups.field
-        const field = fields.find((f) => f.name === templateField)
-        if (field) {
-          templateString = templateString.replaceAll(
-            `{{${templateField}}}`,
-            field.fieldValue,
-          )
-        }
-      })
+  return templateString
+}
 
-      return templateString
+function getMediaList(field: string) {
+  return getMediaFromNote(field)
+}
+
+function preloadImage(url: string) {
+  const img = new Image()
+  img.src = url
+  img.onerror = function () {
+    return false
+  }
+}
+
+async function replaceImages(field: string) {
+  field = await replaceAsync(
+    field,
+    /src\s*=\s*"(?<src>.+?)"/gm,
+    async (src) => {
+      src = src.slice(5, -1)
+      const media = await wankidb.media.get({ name: src })
+      const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
+      console.log('url src', url)
+      preloadImage(url)
+      return `loading="lazy" src="${url}" onerror="this.src = '';this.onerror='';" `
     },
+  )
 
-    getMediaList(field) {
-      return getMediaFromNote(field)
-    },
+  return field
+}
 
-    preloadImage(url) {
-      const img = new Image()
-      img.src = url
-      img.onerror = function () {
-        return false
-      }
-    },
-
-    async replaceImages(field) {
-      field = await replaceAsync(
-        field,
-        /src\s*=\s*"(?<src>.+?)"/gm,
-        async (src) => {
-          src = src.slice(5, -1)
-          const media = await wankidb.media.get({ name: src })
-          const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
-          console.log('url src', url)
-          this.preloadImage(url)
-          return `loading="lazy" src="${url}" onerror="this.src = '';this.onerror='';" `
-        },
-      )
-
-      return field
-    },
-  },
+// Add global window type declaration
+declare global {
+  interface Window {
+    card: any
+    note: any
+    model: any
+  }
 }
 </script>

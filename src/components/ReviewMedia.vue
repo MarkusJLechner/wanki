@@ -13,42 +13,29 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 import ReviewAudio from '@/components/ReviewAudio.vue'
 import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
-export default {
-  name: 'ReviewMedia',
-  components: { ReviewAudio },
-  props: {
-    mediaList: {
-      type: Array,
-      default: () => [],
-    },
-  },
 
-  data() {
-    return {
-      currentIndex: 0,
-    }
-  },
-
-  computed: {
-    useAlignAudioButtonsRight() {
-      return refstorage.getSetting(
-        defaultSettings.reviewing.alignAudioButtonsRight,
-      )
-    },
-  },
-
-  watch: {
-    mediaList() {
-      this.currentIndex = 0
-    },
-  },
-
-  mounted() {},
-
-  methods: {},
+interface Props {
+  mediaList?: any[]
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  mediaList: () => []
+})
+
+const currentIndex = ref(0)
+
+const useAlignAudioButtonsRight = computed(() => {
+  return refstorage.getSetting(
+    defaultSettings.reviewing.alignAudioButtonsRight
+  )
+})
+
+watch(() => props.mediaList, () => {
+  currentIndex.value = 0
+})
 </script>

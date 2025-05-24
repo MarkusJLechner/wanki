@@ -103,36 +103,27 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Promise from '@/components/Promise.vue'
-export default {
-  name: 'ReviewDebug',
-  components: { Promise },
 
-  props: {
-    card: {
-      type: Object,
-      default: null,
-    },
-    note: {
-      type: Object,
-      default: null,
-    },
-    deck: {
-      type: Object,
-      default: null,
-    },
-  },
+interface Props {
+  card?: Record<string, any> | null
+  note?: Record<string, any> | null
+  deck?: Record<string, any> | null
+}
 
-  methods: {
-    getFields() {
-      if (!this.note) {
-        return []
-      }
+const props = withDefaults(defineProps<Props>(), {
+  card: null,
+  note: null,
+  deck: null
+})
 
-      return this.note.flds.split('\u001f')
-    },
-  },
+function getFields(): string[] {
+  if (!props.note) {
+    return []
+  }
+
+  return props.note.flds.split('\u001f')
 }
 </script>
 

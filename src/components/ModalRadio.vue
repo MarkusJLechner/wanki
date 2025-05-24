@@ -9,59 +9,49 @@
   </BaseModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import BaseModal from '@/components/BaseModal.vue'
 import InputRadio from '@/components/InputRadio.vue'
 import { refstorage } from '@/store/globalstate'
 
-export default {
-  components: { InputRadio, BaseModal },
+interface RadioItem {
+  value: string
+  text: string
+  [key: string]: any
+}
 
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: true,
-    },
+interface Props {
+  modelValue?: boolean
+  title?: string
+  radioItems?: RadioItem[]
+  defaultValue?: string | null
+  storageKey?: string | null
+}
 
-    title: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: true,
+  title: '',
+  radioItems: () => [],
+  defaultValue: null,
+  storageKey: null
+})
 
-    radioItems: {
-      type: Array,
-      default: () => [],
-    },
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
 
-    defaultValue: {
-      type: String,
-      default: null,
-    },
+const computedValue = computed(() => {
+  return refstorage.get(props.storageKey, props.defaultValue)
+})
 
-    storageKey: {
-      type: String,
-      default: null,
-    },
-  },
+function onItem(item: RadioItem): void {
+  if (props.storageKey) {
+    refstorage.set(props.storageKey, item.value)
+  }
 
-  emits: ['close'],
-
-  computed: {
-    computedValue() {
-      return refstorage.get(this.storageKey, this.defaultValue)
-    },
-  },
-
-  methods: {
-    onItem(item) {
-      if (this.storageKey) {
-        refstorage.set(this.storageKey, item.value)
-      }
-
-      setTimeout(() => {
-        this.$emit('close')
-      }, 200)
-    },
-  },
+  setTimeout(() => {
+    emit('close')
+  }, 200)
 }
 </script>

@@ -33,55 +33,34 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { nanoid } from 'nanoid'
 
-export default {
-  name: 'InputTextField',
-
-  props: {
-    modelValue: {
-      type: [Number, String],
-      default: '',
-    },
-
-    label: {
-      type: String,
-      default: '',
-    },
-
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-
-    autofocus: {
-      type: Boolean,
-      default: false,
-    },
-
-    type: {
-      type: String,
-      default: 'text',
-    },
-
-    placeholder: {
-      type: String,
-      default: '',
-    },
-
-    autocomplete: {
-      type: String,
-      default: 'off',
-    },
-  },
-
-  emits: ['update:modelValue', 'enter'],
-
-  computed: {
-    uid() {
-      return nanoid(3)
-    },
-  },
+interface Props {
+  modelValue?: string | number
+  label?: string
+  disabled?: boolean
+  autofocus?: boolean
+  type?: string
+  placeholder?: string
+  autocomplete?: string
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  disabled: false,
+  autofocus: false,
+  type: 'text',
+  placeholder: '',
+  autocomplete: 'off'
+})
+
+defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'enter'): void
+}>()
+
+const uid = computed(() => nanoid(3))
 </script>
