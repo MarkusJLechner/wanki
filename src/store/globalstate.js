@@ -6,7 +6,7 @@ import { defaultSettings } from '@/plugins/defaultSettings.js'
 
 const storeItemSubscribers = {}
 
-const parseType = (value, type) => {
+export const parseType = (value, type) => {
   if (type === 'number') {
     return +value
   }

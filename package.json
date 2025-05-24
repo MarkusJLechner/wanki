@@ -6,7 +6,8 @@
     "esbuild:install": " node ./node_modules/esbuild/install.js",
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "dexie": "^3.0.3",
@@ -35,6 +36,7 @@
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "tailwindcss": "^2.1.2",
-    "vite": "^2.4.3"
+    "vite": "^2.4.3",
+    "vitest": "^0.34.0"
   }
 }
