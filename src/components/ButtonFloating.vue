@@ -9,7 +9,7 @@
         left-0
         top-0
         bg-gray-900/50
-        backdrop-grayscale backdrop-filter
+        backdrop-grayscale
       "
       @click="onClose()"
     />
@@ -27,7 +27,7 @@
             :href="item.href"
           >
             <span
-              class="bg-gray-800 py-1 px-2 z-20 rounded text-white select-none"
+              class="bg-gray-800 py-1 px-2 z-20 rounded-sm text-white select-none"
               >{{ item.text }}</span
             ><ButtonRound small :icon="item.icon" />
           </Component>
@@ -35,7 +35,7 @@
       </ul>
     </transition>
     <ButtonRound
-      class="transform duration-100"
+      class="duration-100"
       :class="{
         'rotate-45': show,
         border: !show,

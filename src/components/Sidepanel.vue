@@ -13,7 +13,7 @@
           h-full
           top-0
           left-0
-          backdrop-grayscale backdrop-filter
+          backdrop-grayscale
         "
         @click="onClose()"
       ></div>

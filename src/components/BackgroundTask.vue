@@ -2,7 +2,7 @@
   <div
     v-if="tasks.length"
     class="
-      backdrop-grayscale backdrop-filter
+      backdrop-grayscale
       bg-gray-700/40
       text-sm
       pointer-events-none
