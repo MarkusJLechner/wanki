@@ -6,17 +6,15 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 
-export default {
-  components: { List, TheHeader },
-
-  data() {
-    return {
-      listItems: [],
-    }
-  },
+interface ListItem {
+  // Define the structure of your list items here
+  [key: string]: any;
 }
+
+const listItems = ref<ListItem[]>([])
 </script>

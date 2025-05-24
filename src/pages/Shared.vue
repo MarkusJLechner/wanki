@@ -9,35 +9,28 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 
-export default {
-  components: { ThemeSwitcher, FlexSpacer, TheHeader },
+const details = ref<string | string[]>([])
 
-  data() {
-    return {
-      details: [],
+onMounted(() => {
+  self.addEventListener('fetch', (event: FetchEvent) => {
+    const url = new URL(event.request.url)
+    if (event.request.method === 'POST' && url.pathname === '/bookmark') {
+      event.respondWith(
+        (async () => {
+          const formData = await event.request.formData()
+          const link = formData.get('link') || ''
+          details.value = link
+          console.log(formData)
+          return new Response(link)
+        })(),
+      )
     }
-  },
-
-  created() {
-    self.addEventListener('fetch', (event) => {
-      const url = new URL(event.request.url)
-      if (event.request.method === 'POST' && url.pathname === '/bookmark') {
-        event.respondWith(
-          (async () => {
-            const formData = await event.request.formData()
-            const link = formData.get('link') || ''
-            this.details = link
-            console.log(formData)
-            return new Response(link)
-          })(),
-        )
-      }
-    })
-  },
-}
+  })
+})
 </script>
