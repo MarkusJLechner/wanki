@@ -35,8 +35,6 @@ export default {
     this.initStorage()
     window.wankidb = wankidb
 
-    refstorage.get('darkTheme', true)
-
     let htmlClasses = document.querySelector('html').classList
     watch(refstorage.ref('darkTheme'), (value) => {
       if (value) {
@@ -46,7 +44,7 @@ export default {
       }
     })
 
-    if (refstorage.get('darkTheme', true)) {
+    if (refstorage.get('darkTheme', false)) {
       document.querySelector('html').classList.add('dark')
     } else {
       document.querySelector('html').classList.remove('dark')

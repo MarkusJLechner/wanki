@@ -11,7 +11,7 @@ const parseType = (value, type) => {
     return +value
   }
   if (type === 'boolean') {
-    return !!JSON.parse(type)
+    return !!JSON.parse(value)
   }
   return value
 }
@@ -87,12 +87,8 @@ export const refstorage = {
   },
 }
 
-export const darkTheme = ref(
-  JSON.parse(localStorage.getItem('darkTheme')) || false,
-)
-watch(darkTheme, () => {
-  localStorage.setItem('darkTheme', JSON.stringify(darkTheme.value))
-})
+// Initialize darkTheme in refstorage
+refstorage.init('darkTheme', false)
 
 export const modalOpened = ref(false)
 
