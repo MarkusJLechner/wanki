@@ -71,7 +71,7 @@ Code style: [eslint](https://eslint.org/), [prettier](https://prettier.io/) and 
 
 Database: [dexie.js](https://dexie.org/)
 
-For import [sqllite.js](https://sql.js.org/#/) and for zipping [fflate](https://github.com/101arrowz/fflate)
+For import [sql.js](https://sql.js.org/#/) and for zipping [fflate](https://github.com/101arrowz/fflate)
 
 Simply pull the repository and run 
 ````bash
