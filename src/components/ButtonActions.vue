@@ -14,123 +14,111 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import Spacer from '@/components/Spacer.vue'
 import Button from '@/components/Button.vue'
 
-export default {
-  props: {
-    confirm: {
-      type: [Boolean, String],
-      default: false,
-    },
+interface Action {
+  type?: string
+  text?: string | (() => string)
+  emit?: string
+  [key: string]: any
+}
 
-    disableConfirm: {
-      type: Boolean,
-      default: false,
-    },
+interface Props {
+  confirm?: boolean | string
+  disableConfirm?: boolean
+  loading?: boolean
+  confirmText?: string
+  cancelText?: string | (() => string)
+  actions?: Action[]
+}
 
-    loading: {
-      type: Boolean,
-      default: true,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  confirm: false,
+  disableConfirm: false,
+  loading: true,
+  confirmText: 'Confirm',
+  cancelText: 'Cancel',
+})
 
-    confirmText: {
-      type: String,
-      default: 'Confirm',
-    },
+const emit = defineEmits<{
+  (e: 'click:action', action: Action): void
+  (e: 'action', action: Action): void
+  (e: 'confirm', action: Action): void
+  (e: 'close', action: Action): void
+}>()
 
-    cancelText: {
-      type: [String, Function],
-      default: 'Cancel',
-    },
+const defaultActions = computed<Action[]>(() => [
+  { type: 'spacer' },
+  {
+    text: () =>
+      typeof props.cancelText === 'function'
+        ? props.cancelText()
+        : props.cancelText,
+    emit: 'close',
+  },
+])
 
-    actions: {
-      type: Array,
-      default: (props) => {
-        return [
-          {
-            type: 'spacer',
-          },
-          {
-            text: () => props.cancelText,
-            emit: 'close',
-          },
-        ]
+const baseActions = computed<Action[]>(() => props.actions?.length ? props.actions : defaultActions.value)
+
+const computedActions = computed<Action[]>(() => {
+  if (props.confirm) {
+    return [
+      ...baseActions.value.map((a) => {
+        const action = { ...a }
+        if (action.emit === 'close') {
+          action.text =
+            typeof props.cancelText === 'function'
+              ? props.cancelText
+              : () => props.cancelText
+        }
+        return action
+      }),
+      {
+        text:
+          typeof props.confirm === 'string'
+            ? props.confirm
+            : props.confirmText,
+        emit: 'confirm',
       },
-    },
-  },
+    ]
+  }
+  return baseActions.value
+})
 
-  emits: ['click:action', 'action', 'confirm', 'close'],
+const canAction = (action: Action): boolean => {
+  if (props.loading && props.confirm) {
+    return action.emit === 'confirm'
+  }
 
-  computed: {
-    computedActions() {
-      if (this.confirm) {
-        return [
-          ...this.actions.map((a) => {
-            if (this.confirm && a.emit === 'close') {
-              a.text = this.cancelText
-            }
-            return a
-          }),
-          {
-            text:
-              typeof this.confirm === 'string'
-                ? this.confirm
-                : this.confirmText,
-            emit: 'confirm',
-          },
-        ]
-      }
-      return this.actions
-    },
-  },
+  if (props.loading && !props.confirm) {
+    return action.emit === 'close'
+  }
 
-  methods: {
-    canAction(action) {
-      if (this.loading && this.confirm) {
-        return action.emit === 'confirm'
-      }
+  return true
+}
 
-      if (this.loading && !this.confirm) {
-        return action.emit === 'close'
-      }
+const getValue = (obj: any): any => {
+  return typeof obj === 'function' ? obj() : obj
+}
 
-      return true
-    },
+const getComponent = (action: Action): any => {
+  return action.type === 'spacer' ? Spacer : Button
+}
 
-    getValue(obj) {
-      if (typeof obj === 'function') {
-        return obj()
-      }
+const isDisabled = (action: Action): boolean => {
+  return action.emit === 'confirm' && props.disableConfirm
+}
 
-      return obj
-    },
+const onClick = (action: Action): void => {
+  if (isDisabled(action)) return
 
-    getComponent(action) {
-      switch (action.type) {
-        case 'spacer':
-          return Spacer
-        default:
-          return Button
-      }
-    },
+  if (['close', 'confirm'].includes(action.emit || '')) {
+    emit(action.emit as 'close' | 'confirm', action)
+  }
 
-    isDisabled(action) {
-      return action.emit === 'confirm' && this.disableConfirm
-    },
-
-    onClick(action) {
-      if (this.isDisabled(action)) {
-        return
-      }
-
-      if (['close', 'confirm'].some((a) => a === action.emit)) {
-        this.$emit(action.emit, action)
-      }
-
-      this.$emit('click:action', action)
-    },
-  },
+  emit('click:action', action)
 }
 </script>

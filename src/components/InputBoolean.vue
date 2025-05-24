@@ -32,13 +32,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-  },
+<script setup lang="ts">
+interface Props {
+  modelValue?: boolean
 }
+
+withDefaults(defineProps<Props>(), {
+  modelValue: false
+})
+
+defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
 </script>

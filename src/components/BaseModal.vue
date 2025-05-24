@@ -94,126 +94,94 @@
   </transition>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
 import ButtonActions from '@/components/ButtonActions.vue'
-import { modalOpened } from '@/store/globalstate'
+import { modalOpened } from '@/store/globalstate.ts'
 import { onBeforeRouteLeave } from 'vue-router'
 
-export default {
-  components: { ButtonActions },
+interface Action {
+  text: string
+  value: string | number
+  [key: string]: any
+}
 
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
+interface Props {
+  modelValue?: boolean
+  loading?: boolean
+  title?: string
+  cancelText?: string | Function
+  noGutters?: boolean
+  confirm?: boolean | string
+  contentClass?: string
+  disableConfirm?: boolean
+  actions?: Action[]
+}
 
-    loading: {
-      type: Boolean,
-      default: false,
-    },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  loading: false,
+  title: '',
+  cancelText: undefined,
+  noGutters: false,
+  confirm: undefined,
+  contentClass: '',
+  disableConfirm: false,
+  actions: undefined,
+})
 
-    title: {
-      type: String,
-      default: '',
-    },
+const emit = defineEmits<{
+  (e: 'click:action', action: Action): void
+  (e: 'confirm'): void
+  (e: 'open'): void
+  (e: 'close'): void
+  (e: 'update:modelValue', value: boolean): void
+  (e: 'visible', value: boolean): void
+}>()
 
-    cancelText: {
-      type: [String, Function],
-      default: undefined,
-    },
+const show = ref(false)
 
-    noGutters: {
-      type: Boolean,
-      default: false,
-    },
+watch(() => props.modelValue, (newValue) => {
+  show.value = !!newValue
+  emit('visible', !!newValue)
+  modalOpened.value = !!newValue
+}, { immediate: true })
 
-    confirm: {
-      type: [Boolean, String],
-      default: undefined,
-    },
-
-    contentClass: {
-      type: String,
-      default: '',
-    },
-
-    disableConfirm: {
-      type: Boolean,
-      default: false,
-    },
-
-    actions: {
-      type: Array,
-      default: undefined,
-    },
-  },
-
-  emits: [
-    'click:action',
-    'confirm',
-    'open',
-    'close',
-    'update:modelValue',
-    'visible',
-  ],
-
-  data() {
-    return {
-      show: false,
+onMounted(() => {
+  onBeforeRouteLeave(() => {
+    if (show.value) {
+      onClose()
+      return false
     }
-  },
+    return true
+  })
+})
 
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(newValue) {
-        this.show = newValue
-        this.$emit('visible', newValue)
-        modalOpened.value = newValue
-      },
-    },
-  },
+const open = () => {
+  emit('open')
+  emit('update:modelValue', true)
+  show.value = true
+}
 
-  mounted() {
-    onBeforeRouteLeave(() => {
-      if (this.show) {
-        this.onClose()
-        return false
-      }
+const onClose = () => {
+  if (props.loading) {
+    return
+  }
 
-      return true
-    })
-  },
+  emit('close')
+  closeModal()
+}
 
-  methods: {
-    open() {
-      this.$emit('open')
-      this.$emit('update:modelValue', true)
-      this.show = true
-    },
+const onConfirm = () => {
+  emit('confirm')
+}
 
-    onClose() {
-      if (this.loading) {
-        return
-      }
+const closeModal = () => {
+  emit('update:modelValue', false)
+  show.value = false
+}
 
-      this.$emit('close')
-      this.closeModal()
-    },
-
-    onConfirm() {
-      this.$emit('confirm')
-    },
-
-    closeModal() {
-      this.$emit('update:modelValue', false)
-      this.show = false
-    },
-
-    onAction(action) {
-      this.$emit('click:action', action)
-    },
-  },
+const onAction = (action: Action) => {
+  emit('click:action', action)
 }
 </script>

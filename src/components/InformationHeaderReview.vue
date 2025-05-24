@@ -39,28 +39,20 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import NumberDue from '@/components/NumberDue.vue'
-export default {
-  name: 'InformationHeaderReview',
-  components: { NumberDue },
-  props: {
-    timer: {
-      type: String,
-      default: '01:22',
-    },
 
-    current: {
-      type: Number,
-      default: 0,
-    },
-
-    remaining: {
-      type: Array,
-      default: () => [1, 2, 3],
-    },
-  },
+interface Props {
+  timer?: string
+  current?: number
+  remaining?: number[]
 }
+
+withDefaults(defineProps<Props>(), {
+  timer: '01:22',
+  current: 0,
+  remaining: () => [1, 2, 3]
+})
 </script>
 
 <style scoped></style>

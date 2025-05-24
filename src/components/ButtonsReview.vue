@@ -45,41 +45,42 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import { Ease } from '@/plugins/conts.js'
 
-export default {
-  name: 'ButtonsReview',
+interface Button {
+  text: string
+  color: 'red' | 'gray' | 'green' | 'blue'
+  emit: number
+}
 
-  props: {
-    showRating: {
-      type: Boolean,
-      default: false,
-    },
-  },
+interface Props {
+  showRating?: boolean
+}
 
-  emits: ['show', 'rating'],
+const props = withDefaults(defineProps<Props>(), {
+  showRating: false
+})
 
-  data() {
-    return {
-      buttons: [
-        { text: 'AGAIN', color: 'red', emit: Ease.One },
-        { text: 'HARD', color: 'gray', emit: Ease.Two },
-        { text: 'GOOD', color: 'green', emit: Ease.Three },
-        { text: 'EASY', color: 'blue', emit: Ease.Four },
-      ],
-    }
-  },
+const emit = defineEmits<{
+  (e: 'show'): void
+  (e: 'rating', value: number): void
+}>()
 
-  methods: {
-    onShow() {
-      this.$emit('show')
-    },
+const buttons = ref<Button[]>([
+  { text: 'AGAIN', color: 'red', emit: Ease.One },
+  { text: 'HARD', color: 'gray', emit: Ease.Two },
+  { text: 'GOOD', color: 'green', emit: Ease.Three },
+  { text: 'EASY', color: 'blue', emit: Ease.Four },
+])
 
-    onClickRating(value) {
-      this.$emit('rating', value)
-    },
-  },
+const onShow = (): void => {
+  emit('show')
+}
+
+const onClickRating = (value: number): void => {
+  emit('rating', value)
 }
 </script>
 

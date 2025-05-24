@@ -30,18 +30,14 @@
   </button>
 </template>
 
-<script>
-export default {
-  props: {
-    text: {
-      type: String,
-      default: '',
-    },
-
-    loading: {
-      type: Boolean,
-      default: true,
-    },
-  },
+<script setup lang="ts">
+interface Props {
+  text?: string
+  loading?: boolean
 }
+
+withDefaults(defineProps<Props>(), {
+  text: '',
+  loading: true
+})
 </script>

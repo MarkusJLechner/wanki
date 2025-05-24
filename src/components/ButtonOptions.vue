@@ -42,59 +42,61 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import List from '@/components/List.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
-export default {
-  components: { List, ButtonIcon },
+interface Item {
+  text?: string
+  value?: any
+  emit?: string
+  [key: string]: any
+}
 
-  props: {
-    value: {
-      type: Array,
-      default: () => [],
-    },
-  },
+interface Props {
+  value?: Item[]
+}
 
-  emits: ['item'],
+const props = withDefaults(defineProps<Props>(), {
+  value: () => []
+})
 
-  data() {
-    return {
-      show: false,
+const emit = defineEmits<{
+  (e: 'item', item: Item): void
+  [key: string]: (...args: any[]) => void
+}>()
+
+const show = ref(false)
+
+onMounted(() => {
+  onBeforeRouteLeave(() => {
+    if (show.value) {
+      onClose()
+      return false
     }
-  },
 
-  mounted() {
-    onBeforeRouteLeave(() => {
-      if (this.show) {
-        this.onClose()
-        return false
-      }
+    return true
+  })
+})
 
-      return true
-    })
-  },
+const onOpen = (): void => {
+  if (show.value) {
+    onClose()
+  } else {
+    show.value = true
+  }
+}
 
-  methods: {
-    onOpen() {
-      if (this.show) {
-        this.onClose()
-      } else {
-        this.show = true
-      }
-    },
+const onClose = (): void => {
+  show.value = false
+}
 
-    onClose() {
-      this.show = false
-    },
-
-    onClickItem(item) {
-      if (item.emit) {
-        this.$emit(item.emit)
-      }
-      this.$emit('item', item)
-    },
-  },
+const onClickItem = (item: Item): void => {
+  if (item.emit) {
+    emit(item.emit as any, item)
+  }
+  emit('item', item)
 }
 </script>

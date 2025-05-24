@@ -27,40 +27,40 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 
-export default {
-  name: 'BackgroundTask',
-  components: { LoadingIcon },
-  data() {
-    return {
-      tasks: [],
-    }
-  },
-
-  async mounted() {
-    document.addEventListener('background/task', this.updateTask)
-  },
-
-  beforeUnmount() {
-    document.removeEventListener('background/task', this.updateTask)
-  },
-
-  methods: {
-    updateTask(event) {
-      const task = event.detail
-      if (task.remove) {
-        this.tasks = this.tasks.filter(
-          (t) => t.id !== task.id && t.unique !== task.unique,
-        )
-        return
-      }
-
-      this.tasks = [...this.tasks, task]
-    },
-  },
+interface Task {
+  id?: string | number
+  unique?: string | number
+  text: string
+  color?: string
+  loading?: boolean
+  remove?: boolean
 }
+
+const tasks = ref<Task[]>([])
+
+const updateTask = (event: CustomEvent) => {
+  const task = event.detail as Task
+  if (task.remove) {
+    tasks.value = tasks.value.filter(
+      (t) => t.id !== task.id && t.unique !== task.unique,
+    )
+    return
+  }
+
+  tasks.value = [...tasks.value, task]
+}
+
+onMounted(() => {
+  document.addEventListener('background/task', updateTask as EventListener)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('background/task', updateTask as EventListener)
+})
 </script>
 
 <style scoped></style>

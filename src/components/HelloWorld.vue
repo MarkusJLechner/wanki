@@ -13,19 +13,25 @@
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
 </template>
-<script setup>
-import { defineProps, reactive } from 'vue'
+<script setup lang="ts">
+import { reactive } from 'vue'
 import { useStore } from 'vuex'
+
+interface Props {
+  msg?: string
+}
+
+defineProps<Props>()
+
 const store = useStore()
-defineProps({
-  msg: String,
-})
 const state = reactive({ count: 0 })
-const click = () => {
+
+const click = (): void => {
   state.count++
   increment()
 }
-const increment = () => {
+
+const increment = (): void => {
   store.commit('increment')
   console.log(store.state)
 }

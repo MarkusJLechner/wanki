@@ -5,13 +5,12 @@
   </button>
 </template>
 
-<script>
-export default {
-  props: {
-    icon: {
-      type: String,
-      default: 'far fa-sun',
-    },
-  },
+<script setup lang="ts">
+interface Props {
+  icon?: string
 }
+
+withDefaults(defineProps<Props>(), {
+  icon: 'far fa-sun'
+})
 </script>

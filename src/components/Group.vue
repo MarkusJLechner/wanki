@@ -7,13 +7,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
-  },
+<script setup lang="ts">
+interface Props {
+  value?: string
 }
+
+withDefaults(defineProps<Props>(), {
+  value: ''
+})
 </script>

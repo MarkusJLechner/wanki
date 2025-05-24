@@ -46,44 +46,47 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    accept: {
-      type: String,
-      default: '',
-    },
-  },
-  emits: ['select'],
+<script setup lang="ts">
+import { ref } from 'vue'
 
-  data() {
-    return {
-      onHover: false,
-      isFocused: false,
-    }
-  },
+interface Props {
+  accept?: string
+}
 
-  methods: {
-    dragover(event) {
-      event.preventDefault()
-      this.onHover = true
-    },
+const props = withDefaults(defineProps<Props>(), {
+  accept: ''
+})
 
-    dragleave() {
-      this.onHover = false
-    },
+const emit = defineEmits<{
+  (e: 'select', files: File[]): void
+}>()
 
-    drop(event) {
-      this.dragleave()
-      event.preventDefault()
-      this.$refs.file.files = event.dataTransfer.files
-      this.onFilesChange()
-    },
+const onHover = ref(false)
+const isFocused = ref(false)
+const file = ref<HTMLInputElement | null>(null)
 
-    onFilesChange() {
-      const files = [...this.$refs.file.files]
-      this.$emit('select', files)
-    },
-  },
+const dragover = (event: DragEvent): void => {
+  event.preventDefault()
+  onHover.value = true
+}
+
+const dragleave = (): void => {
+  onHover.value = false
+}
+
+const drop = (event: DragEvent): void => {
+  dragleave()
+  event.preventDefault()
+  if (event.dataTransfer && file.value) {
+    file.value.files = event.dataTransfer.files
+    onFilesChange()
+  }
+}
+
+const onFilesChange = (): void => {
+  if (file.value && file.value.files) {
+    const files = Array.from(file.value.files)
+    emit('select', files)
+  }
 }
 </script>
