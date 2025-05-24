@@ -108,27 +108,20 @@ const ModalRadio = defineAsyncComponent(() =>
   import('@/components/ModalRadio.vue'),
 )
 
-const props = defineProps({
-  value: {
-    type: Array,
-    default: () => [],
-  },
-  noGutters: {
-    type: Boolean,
-    default: false,
-  },
-  dense: {
-    type: Boolean,
-    default: false,
-  },
-  noSeparation: {
-    type: Boolean,
-    default: false,
-  },
-  itemTextKey: {
-    type: String,
-    default: 'text',
-  },
+interface Props {
+  value: Array<any>;
+  noGutters?: boolean;
+  dense?: boolean;
+  noSeparation?: boolean;
+  itemTextKey?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: () => [],
+  noGutters: false,
+  dense: false,
+  noSeparation: false,
+  itemTextKey: 'text',
 })
 
 const emit = defineEmits(['item', 'long-press'])

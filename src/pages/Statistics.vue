@@ -8,12 +8,8 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
-
-export default {
-  components: { ThemeSwitcher, FlexSpacer, TheHeader },
-}
 </script>
