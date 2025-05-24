@@ -57,7 +57,7 @@ import MainContent from '@/components/MainContent.vue'
 import { addToast } from '@/store/globalstate.js'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { ToastType } from '@/plugins/conts.js'
-import { answerCard } from '@/plugins/scheduler.js'
+import { answerCard, getNextCard } from '@/plugins/scheduler.js'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 
@@ -107,7 +107,7 @@ export default {
   },
 
   mounted() {
-    this.loadFirstCard()
+    this.loadNextCard()
     addToast({ type: ToastType.info, text: 'Started review' })
     this.timer.start()
   },
@@ -117,19 +117,11 @@ export default {
   },
 
   methods: {
-    async loadFirstCard() {
-      const count = await wankidb.cards.where({ did: this.deckid }).count()
-      const pages = count / 5
-      const randPage = Math.floor(pages * Math.random())
-      console.log('load random', { count, pages, randPage })
-
-      this.card = await wankidb.cards
-        .where({ did: this.deckid })
-        .offset(randPage)
-        .limit(5)
-        .first()
-
-      console.log(this.card)
+    async loadNextCard() {
+      this.card = await getNextCard(this.deckid)
+      if (!this.card) {
+        addToast({ type: ToastType.info, text: 'No more cards to review' })
+      }
     },
 
     onClickOptions(item) {
@@ -148,7 +140,7 @@ export default {
       }
       try {
         await answerCard(this.card, ease)
-        await this.loadFirstCard()
+        await this.loadNextCard()
 
         this.showAnswer = false
       } catch (e) {

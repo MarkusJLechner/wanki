@@ -830,3 +830,56 @@ export function addUndo(card) {
   }
   stackUndo.push(clonedCard)
 }
+
+export async function getNextCard(deckId) {
+  deckId = +deckId || 1
+
+  const now = Date.now()
+
+  let card = await wankidb.cards
+    .where('did')
+    .equals(deckId)
+    .and((c) => c.queue === QueueType.Learn && c.due <= now)
+    .first()
+
+  if (card) {
+    card.startTimer()
+    return card
+  }
+
+  card = await wankidb.cards
+    .where('did')
+    .equals(deckId)
+    .and((c) => c.queue === QueueType.DayLearnRelearn && c.due <= now)
+    .first()
+
+  if (card) {
+    card.startTimer()
+    return card
+  }
+
+  const { today } = await collectionCreatedAt()
+
+  card = await wankidb.cards
+    .where('did')
+    .equals(deckId)
+    .and((c) => c.queue === QueueType.Review && c.due <= today)
+    .first()
+
+  if (card) {
+    card.startTimer()
+    return card
+  }
+
+  card = await wankidb.cards
+    .where('did')
+    .equals(deckId)
+    .and((c) => c.queue === QueueType.New)
+    .first()
+
+  if (card) {
+    card.startTimer()
+  }
+
+  return card
+}
