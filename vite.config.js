@@ -3,10 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const resolve = (dir) => {
-  return path.resolve(__dirname, dir)
+  return path.resolve(dirname, dir)
 }
 
 // https://vitejs.dev/config/
