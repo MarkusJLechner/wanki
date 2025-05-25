@@ -9,13 +9,28 @@ describe('scheduler helpers', () => {
     expect(String(cutoff).length).toBeGreaterThan(10)
   })
 
-  it('_leftToday respects day cutoff and uses ms', () => {
+  it('_leftToday respects provided time values', () => {
+    const delays = [1]
+    const left = 1
+    const now = 0
+    const cutoff = 60 * 1000
+    expect(_leftToday(delays, left, now, cutoff)).toBe(0)
+  })
+
+  it('_leftToday calculates additional days when cutoff is exceeded', () => {
     const delays = [1, 2, 3]
     const left = 3
     const now = 0
     const cutoff = 2 * 60 * 1000 // two minutes from start
-    // With correct ms calculation we should only fit two steps (index 0 and 1)
-    const result = _leftToday(delays, left, now, cutoff)
-    expect(result).toBe(1)
+    // only the first step fits today
+    expect(_leftToday(delays, left, now, cutoff)).toBe(1)
+  })
+
+  it('handles multiple steps across a single day', () => {
+    const delays = [10, 10, 10, 10]
+    const left = 4
+    const now = 0
+    const cutoff = 25 * 60 * 1000 // 25 minutes
+    expect(_leftToday(delays, left, now, cutoff)).toBe(1)
   })
 })

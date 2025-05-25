@@ -505,17 +505,20 @@ function _leftToday(
   now = Date.now(),
   cutoff = mDayCutoff ?? getDayCutoff(),
 ) {
-  let ok = 0
-  const delaysLength = delays.length
-  let offset = Math.min(left, delaysLength)
+  let extraDays = 0
+  const offset = Math.min(left, delays.length)
+
   for (let i = 0; i < offset; i++) {
-    now += Math.floor((delaysLength - offset + i) * 60.0 * 1000)
+    const delay = delays[delays.length - offset + i]
+    now += Math.floor(delay * 60 * 1000)
+
     if (now > cutoff) {
-      break
+      extraDays++
+      cutoff += 24 * 60 * 60 * 1000
     }
-    ok = i
   }
-  return ok
+
+  return extraDays
 }
 
 async function _answerLrnCard(card, ease) {
