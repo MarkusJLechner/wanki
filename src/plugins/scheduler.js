@@ -57,7 +57,7 @@ let mRevCount = 0
 
 const SECONDS_PER_DAY = 86400
 
-async function _updateCutoff() {
+export async function _updateCutoff() {
   const oldToday = mToday ?? 0
 
   const daysSinceCreation = await collectionCreatedAt()
@@ -78,7 +78,7 @@ async function _updateCutoff() {
   }
 }
 
-async function _timingToday() {
+export async function _timingToday() {
   return sched_timing_today(
     await creationTimestamp(),
     await _creation_timezone_offset(),
@@ -90,11 +90,15 @@ export async function rolloverHour() {
   return getConf('rollover', 4)
 }
 
-async function _creation_timezone_offset() {
+export async function _creation_timezone_offset() {
   return getConf('creationOffset', 0)
 }
 
-function sched_timing_today(collectionCreated, offsetMinutesUtc, rolloverHour) {
+export function sched_timing_today(
+  collectionCreated,
+  offsetMinutesUtc,
+  rolloverHour,
+) {
   const collectionTimestamp = new Date(collectionCreated)
   const colCreated = collectionTimestamp.setMinutes(
     collectionTimestamp.getMinutes() + offsetMinutesUtc,
@@ -117,20 +121,20 @@ function sched_timing_today(collectionCreated, offsetMinutesUtc, rolloverHour) {
   }
 }
 
-function diffDaysWithRollover(start, end, rollover_passed) {
+export function diffDaysWithRollover(start, end, rollover_passed) {
   let days = diffDays(start, end)
   days = rollover_passed ? days : days - 1
   return Math.floor(Math.max(0, days))
 }
 
-function diffDays(from, to) {
+export function diffDays(from, to) {
   const date1 = new Date(from)
   const date2 = new Date(to)
   const Difference_In_Time = date2.getTime() - date1.getTime()
   return Difference_In_Time / (1000 * 3600 * 24)
 }
 
-async function _daysSinceCreation() {
+export async function _daysSinceCreation() {
   const crtTime = new Date(await creationTimestamp())
   crtTime.setHours(await rolloverHour(), 0, 0, 0)
   const now = new Date()
@@ -139,7 +143,7 @@ async function _daysSinceCreation() {
   )
 }
 
-async function _dayCutoff() {
+export async function _dayCutoff() {
   let rolloverTime = await rolloverHour()
   if (rolloverTime < 0) {
     rolloverTime = 24 + rolloverTime
@@ -154,11 +158,11 @@ async function _dayCutoff() {
   return date.getTime()
 }
 
-async function _new_timezone_enabled() {
+export async function _new_timezone_enabled() {
   return !!(await getConf('creationOffset', false))
 }
 
-function update(deck) {
+export function update(deck) {
   ;['new', 'rev', 'lrn', 'time'].forEach((type) => {
     const key = type + 'Today'
     if (!deck[key]) {
@@ -172,7 +176,7 @@ function update(deck) {
   })
 }
 
-function getDayCutoff() {
+export function getDayCutoff() {
   let rolloverTime = 4 // todo get from config
   if (rolloverTime < 0) {
     rolloverTime += 24
@@ -254,7 +258,7 @@ export async function answerCard(card, ease = 3) {
   info('finished review', card)
 }
 
-async function _answerRevCard(card, ease) {
+export async function _answerRevCard(card, ease) {
   let delay = 0
   const early = card.isInDynamicDeck() && card.odue > mToday
   const type = early ? 3 : 1
@@ -268,7 +272,7 @@ async function _answerRevCard(card, ease) {
   await addRevlogReview(card, ease, delay, type)
 }
 
-async function _rescheduleLapse(card) {
+export async function _rescheduleLapse(card) {
   const conf = await _lapseConf(card)
   card.lapses = (card.lapses ?? 0) + 1
   card.factor = Math.max(1300, card.factor - 200)
@@ -292,7 +296,7 @@ async function _rescheduleLapse(card) {
   return delay
 }
 
-async function _checkLeech(card, conf) {
+export async function _checkLeech(card, conf) {
   const lf = conf.leechFails
   if (lf === 0) {
     return false
@@ -315,7 +319,7 @@ async function _checkLeech(card, conf) {
   return false
 }
 
-async function _rescheduleRev(card, ease, early) {
+export async function _rescheduleRev(card, ease, early) {
   // update interval
   card.lastIvl = card.ivl
 
@@ -336,15 +340,15 @@ async function _rescheduleRev(card, ease, early) {
   _removeFromFiltered(card)
 }
 
-async function _updateEarlyRevIvl(card, ease) {
+export async function _updateEarlyRevIvl(card, ease) {
   card.ivl = await _earlyReviewIvl(card, ease)
 }
 
-async function _updateRevIvl(card, ease) {
+export async function _updateRevIvl(card, ease) {
   card.ivl = await _nextRevIvl(card, ease, true)
 }
 
-async function _earlyReviewIvl(card, ease) {
+export async function _earlyReviewIvl(card, ease) {
   if (
     !card.isInDynamicDeck() ||
     card.type !== CardType.Review ||
@@ -388,7 +392,7 @@ async function _earlyReviewIvl(card, ease) {
   return _constrainedIvl(ivl, conf, 0, false)
 }
 
-async function _nextRevIvl(card, ease, fuzz) {
+export async function _nextRevIvl(card, ease, fuzz) {
   const delay = _daysLate(card)
   const conf = await _revConf(card)
   const fct = card.factor / 1000
@@ -418,18 +422,18 @@ async function _nextRevIvl(card, ease, fuzz) {
   )
 }
 
-function _daysLate(card) {
+export function _daysLate(card) {
   const due = card.isInDynamicDeck() ? card.odue : card.due
   return Math.max(0, mToday - due)
 }
 
-async function _revConf(card) {
+export async function _revConf(card) {
   const conf = await cardDeckConfig(card, card.isInDynamicDeck())
 
   return conf.rev
 }
 
-function _constrainedIvl(ivl, conf, prev, fuzz) {
+export function _constrainedIvl(ivl, conf, prev, fuzz) {
   let newIvl = Math.floor(ivl * (conf.ivlFct ?? 1))
   if (fuzz) {
     newIvl = _fuzzedIvl(newIvl)
@@ -441,7 +445,7 @@ function _constrainedIvl(ivl, conf, prev, fuzz) {
   return newIvl
 }
 
-async function _startingLeft(card) {
+export async function _startingLeft(card) {
   let conf
   if (card.type === CardType.Relearning) {
     conf = await _lapseConf(card)
@@ -455,7 +459,7 @@ async function _startingLeft(card) {
   return total + totalDelays * 1000
 }
 
-async function _lapseConf(card) {
+export async function _lapseConf(card) {
   const config = await cardDeckConfig(card)
   if (!card.isInDynamicDeck) {
     return config.lapse
@@ -472,7 +476,7 @@ async function _lapseConf(card) {
   }
 }
 
-async function _newConf(card) {
+export async function _newConf(card) {
   const config = await cardDeckConfig(card)
   if (!card.isInDynamicDeck) {
     return config.new
@@ -491,7 +495,7 @@ async function _newConf(card) {
   }
 }
 
-async function _lrnConf(card) {
+export async function _lrnConf(card) {
   if (card.isTypeReview() || card.isTypeRelearning()) {
     return await _lapseConf(card)
   }
@@ -499,7 +503,7 @@ async function _lrnConf(card) {
   return await _newConf(card)
 }
 
-function _leftToday(
+export function _leftToday(
   delays,
   left,
   now = Date.now(),
@@ -521,7 +525,7 @@ function _leftToday(
   return extraDays
 }
 
-async function _answerLrnCard(card, ease) {
+export async function _answerLrnCard(card, ease) {
   const conf = await _lrnConf(card)
   let type
   if (card.type === CardType.Review || card.type === CardType.Relearning) {
@@ -561,7 +565,7 @@ async function _answerLrnCard(card, ease) {
   await addRevlogLearn(card, ease, conf, leaving, type, lastLeft)
 }
 
-async function _moveToFirstStep(card, conf) {
+export async function _moveToFirstStep(card, conf) {
   card.left = await _startingLeft(card)
 
   if (card.type === CardType.Relearning) {
@@ -571,28 +575,28 @@ async function _moveToFirstStep(card, conf) {
   return _rescheduleLrnCard(card, conf)
 }
 
-function _updateRevIvlOnFail(card, conf) {
+export function _updateRevIvlOnFail(card, conf) {
   card.lastIvl = card.ivl
   card.ivl = _lapseIvl(card, conf)
 }
 
-function _lapseIvl(card, conf) {
+export function _lapseIvl(card, conf) {
   return Math.max(1, Math.max(conf.minInt, Math.floor(card.ivl * conf.mult)))
 }
 
-function _moveToNextStep(card, conf) {
+export function _moveToNextStep(card, conf) {
   const left = (card.left % 1000) - 1
   card.left = _leftToday(conf.delays, left) * 1000 + left
 
   return _rescheduleAsRev(card, conf)
 }
 
-async function _repeatStep(card, conf) {
+export async function _repeatStep(card, conf) {
   const delay = _delayForRepeatingGrade(conf, card.left)
   return _rescheduleLrnCard(card, conf, delay)
 }
 
-function _delayForRepeatingGrade(conf, left) {
+export function _delayForRepeatingGrade(conf, left) {
   // halfway between last and next
   const delay1 = _delayForGrade(conf, left)
   let delay2
@@ -604,7 +608,7 @@ function _delayForRepeatingGrade(conf, left) {
   return (delay1 + Math.max(delay1, delay2)) / 2
 }
 
-async function _rescheduleLrnCard(card, conf, delay) {
+export async function _rescheduleLrnCard(card, conf, delay) {
   if (!delay) {
     delay = _delayForGrade(conf, card.left)
   }
@@ -639,11 +643,11 @@ async function _rescheduleLrnCard(card, conf, delay) {
   return delay
 }
 
-function counts() {
+export function counts() {
   return new Counts(mNewCount, mLrnCount, mRevCount)
 }
 
-function _sortIntoLrn(due, id) {
+export function _sortIntoLrn(due, id) {
   // ensure the queue is active
   if (!mLrnQueue.isFilled) {
     mLrnQueue.add(due, id)
@@ -659,7 +663,7 @@ function _sortIntoLrn(due, id) {
   }
 }
 
-async function addRevlogReview(card, ease, delay, type) {
+export async function addRevlogReview(card, ease, delay, type) {
   const usn = await getColKey('usn', 0)
   const ivl = delay !== 0 ? -delay : card.ivl
   await addRevLog(
@@ -674,7 +678,14 @@ async function addRevlogReview(card, ease, delay, type) {
   )
 }
 
-async function addRevlogLearn(card, ease, conf, leaving, type, lastLeft) {
+export async function addRevlogLearn(
+  card,
+  ease,
+  conf,
+  leaving,
+  type,
+  lastLeft,
+) {
   const usn = await getColKey('usn', 0)
   const lastIvl = -_delayForGrade(conf, lastLeft)
   const ivl = leaving ? card.ivl : -_delayForGrade(conf, card.left)
@@ -690,7 +701,7 @@ async function addRevlogLearn(card, ease, conf, leaving, type, lastLeft) {
   )
 }
 
-function _delayForGrade(conf, left) {
+export function _delayForGrade(conf, left) {
   left = left % 1000
   try {
     let delay
@@ -713,7 +724,16 @@ function _delayForGrade(conf, left) {
   }
 }
 
-async function addRevLog(cardId, usn, ease, ivl, lastIvl, factor, time, type) {
+export async function addRevLog(
+  cardId,
+  usn,
+  ease,
+  ivl,
+  lastIvl,
+  factor,
+  time,
+  type,
+) {
   await wankidb.revlog.add({
     id: new Date().getTime(),
     cid: cardId,
@@ -727,7 +747,7 @@ async function addRevLog(cardId, usn, ease, ivl, lastIvl, factor, time, type) {
   })
 }
 
-function _rescheduleAsRev(card, conf, early) {
+export function _rescheduleAsRev(card, conf, early) {
   const isLapse =
     card.type === CardType.Review || card.type === CardType.Relearning
 
@@ -742,7 +762,7 @@ function _rescheduleAsRev(card, conf, early) {
   }
 }
 
-function _rescheduleGraduatingLapse(card, early) {
+export function _rescheduleGraduatingLapse(card, early) {
   if (early) {
     card.ivl = (card.ivl ?? 0) + 1
   }
@@ -752,7 +772,7 @@ function _rescheduleGraduatingLapse(card, early) {
   card.type = CardType.Review
 }
 
-function _rescheduleNew(card, conf, early) {
+export function _rescheduleNew(card, conf, early) {
   card.ivl = _graduatingIvl(card, conf, early)
   card.due = mToday + card.ivl
   card.factor = conf.initialFactor
@@ -760,7 +780,7 @@ function _rescheduleNew(card, conf, early) {
   card.queue = QueueType.Review
 }
 
-function _graduatingIvl(card, conf, early, fuzz = false) {
+export function _graduatingIvl(card, conf, early, fuzz = false) {
   if (card.type === CardType.Review || card.type === CardType.Relearning) {
     const bonus = early ? 1 : 0
     return card.ivl + bonus
@@ -780,14 +800,14 @@ function _graduatingIvl(card, conf, early, fuzz = false) {
   return ideal
 }
 
-function _fuzzedIvl(ivl) {
+export function _fuzzedIvl(ivl) {
   const [min, max] = _fuzzIvlRange(ivl)
   // Anki's python uses random.randint(a, b) which returns x in [a, b] while the eq Random().nextInt(a, b)
   // returns x in [0, b-a), hence the +1 diff with libanki
   return Math.random() * (max - min + 1) + min
 }
 
-function _fuzzIvlRange(ivl) {
+export function _fuzzIvlRange(ivl) {
   let fuzz
   if (ivl < 2) {
     return [1, 1]
@@ -805,7 +825,7 @@ function _fuzzIvlRange(ivl) {
   return [ivl - fuzz, ivl + fuzz]
 }
 
-function _removeFromFiltered(card) {
+export function _removeFromFiltered(card) {
   if (card.isInDynamicDeck()) {
     card.did = card.oid
     card.odue = 0
@@ -839,6 +859,3 @@ export function addUndo(card) {
   }
   stackUndo.push(clonedCard)
 }
-
-// internal helpers exported for testing
-export { _leftToday, getDayCutoff }
