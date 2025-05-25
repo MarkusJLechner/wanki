@@ -118,6 +118,8 @@ watch(
 )
 
 onMounted(() => {
+  // router.push will not work in dispatch when modal cloases
+  // Error guard afterEach - Navigation aborted from ... via a navigation guard.
   onBeforeRouteLeave(() => {
     if (show.value) {
       onClose()

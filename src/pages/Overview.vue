@@ -140,15 +140,15 @@ const optionsFloating = ref([
 
 // Computed properties
 const modelOptionDeckId = computed(() => {
-  return modalOptionsItem.value?.id
+  return modalOptionsItem.value?.deck?.id
 })
 
 const modelOptionDeckDesc = computed(() => {
-  return modalOptionsItem.value?.desc
+  return modalOptionsItem.value?.deck?.desc
 })
 
 const modelOptionDeckTitle = computed(() => {
-  return modalOptionsItem.value?.text
+  return modalOptionsItem.value?.deck?.name
 })
 
 const deckOptions = computed(() => [
@@ -169,7 +169,10 @@ const deckOptions = computed(() => [
   {
     text: 'Deck options',
     dispatch: () => {
-      router.push({ path: '/deck/options', query: modelOptionDeckId.value })
+      router.push({
+        path: '/deck/options',
+        query: { deckid: modelOptionDeckId.value },
+      })
     },
   },
   { text: 'Delete', dispatch: () => (showModalDelete.value = true) },
