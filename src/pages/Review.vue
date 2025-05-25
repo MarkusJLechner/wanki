@@ -26,7 +26,7 @@
     </TheHeader>
 
     <MainContent>
-      <InformationHeaderReview class="" :current="2" :timer="timerText" />
+      <InformationHeaderReview class="" :current="2" :remaining="[1,2,22]" :timer="timerText" />
 
       <div id="review-container" class="grow p-3 relative">
         <ReviewDebug v-if="debug" :card="card" :deck="deck" />

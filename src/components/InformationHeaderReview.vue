@@ -51,7 +51,7 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   timer: '01:22',
   current: 0,
-  remaining: () => [1, 2, 3]
+  remaining: () => [0, 0, 0]
 })
 </script>
 
