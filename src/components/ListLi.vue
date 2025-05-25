@@ -113,8 +113,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'item', item: Record<string, any>): void;
-  (e: 'long-press', item: Record<string, any>): void;
+  item: [item: Record<string, any>]
+  'long-press': [item: Record<string, any>]
 }>()
 
 const router = useRouter()

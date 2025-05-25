@@ -53,8 +53,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'update:inputValue', value: string): void
+  close: []
+  'update:inputValue': [value: string]
 }>()
 
 const value = ref<string | null>(null)

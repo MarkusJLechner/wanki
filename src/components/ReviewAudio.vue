@@ -43,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'ended'): void
+  ended: []
 }>()
 
 const audio = ref<HTMLAudioElement | null>(null)

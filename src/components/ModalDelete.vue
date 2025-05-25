@@ -45,8 +45,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'item', item: Record<string, any>): void;
-  (e: 'close'): void;
+  item: [item: Record<string, any>]
+  close: []
 }>()
 
 function onClickItem(item: Record<string, any>): void {

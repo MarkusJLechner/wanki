@@ -58,8 +58,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 defineEmits<{
-  (e: 'update:modelValue', value: string): void
-  (e: 'enter'): void
+  'update:modelValue': [value: string];
+  enter: [];
 }>()
 
 const uid = computed(() => nanoid(3))

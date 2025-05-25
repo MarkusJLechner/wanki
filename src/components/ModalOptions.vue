@@ -25,8 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'item', item: any): void
-  (e: 'close'): void
+  item: [item: any]
+  close: []
 }>()
 
 function onClickItem(item: any): void {

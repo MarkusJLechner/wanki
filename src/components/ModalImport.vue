@@ -87,8 +87,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'close'): void;
-  (e: 'update:model-value', value: boolean): void;
+  close: []
+  'update:model-value': [value: boolean]
 }>()
 
 let decompressedFile: any = null

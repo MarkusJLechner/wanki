@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'close'): void
+  close: []
 }>()
 
 const computedValue = computed(() => {
