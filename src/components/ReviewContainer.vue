@@ -74,6 +74,7 @@ const computedStyle = computed(() => {
       max-width: 100%;
       width: 100%;
       max-height: 370px;
+      min-height: 100px;
       object-fit: contain;
     }
     hr {
@@ -99,35 +100,6 @@ watch(() => props.card, () => {
     mountNote()
   }
 })
-
-watch(() => props.showAnswer, () => {
-  setIFrameHeight(true)
-})
-
-function setIFrameHeight(reset = false) {
-  if (reset) {
-    setIframeHeight(0)
-  }
-  nextTick(() => {
-    setIframeHeight()
-  })
-
-  setTimeout(() => {
-    setIframeHeight()
-  }, 500)
-}
-
-function setIframeHeight(height?: number) {
-  const iframe = document.querySelector('iframe')
-  if (iframe) {
-    iframe.height = '' + (height ?? getIframeHeight()) || '100%'
-  }
-}
-
-function getIframeHeight() {
-  return document.querySelector('iframe')?.contentWindow?.document.body
-    ?.scrollHeight
-}
 
 async function mountNote() {
   if (!props.card) return
@@ -155,8 +127,6 @@ async function mountNote() {
   fieldAnswer.value = replaceMediaFromNote(fieldAnswer.value)
 
   cardStyle.value = model.css
-
-  setIFrameHeight()
 }
 
 function parseTemplate(templateString: string, fields: any[]) {
@@ -209,12 +179,18 @@ function getMediaList(field: string) {
   return getMediaFromNote(field)
 }
 
-function preloadImage(url: string) {
-  const img = new Image()
-  img.src = url
-  img.onerror = function () {
-    return false
-  }
+function preloadImage(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = function() {
+      // Update iframe height after image is loaded
+      resolve(true)
+    }
+    img.onerror = function() {
+      resolve(false)
+    }
+    img.src = url
+  })
 }
 
 async function replaceImages(field: string) {
