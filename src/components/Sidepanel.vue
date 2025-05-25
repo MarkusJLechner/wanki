@@ -5,35 +5,14 @@
     <transition name="fade">
       <div
         v-if="show"
-        class="
-          bg-gray-900/50
-          z-20
-          fixed
-          w-full
-          h-full
-          top-0
-          left-0
-          backdrop-grayscale
-        "
+        class="fixed top-0 left-0 z-20 h-full w-full bg-gray-900/50 backdrop-grayscale"
         @click="onClose()"
       ></div>
     </transition>
     <nav
       ref="slide"
       :class="{ open: show }"
-      class="
-        slide-parent
-        fixed
-        left-0
-        top-0
-        flex flex-col
-        bg-white
-        dark:bg-gray-700
-        h-full
-        w-64
-        shadow-md
-        z-20
-      "
+      class="slide-parent fixed top-0 left-0 z-20 flex h-full w-64 flex-col bg-white shadow-md dark:bg-gray-700"
     >
       <slot name="slide-content">
         <List no-separation no-gutters :value="items" @item="onClick" />
@@ -69,7 +48,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  items: () => []
+  items: () => [],
 })
 
 const slideXPosition = ref(52)
@@ -89,7 +68,7 @@ const touch = ref<TouchState>({
   clientX: 0,
   clientY: 0,
   distanceX: 0,
-  distanceY: 0
+  distanceY: 0,
 })
 
 const onTouchmove = (event: TouchEvent) => {

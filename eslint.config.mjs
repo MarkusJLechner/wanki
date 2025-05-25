@@ -1,6 +1,10 @@
 import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import vue from 'eslint-plugin-vue'
+import prettier from 'eslint-plugin-prettier'
+import prettierConfig from 'eslint-config-prettier'
+import typescriptPlugin from '@typescript-eslint/eslint-plugin'
+import typescriptParser from '@typescript-eslint/parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
@@ -15,33 +19,21 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
+  // Base configuration for all files
   {
     languageOptions: {
       globals: {
         ...globals.browser,
         ...globals.node,
       },
-
       ecmaVersion: 'latest',
       sourceType: 'module',
-
-      parserOptions: {
-        parser: '@babel/eslint-parser',
-        requireConfigFile: false,
-      },
     },
-
-    extends: compat.extends(
-      'plugin:vue/recommended',
-      '@vue/prettier',
-      'plugin:prettier/recommended',
-    ),
-
     plugins: {
-      vue,
+      prettier,
     },
-
     rules: {
+      ...prettierConfig.rules,
       indent: [
         'error',
         2,
@@ -49,12 +41,58 @@ export default defineConfig([
           SwitchCase: 1,
         },
       ],
-
       'linebreak-style': ['error', 'unix'],
       quotes: ['error', 'single'],
       semi: ['error', 'never'],
       'prettier/prettier': ['error'],
+    },
+  },
+
+  // Vue files configuration
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vue.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      vue,
+    },
+    rules: {
       'vue/no-multiple-template-root': 'off',
+    },
+  },
+
+  // JavaScript files configuration
+  {
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+  },
+
+  // TypeScript files configuration
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescriptPlugin,
+    },
+    rules: {
+      ...typescriptPlugin.configs.recommended.rules,
     },
   },
 ])
