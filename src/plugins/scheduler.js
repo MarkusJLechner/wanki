@@ -48,8 +48,6 @@ export async function collectionCreatedAt() {
   }
 }
 
-let dayCutof = getDayCutoff()
-
 let mToday = 0
 let mDayCutoff
 let mLrnQueue = LrnCardQueue.default
@@ -181,12 +179,12 @@ function getDayCutoff() {
   }
 
   const date = new Date()
-  date.setHours(rolloverTime)
+  date.setHours(rolloverTime, 0, 0, 0)
   if (date.getTime() < new Date().getTime()) {
     date.setDate(date.getDate() + 1)
   }
 
-  return date.getTime() / 1000
+  return date.getTime()
 }
 
 export async function answerCard(card, ease = 3) {
@@ -501,7 +499,7 @@ async function _lrnConf(card) {
   return await _newConf(card)
 }
 
-function _leftToday(delays, left, now = 0) {
+function _leftToday(delays, left, now = 0, cutoff = mDayCutoff ?? getDayCutoff()) {
   if (!now) {
     now = new Date().getTime()
   }
@@ -509,8 +507,8 @@ function _leftToday(delays, left, now = 0) {
   const delaysLength = delays.length
   let offset = Math.min(left, delaysLength)
   for (let i = 0; i < offset; i++) {
-    now += Math.floor((delaysLength - offset + i) * 60.0)
-    if (now > dayCutof) {
+    now += Math.floor((delaysLength - offset + i) * 60.0 * 1000)
+    if (now > cutoff) {
       break
     }
     ok = i
@@ -744,7 +742,7 @@ function _rescheduleGraduatingLapse(card, early) {
     card.ivl = (card.ivl ?? 0) + 1
   }
 
-  card.due += mToday + card.ivl
+  card.due = mToday + card.ivl
   card.queue = QueueType.Review
   card.type = CardType.Review
 }
@@ -836,3 +834,6 @@ export function addUndo(card) {
   }
   stackUndo.push(clonedCard)
 }
+
+// internal helpers exported for testing
+export { _leftToday, getDayCutoff }
