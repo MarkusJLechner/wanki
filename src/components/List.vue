@@ -1,5 +1,6 @@
 <template>
   <ul
+    v-bind="$attrs"
     class="flex w-full flex-col text-lg"
     :class="{
       'py-2': !noGutters,
