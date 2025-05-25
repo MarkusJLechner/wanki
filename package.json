@@ -8,7 +8,10 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "npm run lint:js && npm run lint:style",
+    "lint:js": "eslint . --ext .ts,.js,.vue",
+    "lint:style": "stylelint \"src/**/*.css\""
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
@@ -25,6 +28,8 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.27.0",
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -37,6 +42,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
     "eslint-plugin-vue": "^10.1.0",
+    "globals": "^16.2.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
