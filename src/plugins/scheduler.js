@@ -502,12 +502,9 @@ async function _lrnConf(card) {
 function _leftToday(
   delays,
   left,
-  now = 0,
+  now = Date.now(),
   cutoff = mDayCutoff ?? getDayCutoff(),
 ) {
-  if (!now) {
-    now = new Date().getTime()
-  }
   let ok = 0
   const delaysLength = delays.length
   let offset = Math.min(left, delaysLength)
