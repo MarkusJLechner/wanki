@@ -6,17 +6,9 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 
-export default {
-  components: { List, TheHeader },
-
-  data() {
-    return {
-      listItems: [],
-    }
-  },
-}
+const listItems: any[] = []
 </script>
