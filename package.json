@@ -10,8 +10,8 @@
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "npm run lint:js && npm run lint:style",
-    "lint:js": "eslint . --ext .ts,.js,.vue",
-    "lint:style": "stylelint \"src/**/*.css\""
+    "lint:js": "eslint . --ext .ts,.js,.vue --cache --cache-location .eslintcache",
+    "lint:style": "stylelint \"src/**/*.css\" --cache"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",

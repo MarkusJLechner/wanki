@@ -6,3 +6,5 @@ dist-ssr
 *.sqlite3
 .idea
 collection.anki2
+.eslintcache
+.stylelintcache
