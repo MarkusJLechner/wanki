@@ -3,59 +3,30 @@
     <TheHeader title="Deck Options" back-button />
     <MainContent>
       <Group value="Daily Limits">
-        <InputTextField
-          label="New cards/day"
-          type="number"
-          v-model="newPerDay"
-        />
-        <InputTextField
-          label="Maximum reviews/day"
-          type="number"
-          v-model="maxReviews"
-        />
-        <div class="flex items-center justify-between px-4">
-          <span>New cards ignore review limit</span>
-          <InputBoolean v-model="ignoreReviewLimit" />
-        </div>
+        <List :value="listItemsDailyLimits" />
       </Group>
 
       <Group value="New Cards" class="mt-4">
-        <InputTextField
-          label="Learning steps"
-          placeholder="e.g. 1m 10m 1h 4d"
-          v-model="newSteps"
-        />
-        <InputRadio :items="orderItems" v-model="newOrder" />
+        <List :value="listItemsNewCards" />
       </Group>
 
       <Group value="Lapses" class="mt-4">
-        <InputTextField
-          label="Relearning steps"
-          placeholder="e.g. 10m 1h"
-          v-model="lapseSteps"
-        />
-        <InputTextField
-          label="Leech threshold"
-          type="number"
-          v-model="leechThreshold"
-        />
-        <InputRadio :items="lapseActionItems" v-model="leechAction" />
+        <List :value="listItemsLapses" />
       </Group>
     </MainContent>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { NewCardOrder, Leech } from '@/plugins/conts.js'
+import { refstorage } from '@/store/globalstate'
 import TheHeader from '@/components/TheHeader.vue'
 import MainContent from '@/components/MainContent.vue'
 import Group from '@/components/Group.vue'
-import InputTextField from '@/components/InputTextField.vue'
-import InputBoolean from '@/components/InputBoolean.vue'
-import InputRadio from '@/components/InputRadio.vue'
+import List from '@/components/List.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,15 +44,162 @@ const lapseSteps = ref('')
 const leechThreshold = ref<number | null>(null)
 const leechAction = ref(Leech.Suspend)
 
-const orderItems = ref([
+const orderItems = [
   { text: 'Random', value: NewCardOrder.Random },
   { text: 'Sequential (oldest first)', value: NewCardOrder.Due },
-])
+]
 
-const lapseActionItems = ref([
+const lapseActionItems = [
   { text: 'Tag only', value: Leech.TagOnly },
   { text: 'Suspend card', value: Leech.Suspend },
-])
+]
+
+interface ListItem {
+  text: string
+  subtext?: string
+  toggle?: string
+  toggleDefault?: boolean
+  icon?: string
+  kind?: string
+  key?: string
+  placeholder?: string
+  type?: string
+  title?: string
+  radio?: {
+    title: string
+    key: string
+    default: string | number
+    items: Array<{
+      text: string
+      value: string | number
+    }>
+  }
+  click?: (item: any) => void
+}
+
+const listItemsDailyLimits: ListItem[] = [
+  {
+    text: 'New cards/day',
+    kind: 'textfield',
+    type: 'number',
+    key: 'deck.options.new.perDay',
+    title: 'New cards/day',
+    click: () => {
+      if (dconf.value) {
+        dconf.value.new = dconf.value.new || {}
+        dconf.value.new.perDay = newPerDay.value
+        save()
+      }
+    }
+  },
+  {
+    text: 'Maximum reviews/day',
+    kind: 'textfield',
+    type: 'number',
+    key: 'deck.options.rev.perDay',
+    title: 'Maximum reviews/day',
+    click: () => {
+      if (dconf.value) {
+        dconf.value.rev = dconf.value.rev || {}
+        dconf.value.rev.perDay = maxReviews.value
+        save()
+      }
+    }
+  },
+  {
+    text: 'New cards ignore review limit',
+    toggle: 'deck.options.new.ignoreReviewLimit',
+    toggleDefault: false,
+    click: () => {
+      if (dconf.value) {
+        dconf.value.new = dconf.value.new || {}
+        dconf.value.new.ignoreReviewLimit = !dconf.value.new.ignoreReviewLimit
+        ignoreReviewLimit.value = dconf.value.new.ignoreReviewLimit
+        save()
+      }
+    }
+  }
+]
+
+const listItemsNewCards: ListItem[] = [
+  {
+    text: 'Learning steps',
+    kind: 'textfield',
+    placeholder: 'e.g. 1m 10m 1h 4d',
+    key: 'deck.options.new.steps',
+    title: 'Learning steps',
+    click: () => {
+      if (dconf.value) {
+        dconf.value.new = dconf.value.new || {}
+        dconf.value.new.delays = parseSteps(newSteps.value)
+        save()
+      }
+    }
+  },
+  {
+    text: 'New cards order',
+    radio: {
+      title: 'New cards order',
+      key: 'deck.options.new.order',
+      default: NewCardOrder.Due,
+      items: orderItems
+    },
+    click: () => {
+      if (dconf.value) {
+        dconf.value.new = dconf.value.new || {}
+        dconf.value.new.order = newOrder.value
+        save()
+      }
+    }
+  }
+]
+
+const listItemsLapses: ListItem[] = [
+  {
+    text: 'Relearning steps',
+    kind: 'textfield',
+    placeholder: 'e.g. 10m 1h',
+    key: 'deck.options.lapse.steps',
+    title: 'Relearning steps',
+    click: () => {
+      if (dconf.value) {
+        dconf.value.lapse = dconf.value.lapse || {}
+        dconf.value.lapse.delays = parseSteps(lapseSteps.value)
+        save()
+      }
+    }
+  },
+  {
+    text: 'Leech threshold',
+    kind: 'textfield',
+    type: 'number',
+    key: 'deck.options.lapse.leechThreshold',
+    title: 'Leech threshold',
+    click: () => {
+      if (dconf.value) {
+        dconf.value.lapse = dconf.value.lapse || {}
+        dconf.value.lapse.leechFails = leechThreshold.value
+        save()
+      }
+    }
+  },
+  {
+    text: 'Leech action',
+    radio: {
+      title: 'Leech action',
+      key: 'deck.options.lapse.leechAction',
+      default: Leech.Suspend,
+      items: lapseActionItems
+    },
+    click: () => {
+      if (dconf.value) {
+        dconf.value.lapse = dconf.value.lapse || {}
+        dconf.value.lapse.leechAction = leechAction.value
+        save()
+      }
+    }
+  }
+]
 
 function formatSteps(steps: number[] = []) {
   return steps
@@ -111,7 +229,7 @@ function parseSteps(str: string): number[] {
 
 async function save() {
   if (dconf.value) {
-    await wankidb.dconf.put(dconf.value)
+    await wankidb.dconf.put(toRaw(dconf.value))
   }
 }
 
@@ -189,5 +307,31 @@ onMounted(async () => {
   lapseSteps.value = formatSteps(dconf.value.lapse?.delays || [])
   leechThreshold.value = dconf.value.lapse?.leechFails ?? null
   leechAction.value = dconf.value.lapse?.leechAction ?? Leech.Suspend
+
+  // Set initial values for refstorage
+  if (dconf.value.new?.perDay !== undefined) {
+    refstorage.set('deck.options.new.perDay', dconf.value.new.perDay)
+  }
+  if (dconf.value.rev?.perDay !== undefined) {
+    refstorage.set('deck.options.rev.perDay', dconf.value.rev.perDay)
+  }
+  if (dconf.value.new?.ignoreReviewLimit !== undefined) {
+    refstorage.set('deck.options.new.ignoreReviewLimit', dconf.value.new.ignoreReviewLimit)
+  }
+  if (dconf.value.new?.delays) {
+    refstorage.set('deck.options.new.steps', formatSteps(dconf.value.new.delays))
+  }
+  if (dconf.value.new?.order !== undefined) {
+    refstorage.set('deck.options.new.order', dconf.value.new.order)
+  }
+  if (dconf.value.lapse?.delays) {
+    refstorage.set('deck.options.lapse.steps', formatSteps(dconf.value.lapse.delays))
+  }
+  if (dconf.value.lapse?.leechFails !== undefined) {
+    refstorage.set('deck.options.lapse.leechThreshold', dconf.value.lapse.leechFails)
+  }
+  if (dconf.value.lapse?.leechAction !== undefined) {
+    refstorage.set('deck.options.lapse.leechAction', dconf.value.lapse.leechAction)
+  }
 })
 </script>
