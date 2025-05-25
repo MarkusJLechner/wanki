@@ -26,7 +26,7 @@ export async function getColKey(key, fallback) {
     console.error('No collection found')
     return fallback
   }
-  return key ? col[key] ?? fallback : col
+  return key ? (col[key] ?? fallback) : col
 }
 
 export async function creationTimestamp() {
@@ -46,7 +46,7 @@ export async function getConf(key, fallback) {
     return fallback
   }
   const conf = col.conf
-  return key ? conf[key] ?? fallback : conf
+  return key ? (conf[key] ?? fallback) : conf
 }
 
 export async function setConf(key, value) {

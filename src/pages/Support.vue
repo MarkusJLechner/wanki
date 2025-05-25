@@ -17,8 +17,8 @@ import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import List from '@/components/List.vue'
 
 interface ListItem {
-  icon: string;
-  text: string;
+  icon: string
+  text: string
 }
 
 const listItems = ref<ListItem[]>([

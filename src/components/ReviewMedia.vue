@@ -24,18 +24,19 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  mediaList: () => []
+  mediaList: () => [],
 })
 
 const currentIndex = ref(0)
 
 const useAlignAudioButtonsRight = computed(() => {
-  return refstorage.getSetting(
-    defaultSettings.reviewing.alignAudioButtonsRight
-  )
+  return refstorage.getSetting(defaultSettings.reviewing.alignAudioButtonsRight)
 })
 
-watch(() => props.mediaList, () => {
-  currentIndex.value = 0
-})
+watch(
+  () => props.mediaList,
+  () => {
+    currentIndex.value = 0
+  },
+)
 </script>

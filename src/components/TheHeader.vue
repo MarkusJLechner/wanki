@@ -1,13 +1,6 @@
 <template>
   <div
-    class="
-      flex
-      bg-gray-300
-      dark:bg-gray-700 dark:text-white
-      text-gray-900
-      items-center
-      py-1
-    "
+    class="flex items-center bg-gray-300 py-1 text-gray-900 dark:bg-gray-700 dark:text-white"
   >
     <div v-if="backButton">
       <ButtonIcon icon="fas fa-arrow-left" @click="onBackButton" />
@@ -38,7 +31,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
-  backButton: false
+  backButton: false,
 })
 
 const router = useRouter()

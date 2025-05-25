@@ -45,9 +45,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'click:action': [action: Action]
-  'action': [action: Action]
-  'confirm': [action: Action]
-  'close': [action: Action]
+  action: [action: Action]
+  confirm: [action: Action]
+  close: [action: Action]
 }>()
 
 const defaultActions = computed<Action[]>(() => [
@@ -61,7 +61,9 @@ const defaultActions = computed<Action[]>(() => [
   },
 ])
 
-const baseActions = computed<Action[]>(() => props.actions?.length ? props.actions : defaultActions.value)
+const baseActions = computed<Action[]>(() =>
+  props.actions?.length ? props.actions : defaultActions.value,
+)
 
 const computedActions = computed<Action[]>(() => {
   if (props.confirm) {
@@ -78,9 +80,7 @@ const computedActions = computed<Action[]>(() => {
       }),
       {
         text:
-          typeof props.confirm === 'string'
-            ? props.confirm
-            : props.confirmText,
+          typeof props.confirm === 'string' ? props.confirm : props.confirmText,
         emit: 'confirm',
       },
     ]

@@ -1,21 +1,7 @@
 <template>
   <div
     :class="{ 'border-blue-500': onHover, 'border-blue-500': isFocused }"
-    class="
-      dragover
-      relative
-      bg-gray-600
-      border-dashed border-2
-      min-h-[120px]
-      flex
-      font-medium
-      text-center
-      w-full
-      focus:border-blue-200
-      active:border-blue-200
-      hover:border-blue-200
-      cursor-pointer
-    "
+    class="dragover relative flex min-h-[120px] w-full cursor-pointer border-2 border-dashed bg-gray-600 text-center font-medium hover:border-blue-200 focus:border-blue-200 active:border-blue-200"
     @click="$refs.file.click()"
     @dragleave="dragleave"
     @dragover="dragover"
@@ -26,7 +12,7 @@
       ref="file"
       :accept="accept"
       :multiple="false"
-      class="h-px opacity-0 overflow-hidden absolute w-px"
+      class="absolute h-px w-px overflow-hidden opacity-0"
       name="fields[assetsFieldHandle][]"
       type="file"
       @focus="isFocused = true"
@@ -34,10 +20,10 @@
       @input="onFilesChange"
     />
     <label
-      class="place-self-center pointer-events-none w-full"
+      class="pointer-events-none w-full place-self-center"
       for="assetsFieldHandle"
     >
-      <span class="text-blue-200 text-sm font-bold mr-1">
+      <span class="mr-1 text-sm font-bold text-blue-200">
         <i class="fas fa-cloud mr-1" />
         Choose file
       </span>
@@ -54,7 +40,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  accept: ''
+  accept: '',
 })
 
 const emit = defineEmits<{

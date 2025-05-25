@@ -1,8 +1,9 @@
 ![wankilogo](https://user-images.githubusercontent.com/48199873/126626393-926f86d8-22db-430b-b079-6c8545dc20d3.png)
 [![GitHub license](https://img.shields.io/github/license/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/blob/master/COPYING) [![GitHub stars](https://img.shields.io/github/stars/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/stargazers) [![GitHub forks](https://img.shields.io/github/forks/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/network) [![GitHub issues](https://img.shields.io/github/issues/MarkusJLechner/wanki)](https://github.com/MarkusJLechner/wanki/issues) [![Netlify Status](https://api.netlify.com/api/v1/badges/9dbfd71d-a596-4fe1-bdb0-4cab918113c1/deploy-status)](https://app.netlify.com/sites/wanki/deploys)
+
 ---
-  
-Wanki is an unofficial port of the already well known [Anki](https://apps.ankiweb.net/) and [AnkiDroid](https://github.com/ankidroid/Anki-Android) open source spaced repetition flashcard system into JavaScript. 
+
+Wanki is an unofficial port of the already well known [Anki](https://apps.ankiweb.net/) and [AnkiDroid](https://github.com/ankidroid/Anki-Android) open source spaced repetition flashcard system into JavaScript.
 They support Windows, Mac, Linux and Android. The iOS Version is not open sourced. [AnkiWeb](https://ankiweb.net/about) is already a web version of Anki, but it requires online connection and has a fairly limited feature set, plus is closed source.
 
 [Try it out: wanki.netlify.app](https://wanki.netlify.app/)
@@ -14,19 +15,20 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 - [✍️ To-do's](#---to-do-s)
 - [⛏️ Development notes](#⛏️-development-notes)
 - [🤲 Contribution](#-contribution)
-  
+
 ---
 
 #### 📣 (Future) Features
 
-* Offline first
-* Dark/ Light mode
-* Installable as a Progressive Web App
-* Working with existing [Shared Anki Decks](https://ankiweb.net/shared/decks/)
-* Seamless start reviewing direct in the browser
-* Use of modern JavaScript features
-  
+- Offline first
+- Dark/ Light mode
+- Installable as a Progressive Web App
+- Working with existing [Shared Anki Decks](https://ankiweb.net/shared/decks/)
+- Seamless start reviewing direct in the browser
+- Use of modern JavaScript features
+
 #### 👀 Screenshots
+
 ![githubheader](https://user-images.githubusercontent.com/48199873/126624785-3fc5af27-0aca-44c5-913e-2f3adb4a20d8.png)
 
 #### 👏 Motivation for Wanki
@@ -34,7 +36,7 @@ They support Windows, Mac, Linux and Android. The iOS Version is not open source
 The code basis for Anki and AnkiDroid are python, rust or java. However, Wanki is a **proof of concept** of porting the official software into JavaScript with 100% offline support. And as it is a served online web page, updates are rolled out immediately when connected to the internet.
 
 #### 👨‍🏫 What's the difference?
-  
+
 Wanki is not bound to any operating system, and that's why it looks and feels the same on every platform. Currently, it is in initial development and lacks many main features.
 
 ---
@@ -73,15 +75,18 @@ Database: [dexie.js](https://dexie.org/)
 
 For import [sqllite.js](https://sql.js.org/#/) and for zipping [fflate](https://github.com/101arrowz/fflate)
 
-Simply pull the repository and run 
-````bash
+Simply pull the repository and run
+
+```bash
 npm install
-````
+```
 
 After installed, run
-````bash
+
+```bash
 npm run dev
-````
+```
+
 and go to `http://localhost:3000`
 
 ---

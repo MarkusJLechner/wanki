@@ -33,7 +33,7 @@
         :timer="timerText"
       />
 
-      <div id="review-container" class="grow p-3 relative">
+      <div id="review-container" class="relative grow p-3">
         <ReviewDebug v-if="debug" :card="card" :deck="deck" />
 
         <ReviewContainer :show-answer="showAnswer" :card="card" />

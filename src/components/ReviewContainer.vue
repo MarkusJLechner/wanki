@@ -1,10 +1,10 @@
 <template>
-  <div class="h-full w-full left-0 top-0 absolute z-10">
-    <div class="fixed bottom-28 px-4 w-full">
+  <div class="absolute top-0 left-0 z-10 h-full w-full">
+    <div class="fixed bottom-28 w-full px-4">
       <ReviewMedia :media-list="computedSoundList" />
     </div>
   </div>
-  <div class="relative w-full h-full">
+  <div class="relative h-full w-full">
     <IFrameContainer
       :body-class="computedDarkTheme"
       class="w-full"
@@ -43,7 +43,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   card: null,
-  showAnswer: false
+  showAnswer: false,
 })
 
 const fieldQuestion = ref('')
@@ -95,11 +95,14 @@ const computedStyle = computed(() => {
   `
 })
 
-watch(() => props.card, () => {
-  if (props.card) {
-    mountNote()
-  }
-})
+watch(
+  () => props.card,
+  () => {
+    if (props.card) {
+      mountNote()
+    }
+  },
+)
 
 async function mountNote() {
   if (!props.card) return
@@ -182,11 +185,11 @@ function getMediaList(field: string) {
 function preloadImage(url: string): Promise<boolean> {
   return new Promise((resolve) => {
     const img = new Image()
-    img.onload = function() {
+    img.onload = function () {
       // Update iframe height after image is loaded
       resolve(true)
     }
-    img.onerror = function() {
+    img.onerror = function () {
       resolve(false)
     }
     img.src = url

@@ -1,25 +1,11 @@
 <template>
   <div
     v-if="card"
-    class="
-      text-xs
-      opacity-90
-      bg-black/60
-      left-0
-      right-0
-      px-6
-      -mt-3
-      fixed
-      h-64
-      bottom-32
-      overflow-y-auto
-      z-20
-      backdrop-blur-xs
-    "
+    class="fixed right-0 bottom-32 left-0 z-20 -mt-3 h-64 overflow-y-auto bg-black/60 px-6 text-xs opacity-90 backdrop-blur-xs"
   >
     <div class="text-yellow-500">Deck ID: {{ deck.id }}</div>
-    <div class="text-yellow-400 mb-1">Deck Name: {{ deck.name }}</div>
-    <div class="text-blue-300 font-bold">Card:</div>
+    <div class="mb-1 text-yellow-400">Deck Name: {{ deck.name }}</div>
+    <div class="font-bold text-blue-300">Card:</div>
     <div>id: {{ card.id }}</div>
     <div>nid: {{ card.nid }}</div>
     <div>did: {{ card.did }}</div>
@@ -47,7 +33,7 @@
     <div>odid: {{ card.odid }}</div>
     <div>flags: {{ card.flags }}</div>
     <div>data: {{ card.data }}</div>
-    <div class="text-blue-300 font-bold">NOTE:</div>
+    <div class="font-bold text-blue-300">NOTE:</div>
     <div v-if="note">
       <div v-html="getFields().join(' ')"></div>
       <div>Tags: {{ note.tags }}</div>
@@ -59,7 +45,7 @@
       <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
       <Promise :promise="card.model">
         <template #default="{ result: model, loading }">
-          <div class="text-blue-300 font-bold">MODEL:</div>
+          <div class="font-bold text-blue-300">MODEL:</div>
           <div v-if="loading">loading</div>
           <div v-else>
             <div>id: {{ model.id }}</div>
@@ -81,7 +67,7 @@
         </template>
       </Promise>
     </div>
-    <div class="text-blue-300 font-bold">DECK:</div>
+    <div class="font-bold text-blue-300">DECK:</div>
     <div v-if="deck">
       <div>browserCollapsed: {{ deck.browserCollapsed }}</div>
       <div>collapsed: {{ deck.collapsed }}</div>
@@ -115,7 +101,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   card: null,
   note: null,
-  deck: null
+  deck: null,
 })
 
 function getFields(): string[] {

@@ -23,11 +23,11 @@
 import ListTreeItem from '@/components/ListTreeItem.vue'
 
 interface Props {
-  modelValue: Record<string, any>;
-  itemTextKey?: string;
-  noGutters?: boolean;
-  dense?: boolean;
-  noSeparation?: boolean;
+  modelValue: Record<string, any>
+  itemTextKey?: string
+  noGutters?: boolean
+  dense?: boolean
+  noSeparation?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -35,12 +35,12 @@ const props = withDefaults(defineProps<Props>(), {
   itemTextKey: 'text',
   noGutters: false,
   dense: false,
-  noSeparation: false
+  noSeparation: false,
 })
 
 defineEmits<{
-  item: [item: Record<string, any>];
-  'long-press': [item: Record<string, any>];
+  item: [item: Record<string, any>]
+  'long-press': [item: Record<string, any>]
 }>()
 </script>
 

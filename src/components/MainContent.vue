@@ -1,25 +1,12 @@
 <template>
-  <div class="grow flex overflow-y-auto w-full">
+  <div class="flex w-full grow overflow-y-auto">
     <div
-      class="
-        pulldown-element
-        rounded-full
-        p-2
-        bg-white
-        mt-3
-        shadow-lg
-        pointer-events-none
-        absolute
-        inline-flex
-        justify-center
-        items-center
-        z-10
-      "
+      class="pulldown-element pointer-events-none absolute z-10 mt-3 inline-flex items-center justify-center rounded-full bg-white p-2 shadow-lg"
     >
       <LoadingLogo />
     </div>
 
-    <div class="refresh-content flex flex-col grow relative">
+    <div class="refresh-content relative flex grow flex-col">
       <slot />
     </div>
   </div>
@@ -36,7 +23,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  pullToRefresh: null
+  pullToRefresh: null,
 })
 
 onMounted(() => {
@@ -52,7 +39,9 @@ function initPullToRefresh() {
   const container = document.querySelector('.refresh-content')
 
   const onStart = (e: MouseEvent | TouchEvent) => {
-    _startY = (e as MouseEvent).clientY || ((e as TouchEvent).touches && (e as TouchEvent).touches[0].clientY)
+    _startY =
+      (e as MouseEvent).clientY ||
+      ((e as TouchEvent).touches && (e as TouchEvent).touches[0].clientY)
     okPull = container!.parentElement!.scrollTop === 0
   }
 
@@ -62,7 +51,10 @@ function initPullToRefresh() {
     }
 
     const pullOverY = 84
-    const y = ((e as MouseEvent).clientY || ((e as TouchEvent).touches && (e as TouchEvent).touches[0].clientY)) - pullOverY
+    const y =
+      ((e as MouseEvent).clientY ||
+        ((e as TouchEvent).touches && (e as TouchEvent).touches[0].clientY)) -
+      pullOverY
     if (
       okPull &&
       !modalOpened.value &&

@@ -10,7 +10,7 @@
     :style="!!(level - 1) ? `padding-left: ${level * 20}px !important;` : ''"
     :class="{
       [$attrs.class]: !!$attrs.class,
-      ' bg-gray-700 ': level > 1,
+      'bg-gray-700': level > 1,
     }"
     @item="$emit('item', $event)"
     @long-press="$emit('long-press', $event)"
@@ -22,7 +22,7 @@
       <ButtonIcon
         v-if="isFolder"
         :icon="isOpen ? 'fas fa-angle-down' : 'fas fa-angle-right'"
-        class="w-10 h-10 -ml-3 -mt-1 -mb-3 z-10"
+        class="z-10 -mt-1 -mb-3 -ml-3 h-10 w-10"
         @touchstart.stop
         @mousedown.stop
         @click.stop="toggle"
@@ -60,13 +60,13 @@ import ButtonIcon from '@/components/ButtonIcon.vue'
 import ListHr from '@/components/ListHr.vue'
 
 interface Props {
-  item: Record<string, any>;
-  itemTextKey?: string;
-  level?: number;
-  noGutters?: boolean;
-  dense?: boolean;
-  noSeparation?: boolean;
-  root?: boolean;
+  item: Record<string, any>
+  itemTextKey?: string
+  level?: number
+  noGutters?: boolean
+  dense?: boolean
+  noSeparation?: boolean
+  root?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,12 +75,12 @@ const props = withDefaults(defineProps<Props>(), {
   noGutters: false,
   dense: false,
   noSeparation: false,
-  root: false
+  root: false,
 })
 
 defineEmits<{
-  item: [item: Record<string, any>];
-  'long-press': [item: Record<string, any>];
+  item: [item: Record<string, any>]
+  'long-press': [item: Record<string, any>]
 }>()
 
 const isOpen = ref(props.root)

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
 html,
@@ -15,7 +15,7 @@ body {
 }
 
 code {
-  @apply border border-gray-500 text-sm font-bold inline-block px-1 rounded-sm;
+  @apply inline-block rounded-sm border border-gray-500 px-1 text-sm font-bold;
 }
 
 * {

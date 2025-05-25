@@ -1,16 +1,8 @@
 <template>
-  <div class="z-10 fixed right-2 bottom-4 text-right">
+  <div class="fixed right-2 bottom-4 z-10 text-right">
     <div
       v-if="show"
-      class="
-        fixed
-        w-screen
-        h-full
-        left-0
-        top-0
-        bg-gray-900/50
-        backdrop-grayscale
-      "
+      class="fixed top-0 left-0 h-full w-screen bg-gray-900/50 backdrop-grayscale"
       @click="onClose()"
     />
     <transition name="fade">
@@ -27,7 +19,7 @@
             :href="item.href"
           >
             <span
-              class="bg-gray-800 py-1 px-2 z-20 rounded-sm text-white select-none"
+              class="z-20 rounded-sm bg-gray-800 px-2 py-1 text-white select-none"
               >{{ item.text }}</span
             ><ButtonRound small :icon="item.icon" />
           </Component>
@@ -91,7 +83,9 @@ onBeforeRouteLeave(() => {
 <style scoped>
 .fade-enter-active li,
 .fade-leave-active li {
-  transition: transform 0.15s, opacity 0.15s ease;
+  transition:
+    transform 0.15s,
+    opacity 0.15s ease;
 }
 
 .fade-enter-from li {

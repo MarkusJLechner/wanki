@@ -1,4 +1,12 @@
-import { h, ref, createApp, onMounted, onBeforeUpdate, watch, onUnmounted } from 'vue'
+import {
+  h,
+  ref,
+  createApp,
+  onMounted,
+  onBeforeUpdate,
+  watch,
+  onUnmounted,
+} from 'vue'
 
 export default {
   name: 'IFrameContainer',
@@ -68,7 +76,7 @@ export default {
         childList: true,
         subtree: true,
         attributes: true,
-        characterData: true
+        characterData: true,
       })
 
       // Initial height adjustment

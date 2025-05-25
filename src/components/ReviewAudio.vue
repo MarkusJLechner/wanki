@@ -13,7 +13,7 @@
       <ButtonIcon
         v-if="!useNativeAudioControls"
         :icon="computedIcon"
-        class="bg-gray-400 p-3 w-14 h-14 text-sm shadow-md"
+        class="h-14 w-14 bg-gray-400 p-3 text-sm shadow-md"
         @click="doPlayAudio"
       />
     </div>
@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   blob: null,
   objectUrl: null,
   dbMediaString: null,
-  autoplay: true
+  autoplay: true,
 })
 
 const emit = defineEmits<{
@@ -78,9 +78,7 @@ const useAutoPlayAudio = computed(() => {
 })
 
 const getAudioStartDelay = computed(() => {
-  return +refstorage.getSetting(
-    defaultSettings.reviewing.autoPlayAudioDelay
-  )
+  return +refstorage.getSetting(defaultSettings.reviewing.autoPlayAudioDelay)
 })
 
 const audioContols = computed(() => {
@@ -91,23 +89,35 @@ const hasRefAudio = computed(() => {
   return !!audio.value
 })
 
-watch(() => props.blob, () => {
-  loadAudio()
-})
+watch(
+  () => props.blob,
+  () => {
+    loadAudio()
+  },
+)
 
-watch(() => props.objectUrl, () => {
-  loadAudio()
-})
+watch(
+  () => props.objectUrl,
+  () => {
+    loadAudio()
+  },
+)
 
-watch(() => props.dbMediaString, () => {
-  loadAudio()
-})
+watch(
+  () => props.dbMediaString,
+  () => {
+    loadAudio()
+  },
+)
 
-watch(() => props.autoplay, (newValue, oldValue) => {
-  if (!oldValue && newValue) {
-    playLoadedAudio()
-  }
-})
+watch(
+  () => props.autoplay,
+  (newValue, oldValue) => {
+    if (!oldValue && newValue) {
+      playLoadedAudio()
+    }
+  },
+)
 
 onMounted(() => {
   loadAudio()

@@ -499,7 +499,12 @@ async function _lrnConf(card) {
   return await _newConf(card)
 }
 
-function _leftToday(delays, left, now = 0, cutoff = mDayCutoff ?? getDayCutoff()) {
+function _leftToday(
+  delays,
+  left,
+  now = 0,
+  cutoff = mDayCutoff ?? getDayCutoff(),
+) {
   if (!now) {
     now = new Date().getTime()
   }

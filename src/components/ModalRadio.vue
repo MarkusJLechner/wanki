@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
   title: '',
   radioItems: () => [],
   defaultValue: null,
-  storageKey: null
+  storageKey: null,
 })
 
 const emit = defineEmits<{

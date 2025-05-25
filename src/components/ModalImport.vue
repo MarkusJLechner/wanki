@@ -19,7 +19,7 @@
     <div v-if="!progress.total">
       <InputFile :accept="accept" class="my-2" @select="onInitImport" />
 
-      <span class="text-right block text-sm" @click="onInitImport">
+      <span class="block text-right text-sm" @click="onInitImport">
         <LoadingIcon v-if="currentState === state.loading" />
         {{ getStateText }}
       </span>
@@ -61,29 +61,29 @@ import LoadingIcon from '@/components/LoadingIcon.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 
 interface Progress {
-  label: string;
-  value: number;
-  total: number;
-  tasks: string[];
+  label: string
+  value: number
+  total: number
+  tasks: string[]
 }
 
 interface State {
-  init: string;
-  loading: string;
-  loaded: string;
-  imported: string;
-  notFound: string;
-  error: string;
+  init: string
+  loading: string
+  loaded: string
+  imported: string
+  notFound: string
+  error: string
 }
 
 interface Props {
-  accept?: string;
-  modelValue?: boolean;
+  accept?: string
+  modelValue?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   accept: '.apkg',
-  modelValue: false
+  modelValue: false,
 })
 
 const emit = defineEmits<{
@@ -142,21 +142,24 @@ const getStateText = computed((): string => {
   }
 })
 
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    currentState.value = state.init
-    error.value = null
-    files.value = []
-    renderingFiles.value = []
-    decompressedFile = null
-    progress.value = {
-      label: 'In Progress',
-      value: 0,
-      total: 0,
-      tasks: [],
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue) {
+      currentState.value = state.init
+      error.value = null
+      files.value = []
+      renderingFiles.value = []
+      decompressedFile = null
+      progress.value = {
+        label: 'In Progress',
+        value: 0,
+        total: 0,
+        tasks: [],
+      }
     }
-  }
-})
+  },
+)
 
 function onClose(): void {
   console.log('close')
@@ -184,7 +187,9 @@ async function onInitImport(importFiles: any[]): Promise<void> {
     progress.value.tasks = ['Move to memory']
     progress.value.total = 1
 
-    const file = importFiles.length ? importFiles[0] : await promptFile(props.accept)
+    const file = importFiles.length
+      ? importFiles[0]
+      : await promptFile(props.accept)
 
     progress.value.label = 'Decompressing'
     const { promise, worker } = decompressFile(file)
@@ -216,15 +221,18 @@ async function onImport(taskId: string): Promise<void> {
   progress.value.label = 'Importing'
   progress.value.tasks = ['Prepare import...']
   const progressObj = await importDeck(decompressedFile)
-  await promiseProgress(progressObj, ({ percent, total, value, payload }: any) => {
-    progress.value.value = value
-    progress.value.total = total
-    if (payload) {
-      progress.value.tasks = Object.entries(payload)
-        .filter((e) => !e[1])
-        .map((e) => e[0])
-    }
-  }).then(() => {
+  await promiseProgress(
+    progressObj,
+    ({ percent, total, value, payload }: any) => {
+      progress.value.value = value
+      progress.value.total = total
+      if (payload) {
+        progress.value.tasks = Object.entries(payload)
+          .filter((e) => !e[1])
+          .map((e) => e[0])
+      }
+    },
+  ).then(() => {
     console.log('complete')
   })
 

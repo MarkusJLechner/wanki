@@ -2,37 +2,24 @@
   <li
     v-long-press="() => onLongPress(item)"
     v-ripple="{ disable: noRipple }"
-    class="
-      select-none
-      cursor-pointer
-      relative
-      focus:outline-hidden focus:ring-2 focus:ring-blue-500
-      flex
-      w-full
-      items-center
-      text-left
-      mt-0
-      mb-0
-      min-h-12
-      flex flex-col
-    "
+    class="relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer flex-col items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
     :style="$attrs.style + 'display: block; ' + item.style"
     :class="{
       seperator: item.type === 'seperator',
       [item.class]: item.class,
       'my-2': getSubText(item),
-      'py-3 px-4': dense,
-      'py-4 px-4': !dense,
+      'px-4 py-3': dense,
+      'px-4 py-4': !dense,
       [$attrs.class]: !!$attrs.class,
     }"
     @click="onClick(item)"
   >
-    <div v-if="render" class="w-full flex">
+    <div v-if="render" class="flex w-full">
       <slot name="before" />
       <component :is="item.component" v-if="item.component" />
       <hr
         v-if="item.type === 'seperator'"
-        class="border border-gray-900 dark:border-gray-500 w-full"
+        class="w-full border border-gray-900 dark:border-gray-500"
       />
 
       <slot name="prefix-item" :item="item" />
@@ -47,13 +34,13 @@
           {{ getText(item) }}
           <span
             v-if="getSubText(item)"
-            class="grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
             >{{ getSubText(item) }}</span
           >
         </span>
 
         <div v-if="callFn(item, 'loading')" class="px-2">
-          <i class="text-black dark:text-white fas fa-spinner fa-spin" />
+          <i class="fas fa-spinner fa-spin text-black dark:text-white" />
         </div>
       </div>
 
@@ -86,19 +73,19 @@ import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
 
-const ModalRadio = defineAsyncComponent(() =>
-  import('@/components/ModalRadio.vue'),
+const ModalRadio = defineAsyncComponent(
+  () => import('@/components/ModalRadio.vue'),
 )
 
 interface Props {
-  item: Record<string, any>;
-  noGutters?: boolean;
-  dense?: boolean;
-  noSeparation?: boolean;
-  render?: boolean;
-  itemTextKey?: string;
-  noRipple?: boolean;
-  isLoading?: boolean;
+  item: Record<string, any>
+  noGutters?: boolean
+  dense?: boolean
+  noSeparation?: boolean
+  render?: boolean
+  itemTextKey?: string
+  noRipple?: boolean
+  isLoading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -109,7 +96,7 @@ const props = withDefaults(defineProps<Props>(), {
   render: true,
   itemTextKey: 'text',
   noRipple: false,
-  isLoading: false
+  isLoading: false,
 })
 
 const emit = defineEmits<{
@@ -143,7 +130,9 @@ function getText(item: Record<string, any>): any {
 function getSubText(item: Record<string, any>): any {
   if (item.radio && item.radio.key) {
     const key = refstorage.get(item.radio.key, item.radio.default)
-    return item.radio.items.find((item: Record<string, any>) => item.value === key)?.text
+    return item.radio.items.find(
+      (item: Record<string, any>) => item.value === key,
+    )?.text
   }
 
   return callFn(item, 'subtext')
@@ -162,9 +151,7 @@ function hasBoolean(item: Record<string, any>): boolean {
     return true
   }
 
-  return (
-    typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
-  )
+  return typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
 }
 
 function callFn(item: Record<string, any>, key: string): any {

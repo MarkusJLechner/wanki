@@ -1,15 +1,6 @@
 <template>
   <div
-    class="
-      select-none
-      flex
-      sticky
-      bottom-0
-      w-full
-      bg-gray-500/50
-      backdrop-blur-xs
-      review-height
-    "
+    class="review-height sticky bottom-0 flex w-full bg-gray-500/50 backdrop-blur-xs select-none"
     :class="{
       'bg-black': showRating,
       'bg-gray-500': !showRating,
@@ -19,18 +10,18 @@
       v-if="!showRating"
       v-ripple
       role="button"
-      class="flex justify-center items-center w-full text-white"
+      class="flex w-full items-center justify-center text-white"
       @click="onShow"
     >
       Show Answers
     </div>
-    <div v-else class="grid grid-cols-4 w-full justify-items-stretch">
+    <div v-else class="grid w-full grid-cols-4 justify-items-stretch">
       <div
         v-for="(button, index) in buttons"
         :key="index"
         v-ripple
         role="button"
-        class="flex justify-center items-center text-white"
+        class="flex items-center justify-center text-white"
         :class="{
           'bg-red-500/50': button.color === 'red',
           'bg-gray-500/50': button.color === 'gray',
@@ -60,7 +51,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showRating: false
+  showRating: false,
 })
 
 const emit = defineEmits<{

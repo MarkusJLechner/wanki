@@ -2,41 +2,21 @@
   "tables": {
     "decks": {
       "1376651920844": {
-        "terms": [
-          [
-            "tag:'basic'",
-            47,
-            1
-          ]
-        ],
+        "terms": [["tag:'basic'", 47, 1]],
         "separate": true,
         "collapsed": false,
-        "newToday": [
-          92,
-          68
-        ],
-        "timeToday": [
-          92,
-          58830
-        ],
+        "newToday": [92, 68],
+        "timeToday": [92, 58830],
         "dyn": 1,
         "conf": 1,
         "return": true,
-        "revToday": [
-          92,
-          2
-        ],
-        "lrnToday": [
-          92,
-          0
-        ],
+        "revToday": [92, 2],
+        "lrnToday": [92, 0],
         "id": 1376651920844,
         "mod": 1384115547,
         "name": "Japanese Hiragana (Basic)",
         "usn": -1,
-        "delays": [
-          1
-        ],
+        "delays": [1],
         "resched": false,
         "desc": "Please see the <a href='https://ankiweb.net/shared/info/'>shared deck page</a> for more info."
       }
@@ -50,41 +30,21 @@
       "table": "decks",
       "key": 1376651920844,
       "obj": {
-        "terms": [
-          [
-            "tag:'basic'",
-            47,
-            1
-          ]
-        ],
+        "terms": [["tag:'basic'", 47, 1]],
         "separate": true,
         "collapsed": false,
-        "newToday": [
-          92,
-          68
-        ],
-        "timeToday": [
-          92,
-          58830
-        ],
+        "newToday": [92, 68],
+        "timeToday": [92, 58830],
         "dyn": 1,
         "conf": 1,
         "return": true,
-        "revToday": [
-          92,
-          2
-        ],
-        "lrnToday": [
-          92,
-          0
-        ],
+        "revToday": [92, 2],
+        "lrnToday": [92, 0],
         "id": 1376651920844,
         "mod": 1384115547,
         "name": "Japanese Hiragana (Basic)",
         "usn": -1,
-        "delays": [
-          1
-        ],
+        "delays": [1],
         "resched": false,
         "desc": "Please see the <a href='https://ankiweb.net/shared/info/'>shared deck page</a> for more info."
       }
@@ -92,7 +52,5 @@
   ],
   "uncommittedChanges": {},
   "revision": 1,
-  "subscribers": [
-    null
-  ]
+  "subscribers": [null]
 }

@@ -2,14 +2,7 @@
   <transition name="fade" appear>
     <div
       v-if="modelValue"
-      class="
-        fixed
-        z-20
-        inset-0
-        bg-gray-900/50
-        transition-opacity
-        backdrop-grayscale
-      "
+      class="fixed inset-0 z-20 bg-gray-900/50 backdrop-grayscale transition-opacity"
       aria-hidden="true"
       @click.stop="onClose"
     ></div>
@@ -17,62 +10,35 @@
   <transition name="slide-open" appear>
     <div
       v-if="modelValue"
-      class="fixed z-20 inset-0 overflow-y-auto"
+      class="fixed inset-0 z-20 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
     >
       <div
-        class="
-          flex
-          h-full
-          items-center
-          justify-center
-          pt-4
-          px-4
-          pb-20
-          text-center
-        "
+        class="flex h-full items-center justify-center px-4 pt-4 pb-20 text-center"
       >
         <div
           v-if="modelValue"
-          class="fixed z-10 inset-0 transition-opacity"
+          class="fixed inset-0 z-10 transition-opacity"
           aria-hidden="true"
           @click.stop="onClose"
         ></div>
 
         <!-- This element is to trick the browser into centering the modal contents. -->
         <span
-          class="hidden sm:inline-block sm:align-middle sm:h-full"
+          class="hidden sm:inline-block sm:h-full sm:align-middle"
           aria-hidden="true"
           >&#8203;</span
         >
 
         <div
-          class="
-            z-50
-            inline-block
-            align-bottom
-            dark:bg-gray-700
-            bg-white
-            dark:text-white
-            text-gray-800
-            rounded-lg
-            text-left
-            overflow-hidden
-            shadow-xl
-            p-1
-            min-w-[20rem]
-            transition-all
-            max-h-[85vh]
-            relative
-            flex flex-col
-          "
+          class="relative z-50 flex inline-block max-h-[85vh] min-w-[20rem] flex-col overflow-hidden rounded-lg bg-white p-1 text-left align-bottom text-gray-800 shadow-xl transition-all dark:bg-gray-700 dark:text-white"
         >
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
-            class="overflow-y-auto grow"
+            class="grow overflow-y-auto"
             :class="{ 'p-4': !noGutters, [contentClass]: !!contentClass }"
           >
             <slot />
@@ -141,11 +107,15 @@ const emit = defineEmits<{
 
 const show = ref(false)
 
-watch(() => props.modelValue, (newValue) => {
-  show.value = !!newValue
-  emit('visible', !!newValue)
-  modalOpened.value = !!newValue
-}, { immediate: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    show.value = !!newValue
+    emit('visible', !!newValue)
+    modalOpened.value = !!newValue
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
   onBeforeRouteLeave(() => {

@@ -116,7 +116,15 @@ export const modalOpened = ref(false)
 
 export const toasts = ref<Toast[]>([])
 
-export const addToast = ({ type, text, timeout = 3 }: { type: string, text: string, timeout?: number }): void => {
+export const addToast = ({
+  type,
+  text,
+  timeout = 3,
+}: {
+  type: string
+  text: string
+  timeout?: number
+}): void => {
   const id = nanoid(4)
   if (type !== ToastType.error && type !== ToastType.success) {
     type = ToastType.info
@@ -133,7 +141,6 @@ export const addToast = ({ type, text, timeout = 3 }: { type: string, text: stri
     toasts.value = toasts.value.filter((toast) => toast.id !== id)
   }, timeout * 1000)
 }
-
 
 export const removeToast = (id: string): void => {
   toasts.value = toasts.value.filter((toast) => toast.id !== id)

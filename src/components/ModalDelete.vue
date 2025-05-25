@@ -13,16 +13,16 @@
 import BaseModal from '@/components/BaseModal.vue'
 
 interface Action {
-  type?: string;
-  text?: string;
-  emit?: string;
+  type?: string
+  text?: string
+  emit?: string
 }
 
 interface Props {
-  modelValue?: boolean;
-  title?: string;
-  items?: Record<string, any> | null;
-  actions?: Action[];
+  modelValue?: boolean
+  title?: string
+  items?: Record<string, any> | null
+  actions?: Action[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
       text: 'Delete',
       emit: 'confirm',
     },
-  ]
+  ],
 })
 
 const emit = defineEmits<{

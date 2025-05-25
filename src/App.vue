@@ -1,12 +1,12 @@
 <template>
-  <main class="h-full dark:bg-gray-600 bg-gray-200 dark:text-white text-lg">
+  <main class="h-full bg-gray-200 text-lg dark:bg-gray-600 dark:text-white">
     <Toasts />
     <router-view v-slot="{ Component, route }">
       <transition appear :name="route.meta.transition || transitionName">
         <keep-alive include="Overview">
           <component
             :is="Component"
-            class="h-full flex flex-col dark:bg-gray-600 bg-gray-200"
+            class="flex h-full flex-col bg-gray-200 dark:bg-gray-600"
           />
         </keep-alive>
       </transition>
@@ -54,21 +54,25 @@ const afterEnter = (element: HTMLElement) => {
 
 // Setup router navigation guards
 onBeforeMount(() => {
-  router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
-    let newTransitionName = to.meta.transitionName as string || from.meta.transitionName as string
+  router.beforeEach(
+    (to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
+      let newTransitionName =
+        (to.meta.transitionName as string) ||
+        (from.meta.transitionName as string)
 
-    const toDepth = to.path.split('/').length
-    const fromDepth = from.path.split('/').length
-    if (toDepth !== fromDepth) {
-      newTransitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-    }
+      const toDepth = to.path.split('/').length
+      const fromDepth = from.path.split('/').length
+      if (toDepth !== fromDepth) {
+        newTransitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+      }
 
-    transitionName.value = newTransitionName || 'fade'
+      transitionName.value = newTransitionName || 'fade'
 
-    clearToasts()
+      clearToasts()
 
-    next()
-  })
+      next()
+    },
+  )
 })
 
 // Setup on component mount

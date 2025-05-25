@@ -2,25 +2,15 @@
   <List :value="items" @item="onClick">
     <template #prefix-item="{ item }">
       <div
-        class="
-          relative
-          bg-white
-          dark:bg-gray-700
-          w-6
-          h-6
-          rounded-full
-          dark:border-white
-          border-2
-          mr-3
-        "
+        class="relative mr-3 h-6 w-6 rounded-full border-2 bg-white dark:border-white dark:bg-gray-700"
         :class="{
-          'border-blue-500 dark:border-blue-500 p-1': item.selected,
+          'border-blue-500 p-1 dark:border-blue-500': item.selected,
           'border-gray-500': !item.selected,
         }"
       >
         <div
           v-if="item.selected"
-          class="absolute w-3 h-3 bg-blue-500 rounded-full"
+          class="absolute h-3 w-3 rounded-full bg-blue-500"
         ></div>
       </div>
     </template>
@@ -44,7 +34,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   items: () => [],
-  value: null
+  value: null,
 })
 
 const emit = defineEmits<{
@@ -73,9 +63,12 @@ const onClick = (item: Item) => {
   )
 }
 
-watch(() => props.value, () => {
-  initValue()
-})
+watch(
+  () => props.value,
+  () => {
+    initValue()
+  },
+)
 
 onMounted(() => {
   initValue()

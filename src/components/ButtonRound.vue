@@ -1,18 +1,7 @@
 <template>
   <div
     v-ripple
-    class="
-      inline-flex
-      justify-center
-      items-center
-      shadow-md
-      bg-gray-400
-      rounded-full
-      border-white
-      text-gray-900
-      dark:text-white
-      dark:bg-blue-500
-    "
+    class="inline-flex items-center justify-center rounded-full border-white bg-gray-400 text-gray-900 shadow-md dark:bg-blue-500 dark:text-white"
     :class="computedClass"
   >
     <i :class="{ [icon]: icon, [computedSize]: computedSize }" />
@@ -29,7 +18,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   small: false,
-  icon: 'fas fa-plus'
+  icon: 'fas fa-plus',
 })
 
 const computedSize = computed(() => {

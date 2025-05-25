@@ -2,7 +2,7 @@
   <div class="mb-4">
     <label
       v-if="!!label"
-      class="block text-gray-700 dark:text-gray-300 text-sm mb-2"
+      class="mb-2 block text-sm text-gray-700 dark:text-gray-300"
       :for="uid"
     >
       {{ label }}
@@ -10,18 +10,7 @@
     <input
       :id="uid"
       :autofocus="autofocus"
-      class="
-        shadow-xs
-        appearance-none
-        border border-gray-200
-        rounded-sm
-        w-full
-        py-2
-        px-3
-        text-gray-700
-        leading-tight
-        focus:outline-hidden focus:ring-2 focus:ring-blue-500
-      "
+      class="w-full appearance-none rounded-sm border border-gray-200 px-3 py-2 leading-tight text-gray-700 shadow-xs focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
       :type="type"
       :autocomplete="autocomplete"
       :placeholder="placeholder"
@@ -54,12 +43,12 @@ const props = withDefaults(defineProps<Props>(), {
   autofocus: false,
   type: 'text',
   placeholder: '',
-  autocomplete: 'off'
+  autocomplete: 'off',
 })
 
 defineEmits<{
-  'update:modelValue': [value: string];
-  enter: [];
+  'update:modelValue': [value: string]
+  enter: []
 }>()
 
 const uid = computed(() => nanoid(3))

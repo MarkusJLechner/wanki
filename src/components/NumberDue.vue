@@ -3,11 +3,11 @@
     class="px-1"
     :class="{
       underline,
-      'dark:text-gray-800 text-gray-800': value === 0 && highContrast,
-      'dark:text-gray-500 text-gray-500': value === 0 && !highContrast,
-      'dark:text-blue-300 text-blue-500': value > 0 && color === 'blue',
-      'dark:text-red-300 text-red-500': value > 0 && color === 'red',
-      'dark:text-green-300 text-green-600': value > 0 && color === 'green',
+      'text-gray-800 dark:text-gray-800': value === 0 && highContrast,
+      'text-gray-500 dark:text-gray-500': value === 0 && !highContrast,
+      'text-blue-500 dark:text-blue-300': value > 0 && color === 'blue',
+      'text-red-500 dark:text-red-300': value > 0 && color === 'red',
+      'text-green-600 dark:text-green-300': value > 0 && color === 'green',
     }"
   >
     {{ value }}
@@ -26,6 +26,6 @@ withDefaults(defineProps<Props>(), {
   value: 0,
   color: 'blue',
   underline: false,
-  highContrast: true
+  highContrast: true,
 })
 </script>

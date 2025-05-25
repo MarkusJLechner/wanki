@@ -1,18 +1,6 @@
 <template>
   <div
-    class="
-      z-10
-      top-0
-      sticky
-      flex
-      justify-between
-      dark:bg-gray-800/50
-      bg-gray-400/20
-      px-3
-      py-1
-      text-sm
-      backdrop-blur-xs
-    "
+    class="sticky top-0 z-10 flex justify-between bg-gray-400/20 px-3 py-1 text-sm backdrop-blur-xs dark:bg-gray-800/50"
   >
     <div class="flex">
       <NumberDue
@@ -51,7 +39,7 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   timer: '01:22',
   current: 0,
-  remaining: () => [0, 0, 0]
+  remaining: () => [0, 0, 0],
 })
 </script>
 

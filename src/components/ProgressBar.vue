@@ -1,17 +1,9 @@
 <template>
-  <div class="relative pt-1 mb-3">
-    <div class="flex mb-2 items-center justify-between">
+  <div class="relative mb-3 pt-1">
+    <div class="mb-2 flex items-center justify-between">
       <div>
         <span
-          class="
-            text-xs
-            font-semibold
-            inline-block
-            py-1
-            px-2
-            uppercase
-            rounded-full
-          "
+          class="inline-block rounded-full px-2 py-1 text-xs font-semibold uppercase"
           :class="{
             'bg-yellow-200 text-yellow-900': computedColor === 'yellow',
             'bg-pink-200 text-pink-900': computedColor === 'pink',
@@ -25,7 +17,7 @@
       </div>
       <div class="text-right">
         <span
-          class="text-xs font-semibold inline-block"
+          class="inline-block text-xs font-semibold"
           :class="{
             'text-yellow-300': computedColor === 'yellow',
             'text-pink-300': computedColor === 'pink',
@@ -38,7 +30,7 @@
       </div>
     </div>
     <div
-      class="overflow-hidden h-2 mb-1 text-xs flex rounded-sm"
+      class="mb-1 flex h-2 overflow-hidden rounded-sm text-xs"
       :class="{
         'bg-yellow-200': computedColor === 'yellow',
         'bg-pink-200': computedColor === 'pink',
@@ -48,15 +40,7 @@
     >
       <div
         :style="`width: ${progress}%`"
-        class="
-          transition-all
-          shadow-none
-          flex flex-col
-          text-center
-          whitespace-nowrap
-          text-white
-          justify-center
-        "
+        class="flex flex-col justify-center text-center whitespace-nowrap text-white shadow-none transition-all"
         :class="{
           'bg-yellow-500': computedColor === 'yellow',
           'bg-pink-500': computedColor === 'pink',
@@ -69,7 +53,7 @@
       <span
         v-for="(task, index) in tasks"
         :key="index"
-        class="text-xs block py-1 px-2 uppercase"
+        class="block px-2 py-1 text-xs uppercase"
         :class="{
           'text-gray-300': computedColor === 'pink',
         }"
@@ -88,11 +72,11 @@ import LoadingIcon from '@/components/LoadingIcon.vue'
 type ColorType = 'red' | 'pink' | 'yellow' | 'green'
 
 interface Props {
-  label?: string;
-  value?: number;
-  tasks?: string[];
-  color?: ColorType;
-  total?: number;
+  label?: string
+  value?: number
+  tasks?: string[]
+  color?: ColorType
+  total?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -100,7 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
   value: 0,
   tasks: () => [],
   color: 'yellow',
-  total: 10
+  total: 10,
 })
 
 const progress = computed((): number => {

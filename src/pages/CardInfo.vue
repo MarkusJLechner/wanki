@@ -5,12 +5,16 @@
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
-      <div v-if="card && deck && note" class="p-4 space-y-2 text-sm">
-        <div class="p-4 mb-4 border rounded">
-          <div class="font-bold mb-2 flex justify-between items-center cursor-pointer"
-               @click="isExpanded = !isExpanded">
+      <div v-if="card && deck && note" class="space-y-2 p-4 text-sm">
+        <div class="mb-4 rounded border p-4">
+          <div
+            class="mb-2 flex cursor-pointer items-center justify-between font-bold"
+            @click="isExpanded = !isExpanded"
+          >
             <span>Current Card</span>
-            <i :class="['fas', isExpanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
+            <i
+              :class="['fas', isExpanded ? 'fa-chevron-up' : 'fa-chevron-down']"
+            ></i>
           </div>
           <div v-if="isExpanded">
             <div v-html="note.flds[0]" class="mb-2"></div>
@@ -19,8 +23,8 @@
         </div>
 
         <div><strong>Added:</strong> {{ formatDate(card.id) }}</div>
-        <div><strong>First review:</strong> {{ firstReview || "-" }}</div>
-        <div><strong>Latest review:</strong> {{ latestReview || "-" }}</div>
+        <div><strong>First review:</strong> {{ firstReview || '-' }}</div>
+        <div><strong>Latest review:</strong> {{ latestReview || '-' }}</div>
         <div><strong>Due:</strong> {{ due }}</div>
         <div><strong>Position:</strong> {{ card.due }}</div>
         <div><strong>Interval:</strong> {{ intervalText }}</div>
@@ -38,27 +42,27 @@
       <div v-else class="p-4">Loading...</div>
 
       <div v-if="revlogs.length" class="p-4">
-        <h2 class="font-bold mb-2">Review History</h2>
+        <h2 class="mb-2 font-bold">Review History</h2>
         <table class="w-full text-left text-sm">
           <thead>
-          <tr class="border-b">
-            <th class="py-1">Date</th>
-            <th class="py-1">Type</th>
-            <th class="py-1">Rating</th>
-            <th class="py-1">Interval</th>
-            <th class="py-1">Ease</th>
-            <th class="py-1">Time</th>
-          </tr>
+            <tr class="border-b">
+              <th class="py-1">Date</th>
+              <th class="py-1">Type</th>
+              <th class="py-1">Rating</th>
+              <th class="py-1">Interval</th>
+              <th class="py-1">Ease</th>
+              <th class="py-1">Time</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="rev in revlogs" :key="rev.id" class="border-b">
-            <td class="py-1">{{ formatDate(rev.id) }}</td>
-            <td class="py-1">{{ revType(rev.type) }}</td>
-            <td class="py-1">{{ rev.ease }}</td>
-            <td class="py-1">{{ formatInterval(rev.ivl) }}</td>
-            <td class="py-1">{{ (rev.factor / 10).toFixed(0) }}%</td>
-            <td class="py-1">{{ (rev.time / 1000).toFixed(1) }}s</td>
-          </tr>
+            <tr v-for="rev in revlogs" :key="rev.id" class="border-b">
+              <td class="py-1">{{ formatDate(rev.id) }}</td>
+              <td class="py-1">{{ revType(rev.type) }}</td>
+              <td class="py-1">{{ rev.ease }}</td>
+              <td class="py-1">{{ formatInterval(rev.ivl) }}</td>
+              <td class="py-1">{{ (rev.factor / 10).toFixed(0) }}%</td>
+              <td class="py-1">{{ (rev.time / 1000).toFixed(1) }}s</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -67,14 +71,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import TheHeader from "@/components/TheHeader.vue"
-import FlexSpacer from "@/components/FlexSpacer.vue"
-import ThemeSwitcher from "@/components/ThemeSwitcher.vue"
-import MainContent from "@/components/MainContent.vue"
-import { wankidb } from "@/plugins/wankidb/db.js"
-import { CardType } from "@/plugins/conts.js"
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import TheHeader from '@/components/TheHeader.vue'
+import FlexSpacer from '@/components/FlexSpacer.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
+import MainContent from '@/components/MainContent.vue'
+import { wankidb } from '@/plugins/wankidb/db.js'
+import { CardType } from '@/plugins/conts.js'
 
 const route = useRoute()
 
@@ -82,13 +86,13 @@ const isExpanded = ref(false)
 const card = ref<any>(null)
 const deck = ref<any>(null)
 const note = ref<any>(null)
-const modelName = ref("")
+const modelName = ref('')
 const revlogs = ref<any[]>([])
-const firstReview = ref("")
-const latestReview = ref("")
-const due = ref("")
-const intervalText = ref("")
-const easePct = ref("")
+const firstReview = ref('')
+const latestReview = ref('')
+const due = ref('')
+const intervalText = ref('')
+const easePct = ref('')
 const avgTime = ref(0)
 const totalTime = ref(0)
 
@@ -98,15 +102,15 @@ function formatDate(ts: number) {
 
 function formatInterval(ivl: number) {
   if (ivl < 0) {
-    return Math.abs(ivl) + "s"
+    return Math.abs(ivl) + 's'
   }
   if (ivl < 30) {
-    return ivl + "d"
+    return ivl + 'd'
   }
   if (ivl < 365) {
-    return (ivl / 30).toFixed(1) + "mo"
+    return (ivl / 30).toFixed(1) + 'mo'
   }
-  return (ivl / 365).toFixed(1) + "y"
+  return (ivl / 365).toFixed(1) + 'y'
 }
 
 function revType(t: number) {
@@ -123,7 +127,7 @@ onMounted(async () => {
   note.value = await card.value.note
   deck.value = await card.value.deck
   const model = await card.value.model
-  modelName.value = model?.name || ""
+  modelName.value = model?.name || ''
 
   const dueDate = await card.value.dueDate
   due.value = formatDate(dueDate.getTime())
@@ -131,7 +135,7 @@ onMounted(async () => {
   intervalText.value = formatInterval(card.value.ivl)
   easePct.value = (card.value.factor / 10).toFixed(0)
 
-  revlogs.value = await wankidb.revlog.where({ cid }).sortBy("id")
+  revlogs.value = await wankidb.revlog.where({ cid }).sortBy('id')
   if (revlogs.value.length) {
     firstReview.value = formatDate(revlogs.value[0].id)
     latestReview.value = formatDate(revlogs.value[revlogs.value.length - 1].id)

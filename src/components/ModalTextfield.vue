@@ -49,7 +49,7 @@ const props = withDefaults(defineProps<Props>(), {
   label: 'text',
   placeholder: 'text',
   defaultValue: null,
-  storageKey: null
+  storageKey: null,
 })
 
 const emit = defineEmits<{
@@ -70,11 +70,14 @@ const computedType = computed(() => {
   return refstorage.getValueType(props.storageKey)
 })
 
-watch(() => props.modelValue, (newValue) => {
-  if (newValue && props.storageKey) {
-    value.value = '' + refstorage.get(props.storageKey)
-  }
-})
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue && props.storageKey) {
+      value.value = '' + refstorage.get(props.storageKey)
+    }
+  },
+)
 
 function onInput(event: Event): void {
   const val = (event.target as HTMLInputElement).value

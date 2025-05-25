@@ -16,14 +16,14 @@ import Group from '@/components/Group.vue'
 import { defaultSettings } from '@/plugins/defaultSettings.js'
 
 interface AudioItem {
-  text: string;
-  subtext: string;
-  toggle?: string;
-  kind?: string;
-  title?: string;
-  label?: string;
-  placeholder?: string;
-  key?: string;
+  text: string
+  subtext: string
+  toggle?: string
+  kind?: string
+  title?: string
+  label?: string
+  placeholder?: string
+  key?: string
 }
 
 const listItemsAudio = ref<AudioItem[]>([

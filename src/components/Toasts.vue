@@ -1,29 +1,19 @@
 <template>
-  <div class="flex flex-col jusctify-center fixed z-50 right-2 top-24">
+  <div class="jusctify-center fixed top-24 right-2 z-50 flex flex-col">
     <transition-group name="list" tag="div">
       <div
         v-for="(toast, index) in toasts"
         :key="toast"
-        class="
-          flex
-          items-center
-          border-r-4
-          rounded-lg
-          py-2
-          px-3
-          shadow-md
-          backdrop-blur-xs
-          mb-2
-        "
+        class="mb-2 flex items-center rounded-lg border-r-4 px-3 py-2 shadow-md backdrop-blur-xs"
         :class="{
-          'bg-blue-500/70 border-blue-700': toast.type === 'info',
-          'bg-red-500/70 border-red-700': toast.type === 'error',
-          'bg-green-500/70 border-green-700': toast.type === 'success',
+          'border-blue-700 bg-blue-500/70': toast.type === 'info',
+          'border-red-700 bg-red-500/70': toast.type === 'error',
+          'border-green-700 bg-green-500/70': toast.type === 'success',
         }"
         @click="removeToast(index)"
       >
         <div
-          class="w-6 h-6 text-center rounded-full bg-white mr-3"
+          class="mr-3 h-6 w-6 rounded-full bg-white text-center"
           :class="{
             'text-blue-500': toast.type === 'info',
             'text-red-500': toast.type === 'error',
@@ -31,7 +21,7 @@
           }"
         >
           <i
-            class="mt-[0.2rem] block fas fa-check text-sm"
+            class="fas fa-check mt-[0.2rem] block text-sm"
             :class="{
               'fa-info': toast.type === 'info',
               'fa-times': toast.type === 'error',
@@ -39,14 +29,14 @@
             }"
           />
         </div>
-        <div class="text-white max-w-xs">{{ toast.text }}</div>
+        <div class="max-w-xs text-white">{{ toast.text }}</div>
       </div>
     </transition-group>
   </div>
 </template>
 
 <script setup lang="ts">
-import { removeToast, toasts } from "@/store/globalstate.ts"
+import { removeToast, toasts } from '@/store/globalstate.ts'
 </script>
 
 <style scoped>

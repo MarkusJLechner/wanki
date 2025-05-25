@@ -3,14 +3,7 @@
     <transition name="fade" appear>
       <div
         v-if="show"
-        class="
-          fixed
-          z-20
-          inset-0
-          bg-gray-900/50
-          backdrop-grayscale
-          transition-opacity
-        "
+        class="fixed inset-0 z-20 bg-gray-900/50 backdrop-grayscale transition-opacity"
         aria-hidden="true"
         @mousedown.stop.prevent="onClose()"
         @touchstart.stop.prevent="onClose()"
@@ -21,18 +14,7 @@
         <transition name="slide-open">
           <div
             v-if="show"
-            class="
-              dark:bg-gray-700
-              bg-gray-200
-              z-20
-              rounded-md
-              shadow-xl
-              w-60
-              pointer-event-none
-              top-0
-              right-1
-              absolute
-            "
+            class="pointer-event-none absolute top-0 right-1 z-20 w-60 rounded-md bg-gray-200 shadow-xl dark:bg-gray-700"
           >
             <List dense no-separation :value="value" @item="onClickItem" />
           </div>
@@ -60,7 +42,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  value: () => []
+  value: () => [],
 })
 
 const emit = defineEmits<{

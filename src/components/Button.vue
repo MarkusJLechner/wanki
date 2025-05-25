@@ -2,25 +2,7 @@
   <button
     v-ripple
     type="button"
-    class="
-      mt-3
-      inline-flex
-      justify-center
-      rounded-md
-      px-4
-      py-2
-      m-1
-      bg-white
-      text-base
-      font-medium
-      text-gray-700
-      dark:text-white
-      dark:bg-gray-700
-      items-center
-      hover:bg-gray-50
-      focus:outline-hidden
-      focus:ring-2 focus:ring-blue-500
-    "
+    class="m-1 mt-3 inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-hidden dark:bg-gray-700 dark:text-white"
     style="min-height: 40px"
   >
     <slot>
@@ -38,6 +20,6 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   text: '',
-  loading: true
+  loading: true,
 })
 </script>

@@ -27,7 +27,7 @@ export default defineConfig({
     },
   },
 
-  plugins: [vue(), tailwindcss(),],
+  plugins: [vue(), tailwindcss()],
 
   build: {
     target: ['chrome87', 'edge88', 'es2020'],

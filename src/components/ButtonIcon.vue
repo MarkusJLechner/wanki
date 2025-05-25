@@ -1,5 +1,5 @@
 <template>
-  <button v-ripple class="w-12 h-12 dark:text-white relative rounded-full">
+  <button v-ripple class="relative h-12 w-12 rounded-full dark:text-white">
     <i :class="icon"></i>
     <slot name="content" />
   </button>
@@ -11,6 +11,6 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  icon: 'far fa-sun'
+  icon: 'far fa-sun',
 })
 </script>

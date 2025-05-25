@@ -251,7 +251,7 @@ async function SyncServer(port) {
             // Client sends its changes to us.
             const requestId = request.requestId
             try {
-              if (!request.changes instanceof Array) {
+              if ((!request.changes) instanceof Array) {
                 throw new Error(
                   'Property "changes" must be provided and must be an array',
                 )

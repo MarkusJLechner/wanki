@@ -1,24 +1,12 @@
 <template>
   <div
     v-if="tasks.length"
-    class="
-      backdrop-grayscale
-      bg-gray-700/40
-      text-sm
-      pointer-events-none
-      fixed
-      rounded-tl-lg
-      z-30
-      bottom-0
-      right-0
-      px-5
-      py-2
-    "
+    class="pointer-events-none fixed right-0 bottom-0 z-30 rounded-tl-lg bg-gray-700/40 px-5 py-2 text-sm backdrop-grayscale"
   >
     <div
       v-for="(task, index) in tasks"
       :key="index"
-      class="text-right py-1"
+      class="py-1 text-right"
       :class="{ 'text-yellow-200': task.color === 'yellow' }"
     >
       {{ task.text }}
