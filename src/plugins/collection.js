@@ -6,14 +6,14 @@ export async function cardDeckConfig(card, dynamicDeck = false) {
 
 export async function deckConfig(deckId) {
   deckId = +deckId || 1
-  const deck = wankidb.decks.get({ id: deckId })
+  const deck = await wankidb.decks.get({ id: deckId })
   if (!deck) {
     throw new Error('Deck not found: ' + deckId)
   }
 
   const configId = +deck.conf || 1
 
-  return wankidb.dconf.get({ id: configId })
+  return await wankidb.dconf.get({ id: configId })
 }
 
 export async function getCol() {

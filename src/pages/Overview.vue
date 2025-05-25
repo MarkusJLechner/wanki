@@ -34,9 +34,18 @@
           @long-press="onMenu"
         >
           <template #suffix-item="{ item }">
-            <NumberDue :value="item.newToday?.[1]" color="blue" />
-            <NumberDue :value="item.revToday?.[1]" color="red" />
-            <NumberDue :value="item.lrnToday?.[1]" color="green" />
+            <NumberDue
+              :value="item.dueCounts ? item.dueCounts[0] : item.newToday?.[1]"
+              color="blue"
+            />
+            <NumberDue
+              :value="item.dueCounts ? item.dueCounts[1] : item.revToday?.[1]"
+              color="red"
+            />
+            <NumberDue
+              :value="item.dueCounts ? item.dueCounts[2] : item.lrnToday?.[1]"
+              color="green"
+            />
           </template>
         </ListTree>
       </div>
@@ -114,6 +123,7 @@ import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
 import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+import { getDueCounts } from '@/plugins/reviewer.js'
 
 const router = useRouter()
 
@@ -186,12 +196,16 @@ function pullToRefresh(): void {
 
 async function updateDeckList(): Promise<void> {
   const deckArray = await wankidb.decks.toArray()
-  decks.value = deckArray.map((deck: any) => {
-    return {
-      text: deck.name.split('::'),
-      ...deck,
-    }
-  })
+  decks.value = await Promise.all(
+    deckArray.map(async (deck: any) => {
+      const counts = await getDueCounts(deck.id)
+      return {
+        text: deck.name.split('::'),
+        dueCounts: counts,
+        ...deck,
+      }
+    }),
+  )
 
   const mapper: Record<string, any> = {}
   let root = { children: [] }

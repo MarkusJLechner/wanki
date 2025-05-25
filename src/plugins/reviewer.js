@@ -1,10 +1,17 @@
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { QueueType } from '@/plugins/conts.js'
 import { collectionCreatedAt } from '@/plugins/scheduler.js'
+import { deckConfig } from '@/plugins/collection.js'
 
 export async function getNextCard(deckId) {
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
+  const deck = await wankidb.decks.get({ id: deckId })
+  const dconf = await deckConfig(deckId)
+  const newLimit = dconf?.new?.perDay ?? Infinity
+  const newDone = deck?.newToday?.[1] ?? 0
+  const remainingNew = Math.max(newLimit - newDone, 0)
+
   const { today } = await collectionCreatedAt()
   const now = Date.now()
 
@@ -26,7 +33,9 @@ export async function getNextCard(deckId) {
         }
         break
       case QueueType.New:
-        newCards.push(card)
+        if (newCards.length < remainingNew) {
+          newCards.push(card)
+        }
         break
       default:
         break
@@ -48,6 +57,12 @@ export async function getNextCard(deckId) {
 export async function getDueCounts(deckId) {
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
+  const deck = await wankidb.decks.get({ id: deckId })
+  const dconf = await deckConfig(deckId)
+  const newLimit = dconf?.new?.perDay ?? Infinity
+  const newDone = deck?.newToday?.[1] ?? 0
+  const remainingNew = Math.max(newLimit - newDone, 0)
+
   const { today } = await collectionCreatedAt()
   const now = Date.now()
 
@@ -69,7 +84,9 @@ export async function getDueCounts(deckId) {
         }
         break
       case QueueType.New:
-        newCount += 1
+        if (newCount < remainingNew) {
+          newCount += 1
+        }
         break
       default:
         break
