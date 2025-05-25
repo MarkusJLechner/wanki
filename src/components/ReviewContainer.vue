@@ -10,8 +10,8 @@
       class="w-full"
       :css="computedStyle"
     >
-      <span v-if="!showAnswer" class="card question" v-html="fieldQuestion" />
-      <span v-else class="card answer" v-html="fieldAnswer" />
+      <span v-show="!showAnswer" class="card question" v-html="fieldQuestion" />
+      <span v-show="showAnswer" class="card answer" v-html="fieldAnswer" />
     </IFrameContainer>
   </div>
 </template>
