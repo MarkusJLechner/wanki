@@ -4,7 +4,7 @@
       <FlexSpacer />
       <ThemeSwitcher />
       <ButtonIcon icon="far fa-flag" />
-      <ButtonIcon icon="fas fa-info-circle" />
+      <ButtonIcon icon="fas fa-info-circle" @click="onInfo" />
       <ButtonIcon icon="fas fa-microphone" />
       <ButtonIcon icon="fas fa-arrow-alt-circle-right" />
       <ButtonIcon icon="far fa-star" @click="debug = !debug" />
@@ -128,6 +128,13 @@ const loadNextCard = async () => {
 
 const onClickOptions = (item) => {
   console.log(item)
+}
+
+const onInfo = () => {
+  if (!card.value) {
+    return
+  }
+  router.push({ path: '/card/info', query: { cardid: card.value.id } })
 }
 
 const onShow = () => {

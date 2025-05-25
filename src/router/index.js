@@ -12,6 +12,7 @@ import Help from 'pages/Help.vue'
 import Support from 'pages/Support.vue'
 import Statistics from 'pages/Statistics.vue'
 import Review from 'pages/Review.vue'
+import CardInfo from 'pages/CardInfo.vue'
 import Error from 'pages/Error.vue'
 import Settings from 'pages/Settings.vue'
 import GeneralSettings from 'pages/Settings/GeneralSettings.vue'
@@ -63,6 +64,11 @@ const routes = [
     name: 'Review',
     component: Review,
     // component: () => import('pages/Review.vue'),
+  },
+  {
+    path: '/card/info',
+    name: 'CardInfo',
+    component: CardInfo,
   },
   {
     path: '/:catchAll(.*)',

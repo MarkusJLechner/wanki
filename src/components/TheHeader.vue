@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { refstorage } from '@/store/globalstate'
 import ButtonIcon from '@/components/ButtonIcon.vue'
