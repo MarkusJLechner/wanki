@@ -168,8 +168,9 @@ const deckOptions = computed(() => [
   },
   {
     text: 'Deck options',
-    route: '/deck/options',
-    routeQuery: { deckid: modelOptionDeckId.value },
+    dispatch: () => {
+      router.push({ path: '/deck/options', query: modelOptionDeckId.value })
+    },
   },
   { text: 'Delete', dispatch: () => (showModalDelete.value = true) },
 ])
