@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="w-full flex flex-col text-lg"
+    class="flex w-full flex-col text-lg"
     :class="{
       'py-2': !noGutters,
       'text-gray-600 dark:text-gray-400': isAnyLoading(),
@@ -12,33 +12,21 @@
       :key="index"
       v-long-press="() => onLongPress(item)"
       v-ripple
-      class="
-        select-none
-        cursor-pointer
-        relative
-        focus:outline-hidden focus:ring-2 focus:ring-blue-500
-        flex
-        w-full
-        items-center
-        text-left
-        mt-0
-        mb-0
-        min-h-12
-      "
+      class="relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
       :style="item.style"
       :class="{
         seperator: item.type === 'seperator',
         [item.class]: item.class,
         'my-2': getSubText(item),
-        'py-3 px-4': dense,
-        'py-4 px-4': !dense,
+        'px-4 py-3': dense,
+        'px-4 py-4': !dense,
       }"
       @click.prevent="onClick(item)"
     >
       <component :is="item.component" v-if="item.component" />
       <hr
         v-if="item.type === 'seperator'"
-        class="border border-gray-900 dark:border-gray-500 w-full"
+        class="w-full border border-gray-900 dark:border-gray-500"
       />
 
       <slot name="prefix-item" :item="item" />
@@ -53,13 +41,13 @@
           {{ getText(item) }}
           <span
             v-if="getSubText(item)"
-            class="grow text-sm text-gray-600 dark:text-gray-300 pr-2"
+            class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
             >{{ getSubText(item) }}</span
           >
         </span>
 
         <div v-if="callFn(item, 'loading')" class="px-2">
-          <i class="text-black dark:text-white fas fa-spinner fa-spin" />
+          <i class="fas fa-spinner fa-spin text-black dark:text-white" />
         </div>
       </div>
 
@@ -104,16 +92,16 @@ import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
 import ModalTextfield from '@/components/ModalTextfield.vue'
-const ModalRadio = defineAsyncComponent(() =>
-  import('@/components/ModalRadio.vue'),
+const ModalRadio = defineAsyncComponent(
+  () => import('@/components/ModalRadio.vue'),
 )
 
 interface Props {
-  value: Array<any>;
-  noGutters?: boolean;
-  dense?: boolean;
-  noSeparation?: boolean;
-  itemTextKey?: string;
+  value: Array<any>
+  noGutters?: boolean
+  dense?: boolean
+  noSeparation?: boolean
+  itemTextKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -179,9 +167,7 @@ const hasBoolean = (item) => {
     return true
   }
 
-  return (
-    typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
-  )
+  return typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
 }
 
 const hasText = (item) => {
@@ -221,7 +207,7 @@ const onClick = (item) => {
   }
 
   if (item.route) {
-    router.push({ path: item.route })
+    router.push({ path: item.route, query: item.routeQuery })
   }
 
   if (item.dispatch) {

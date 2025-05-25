@@ -41,7 +41,7 @@
         </ListTree>
       </div>
 
-      <span v-else class="p-4 leading-10 block"
+      <span v-else class="block p-4 leading-10"
         >No decks available. Download
         <a
           class="text-blue-700 dark:text-blue-300"
@@ -113,6 +113,7 @@ import MainContent from '@/components/MainContent.vue'
 import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
 import ListTree from '@/components/ListTree.vue'
+import { wankidb } from '@/plugins/wankidb/db'
 
 const router = useRouter()
 
@@ -136,7 +137,21 @@ const optionsFloating = ref([
   { text: 'Create deck', icon: 'fas fa-folder-plus' },
   { text: 'Add note', icon: 'fas fa-plus' },
 ])
-const deckOptions = ref([
+
+// Computed properties
+const modelOptionDeckId = computed(() => {
+  return modalOptionsItem.value?.id
+})
+
+const modelOptionDeckDesc = computed(() => {
+  return modalOptionsItem.value?.desc
+})
+
+const modelOptionDeckTitle = computed(() => {
+  return modalOptionsItem.value?.text
+})
+
+const deckOptions = computed(() => [
   {
     text: 'Rename',
     dispatch: () => {
@@ -153,29 +168,11 @@ const deckOptions = ref([
   },
   {
     text: 'Deck options',
-    dispatch: () => {
-      console.log(modelOptionDeckId.value)
-      router.push({
-        path: '/deck/options',
-        query: { deckid: modelOptionDeckId.value },
-      })
-    },
+    route: '/deck/options',
+    routeQuery: { deckid: modelOptionDeckId.value },
   },
   { text: 'Delete', dispatch: () => (showModalDelete.value = true) },
 ])
-
-// Computed properties
-const modelOptionDeckId = computed(() => {
-  return modalOptionsItem.value?.id
-})
-
-const modelOptionDeckDesc = computed(() => {
-  return modalOptionsItem.value?.desc
-})
-
-const modelOptionDeckTitle = computed(() => {
-  return modalOptionsItem.value?.text
-})
 
 // Methods
 function pullToRefresh(): void {
