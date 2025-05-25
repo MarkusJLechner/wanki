@@ -33,7 +33,7 @@
         >
 
         <div
-          class="relative z-50 flex inline-block max-h-[85vh] min-w-[20rem] flex-col overflow-hidden rounded-lg bg-white p-1 text-left align-bottom text-gray-800 shadow-xl transition-all dark:bg-gray-700 dark:text-white"
+          class="relative z-50 flex max-h-[85vh] min-w-[20rem] flex-col overflow-hidden rounded-lg bg-white p-1 text-left align-bottom text-gray-800 shadow-xl transition-all dark:bg-gray-700 dark:text-white"
         >
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
           <div
@@ -123,7 +123,9 @@ onMounted(() => {
   onBeforeRouteLeave(() => {
     if (show.value) {
       onClose()
-      return false
+      // prevent back fix https://github.com/MarkusJLechner/wanki/commit/a907db731e5821ddb7e67d49a3af47c7d4a8c544
+      // why was this needed?
+      return true
     }
     return true
   })

@@ -56,7 +56,7 @@
       <ModalOptions
         :model-value="modalOptionsItem"
         :items="deckOptions"
-        @close="modalOptionsItem = null"
+        @close="closeModalOptions"
       >
         <div v-if="modalOptionsItem" class="p-4">
           ID: {{ modelOptionDeckId }}
@@ -168,15 +168,15 @@ const deckOptions = computed(() => [
   },
   {
     text: 'Deck options',
-    dispatch: () => {
-      router.push({
-        path: '/deck/options',
-        query: { deckid: modelOptionDeckId.value },
-      })
-    },
+    route: '/deck/options',
+    routeQuery: { deckid: modelOptionDeckId.value },
   },
   { text: 'Delete', dispatch: () => (showModalDelete.value = true) },
 ])
+
+async function closeModalOptions() {
+  modalOptionsItem.value = null
+}
 
 // Methods
 function pullToRefresh(): void {
