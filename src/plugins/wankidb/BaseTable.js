@@ -34,8 +34,8 @@ export class BaseTable {
     }, {})
   }
 
-  save() {
-    wankidb[this.tableName].put(this.getObj())
+  async save() {
+    await wankidb[this.tableName].put(this.getObj())
     return this
   }
 }

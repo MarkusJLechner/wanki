@@ -253,7 +253,7 @@ export async function answerCard(card, ease = 3) {
     card.odue = 0
   }
 
-  card.save()
+  await card.save()
 
   info('finished review', card)
 }

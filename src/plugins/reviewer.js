@@ -15,8 +15,12 @@ export async function getNextCard(deckId) {
   cards.forEach((card) => {
     switch (card.queue) {
       case QueueType.Learn:
-      case QueueType.DayLearnRelearn:
         if (card.due <= now) {
+          dueLearns.push(card)
+        }
+        break
+      case QueueType.DayLearnRelearn:
+        if (card.due <= today) {
           dueLearns.push(card)
         }
         break
@@ -58,8 +62,12 @@ export async function getDueCounts(deckId) {
   cards.forEach((card) => {
     switch (card.queue) {
       case QueueType.Learn:
-      case QueueType.DayLearnRelearn:
         if (card.due <= now) {
+          learnCount += 1
+        }
+        break
+      case QueueType.DayLearnRelearn:
+        if (card.due <= today) {
           learnCount += 1
         }
         break
