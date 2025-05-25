@@ -60,6 +60,7 @@ import { addToast } from '@/store/globalstate'
 import { wankidb } from '@/plugins/wankidb/db.js'
 import { ToastType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
+import { getNextCard } from '@/plugins/reviewer.js'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 
@@ -70,7 +71,6 @@ const debug = ref(false)
 const deckid = ref(1)
 const deck = ref(null)
 const card = ref(null)
-const note = ref(null)
 const showAnswer = ref(false)
 const timer = ref(null)
 const timerText = ref('00:00')
@@ -95,20 +95,9 @@ const initializeData = async () => {
   }
 }
 
-// Load first card
-const loadFirstCard = async () => {
-  const count = await wankidb.cards.where({ did: deckid.value }).count()
-  const pages = count / 5
-  const randPage = Math.floor(pages * Math.random())
-  console.log('load random', { count, pages, randPage })
-
-  card.value = await wankidb.cards
-    .where({ did: deckid.value })
-    .offset(randPage)
-    .limit(5)
-    .first()
-
-  console.log(card.value)
+// Load next card for review
+const loadNextCard = async () => {
+  card.value = await getNextCard(deckid.value)
 }
 
 const onClickOptions = (item) => {
@@ -127,7 +116,7 @@ const onRating = async (ease) => {
   }
   try {
     await answerCard(card.value, ease)
-    await loadFirstCard()
+    await loadNextCard()
 
     showAnswer.value = false
   } catch (e) {
@@ -140,7 +129,7 @@ void initializeData()
 
 // Lifecycle hooks
 onMounted(() => {
-  loadFirstCard()
+  loadNextCard()
   addToast({ type: ToastType.info, text: 'Started review' })
   timer.value.start()
 })

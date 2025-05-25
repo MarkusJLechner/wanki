@@ -1,0 +1,46 @@
+import { wankidb } from '@/plugins/wankidb/db.js'
+import { QueueType } from '@/plugins/conts.js'
+import { collectionCreatedAt } from '@/plugins/scheduler.js'
+
+export async function getNextCard(deckId) {
+  deckId = +deckId || 1
+  const cards = await wankidb.cards.where({ did: deckId }).toArray()
+  const { today } = await collectionCreatedAt()
+  const now = Date.now()
+
+  const dueLearns = []
+  const dueReviews = []
+  const newCards = []
+
+  cards.forEach((card) => {
+    switch (card.queue) {
+      case QueueType.Learn:
+      case QueueType.DayLearnRelearn:
+        if (card.due <= now) {
+          dueLearns.push(card)
+        }
+        break
+      case QueueType.Review:
+        if ((card.due < 1e12 && card.due <= today) || card.due <= now) {
+          dueReviews.push(card)
+        }
+        break
+      case QueueType.New:
+        newCards.push(card)
+        break
+      default:
+        break
+    }
+  })
+
+  const sortFn = (a, b) => a.due - b.due
+  dueLearns.sort(sortFn)
+  dueReviews.sort(sortFn)
+  newCards.sort(sortFn)
+
+  const next = dueLearns[0] || dueReviews[0] || newCards[0] || null
+  if (next && typeof next.startTimer === 'function') {
+    next.startTimer()
+  }
+  return next
+}
