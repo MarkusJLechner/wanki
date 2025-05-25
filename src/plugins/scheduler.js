@@ -641,13 +641,19 @@ function counts() {
 }
 
 function _sortIntoLrn(due, id) {
+  // ensure the queue is active
   if (!mLrnQueue.isFilled) {
+    mLrnQueue.add(due, id)
     return
   }
 
   const queue = mLrnQueue.queue
   const index = queue.findIndex((queueItem) => queueItem.due > due)
-  queue.splice(index, 0, new LrnCard(due, id))
+  if (index === -1) {
+    queue.push(new LrnCard(due, id))
+  } else {
+    queue.splice(index, 0, new LrnCard(due, id))
+  }
 }
 
 async function addRevlogReview(card, ease, delay, type) {
