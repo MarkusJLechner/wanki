@@ -58,7 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'select', files: File[]): void
+  select: [files: File[]]
 }>()
 
 const onHover = ref(false)

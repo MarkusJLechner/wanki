@@ -124,7 +124,10 @@ const props = withDefaults(defineProps<Props>(), {
   itemTextKey: 'text',
 })
 
-const emit = defineEmits(['item', 'long-press'])
+const emit = defineEmits<{
+  item: [item: any]
+  'long-press': [item: any]
+}>()
 const router = useRouter()
 
 const radio = ref(null)

@@ -42,6 +42,6 @@ withDefaults(defineProps<Props>(), {
 })
 
 defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
+  'update:modelValue': [value: boolean]
 }>()
 </script>

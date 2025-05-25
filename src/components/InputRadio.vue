@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'update:items', items: Item[]): void
+  'update:items': [items: Item[]]
 }>()
 
 const initValue = () => {

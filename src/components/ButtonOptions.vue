@@ -64,8 +64,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'item', item: Item): void
-  [key: string]: (...args: any[]) => void
+  item: [item: Item]
+  [key: string]: any[]
 }>()
 
 const show = ref(false)

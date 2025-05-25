@@ -131,12 +131,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'click:action', action: Action): void
-  (e: 'confirm'): void
-  (e: 'open'): void
-  (e: 'close'): void
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'visible', value: boolean): void
+  'click:action': [action: Action]
+  confirm: []
+  open: []
+  close: []
+  'update:modelValue': [value: boolean]
+  visible: [value: boolean]
 }>()
 
 const show = ref(false)

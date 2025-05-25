@@ -44,10 +44,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'click:action', action: Action): void
-  (e: 'action', action: Action): void
-  (e: 'confirm', action: Action): void
-  (e: 'close', action: Action): void
+  'click:action': [action: Action]
+  'action': [action: Action]
+  'confirm': [action: Action]
+  'close': [action: Action]
 }>()
 
 const defaultActions = computed<Action[]>(() => [

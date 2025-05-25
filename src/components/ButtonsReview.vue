@@ -64,8 +64,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'show'): void
-  (e: 'rating', value: number): void
+  show: []
+  rating: [value: number]
 }>()
 
 const buttons = ref<Button[]>([
