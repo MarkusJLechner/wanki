@@ -44,3 +44,37 @@ export async function getNextCard(deckId) {
   }
   return next
 }
+
+export async function getDueCounts(deckId) {
+  deckId = +deckId || 1
+  const cards = await wankidb.cards.where({ did: deckId }).toArray()
+  const { today } = await collectionCreatedAt()
+  const now = Date.now()
+
+  let newCount = 0
+  let reviewCount = 0
+  let learnCount = 0
+
+  cards.forEach((card) => {
+    switch (card.queue) {
+      case QueueType.Learn:
+      case QueueType.DayLearnRelearn:
+        if (card.due <= now) {
+          learnCount += 1
+        }
+        break
+      case QueueType.Review:
+        if ((card.due < 1e12 && card.due <= today) || card.due <= now) {
+          reviewCount += 1
+        }
+        break
+      case QueueType.New:
+        newCount += 1
+        break
+      default:
+        break
+    }
+  })
+
+  return [newCount, reviewCount, learnCount]
+}

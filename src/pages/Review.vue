@@ -26,7 +26,12 @@
     </TheHeader>
 
     <MainContent>
-      <InformationHeaderReview class="" :current="2" :remaining="[1,2,22]" :timer="timerText" />
+      <InformationHeaderReview
+        class=""
+        :current="current"
+        :remaining="remaining"
+        :timer="timerText"
+      />
 
       <div id="review-container" class="grow p-3 relative">
         <ReviewDebug v-if="debug" :card="card" :deck="deck" />
@@ -58,9 +63,9 @@ import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
 import { addToast } from '@/store/globalstate'
 import { wankidb } from '@/plugins/wankidb/db.js'
-import { ToastType } from '@/plugins/conts.js'
+import { ToastType, CardType, QueueType } from '@/plugins/conts.js'
 import { answerCard } from '@/plugins/scheduler.js'
-import { getNextCard } from '@/plugins/reviewer.js'
+import { getNextCard, getDueCounts } from '@/plugins/reviewer.js'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 
@@ -75,6 +80,8 @@ const showAnswer = ref(false)
 const timer = ref(null)
 const timerText = ref('00:00')
 const timerDuration = ref(0)
+const remaining = ref([0, 0, 0])
+const current = ref(0)
 
 // Initialize timer and load deck
 timer.value = createTimer({
@@ -96,8 +103,27 @@ const initializeData = async () => {
 }
 
 // Load next card for review
+const cardTypeIndex = (c: any): number => {
+  if (!c) {
+    return -1
+  }
+  if (c.queue === QueueType.New || c.type === CardType.New) {
+    return 0
+  }
+  if (
+    c.queue === QueueType.Learn ||
+    c.queue === QueueType.DayLearnRelearn ||
+    c.type === CardType.Learn
+  ) {
+    return 2
+  }
+  return 1
+}
+
 const loadNextCard = async () => {
   card.value = await getNextCard(deckid.value)
+  remaining.value = await getDueCounts(deckid.value)
+  current.value = cardTypeIndex(card.value)
 }
 
 const onClickOptions = (item) => {
