@@ -95,7 +95,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import List from '@/components/List.vue'
 import ModalImport from '@/components/ModalImport.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
@@ -150,6 +149,16 @@ const deckOptions = ref([
     loading: () => loadingOnExport.value,
     dispatch: () => {
       onExport()
+    },
+  },
+  {
+    text: 'Deck options',
+    dispatch: () => {
+      console.log(modelOptionDeckId.value)
+      router.push({
+        path: '/deck/options',
+        query: { deckid: modelOptionDeckId.value },
+      })
     },
   },
   { text: 'Delete', dispatch: () => (showModalDelete.value = true) },

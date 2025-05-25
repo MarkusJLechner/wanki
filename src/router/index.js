@@ -13,6 +13,7 @@ import Support from 'pages/Support.vue'
 import Statistics from 'pages/Statistics.vue'
 import Review from 'pages/Review.vue'
 import CardInfo from 'pages/CardInfo.vue'
+import DeckOptions from 'pages/DeckOptions.vue'
 import Error from 'pages/Error.vue'
 import Settings from 'pages/Settings.vue'
 import GeneralSettings from 'pages/Settings/GeneralSettings.vue'
@@ -64,6 +65,11 @@ const routes = [
     name: 'Review',
     component: Review,
     // component: () => import('pages/Review.vue'),
+  },
+  {
+    path: '/deck/options',
+    name: 'DeckOptions',
+    component: DeckOptions,
   },
   {
     path: '/card/info',
