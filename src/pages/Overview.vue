@@ -18,7 +18,7 @@
     <div
       class="fixed bottom-2.5 left-2.5 z-10 text-[0.7rem] text-inherit opacity-60"
     >
-      Build: {{ buildDate }}
+      Build: {{ commitHash }} - {{ buildDate }}
     </div>
 
     <MainContent
@@ -122,7 +122,8 @@ import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 
 // Build date from Vite environment variable
-const buildDate = __BUILD_DATE__ as string
+const buildDate = __BUILD_DATE__
+const commitHash = __COMMIT_HASH__
 
 const router = useRouter()
 
