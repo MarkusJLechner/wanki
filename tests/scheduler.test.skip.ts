@@ -7,6 +7,7 @@ import {
   _lapseIvl,
   _graduatingIvl,
   _rescheduleAsRev,
+  _rescheduleRev,
   _checkLeech,
   _nextRevIvl,
   _earlyReviewIvl,
@@ -40,6 +41,20 @@ import {
 import * as collection from '../src/plugins/collection.js'
 import * as globalstate from '../src/store/globalstate.js'
 import { wankidb } from '../src/plugins/wankidb/db.js'
+
+// Attach scheduler helpers to the global object so they can be spied on in tests
+Object.assign(globalThis, {
+  _daysLate,
+  _startingLeft,
+  _rescheduleLrnCard,
+  _rescheduleLapse,
+  _rescheduleAsRev,
+  _rescheduleRev,
+  _moveToNextStep,
+  _updateRevIvlOnFail,
+  mToday: 0,
+  mDayCutoff: 0,
+})
 
 // Mock dependencies
 vi.mock('../src/plugins/wankidb/db.js', () => {
