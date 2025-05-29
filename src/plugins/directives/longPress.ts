@@ -3,7 +3,10 @@ import { DirectiveBinding, ObjectDirective } from 'vue'
 const PRESS_TIMEOUT = 500
 
 export default {
-  mounted(el: HTMLElement, { value }: DirectiveBinding) {
+  mounted(
+    el: HTMLElement,
+    { value }: DirectiveBinding<(e: MouseEvent | TouchEvent) => void>,
+  ) {
     if (typeof value !== 'function') {
       console.warn(`Expect a function, got ${value}`)
       return
@@ -16,7 +19,7 @@ export default {
     let iy = 0
     let dx = 0
     let dy = 0
-    let thresholdMove = 10
+    const thresholdMove = 10
 
     const start = (e: MouseEvent | TouchEvent) => {
       ix = 'clientX' in e ? e.clientX : (e.touches && e.touches[0].clientX) || 0

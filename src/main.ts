@@ -34,6 +34,6 @@ app.mount('#app')
 // Register service worker
 if (!import.meta.hot) {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
+    void navigator.serviceWorker.register('/service-worker.js')
   }
 }

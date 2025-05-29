@@ -72,8 +72,8 @@ export async function setConf<T>(
   const conf = col.conf as Record<string, unknown>
   conf[key] = value
 
-  // Assuming there's a save method on the col object
-  return (col as any).save()
+  await col.save()
+  return conf
 }
 
 export function getDecks(): Promise<Record<string, unknown>[]> {

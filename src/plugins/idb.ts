@@ -286,19 +286,19 @@ export const tableColJsonParse = (
   tableCol: Record<string, unknown>,
 ): Record<string, unknown> => {
   if (typeof tableCol.conf === 'string') {
-    tableCol.conf = JSON.parse(tableCol.conf as string)
+    tableCol.conf = JSON.parse(tableCol.conf)
   }
   if (typeof tableCol.models === 'string') {
-    tableCol.models = JSON.parse(tableCol.models as string)
+    tableCol.models = JSON.parse(tableCol.models)
   }
   if (typeof tableCol.decks === 'string') {
-    tableCol.decks = JSON.parse(tableCol.decks as string)
+    tableCol.decks = JSON.parse(tableCol.decks)
   }
   if (typeof tableCol.dconf === 'string') {
-    tableCol.dconf = JSON.parse(tableCol.dconf as string)
+    tableCol.dconf = JSON.parse(tableCol.dconf)
   }
   if (typeof tableCol.tags === 'string') {
-    tableCol.tags = JSON.parse(tableCol.tags as string)
+    tableCol.tags = JSON.parse(tableCol.tags)
   }
   return tableCol
 }

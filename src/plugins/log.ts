@@ -16,7 +16,7 @@ const printLog = (
 }
 
 const verboseLevel = 3
-export let trace = false
+export const trace = false
 
 export const log: LogFunction = (name, ...args) => {
   if (verboseLevel < 3) return

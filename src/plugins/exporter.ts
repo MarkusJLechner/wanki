@@ -37,7 +37,7 @@ export const exportDeck = async (deckId: string): Promise<void> => {
     {} as Record<string | number, Uint8Array>,
   )
   decompressedFile['collection.anki2'] = deck.decompressedFile.collection
-  decompressedFile.media = deck.decompressedFile.media as Uint8Array
+  decompressedFile.media = deck.decompressedFile.media
 
   const deckNameSanitized = deck.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()
   const filename = `${deckNameSanitized}.apkg`
@@ -61,10 +61,7 @@ export const exportDeck = async (deckId: string): Promise<void> => {
   await downloadBlob(compressed, filename, 'application/zip')
 }
 
-export const downloadURL = async (
-  data: string,
-  fileName: string,
-): Promise<void> => {
+export const downloadURL = (data: string, fileName: string): void => {
   const a = document.createElement('a')
   a.href = data
   a.download = fileName
@@ -85,7 +82,7 @@ export const downloadBlob = async (
 
   const url = window.URL.createObjectURL(blob)
 
-  await downloadURL(url, fileName)
+  downloadURL(url, fileName)
 
   return new Promise<void>((resolve) =>
     setTimeout(() => {

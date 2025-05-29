@@ -6,16 +6,16 @@ import { ToastType } from '@/plugins/conts'
 import { defaultSettings } from '@/plugins/defaultSettings'
 
 interface StoreItemSubscribers {
-  [key: string]: Ref<any>
+  [key: string]: Ref<unknown>
 }
 
 interface Setting {
   key: string
-  default?: any
+  default?: unknown
 }
 
 interface DefaultSetting {
-  default?: any
+  default?: unknown
   valueType?: 'number' | 'boolean' | string
 }
 
@@ -28,7 +28,7 @@ interface Toast {
 
 const storeItemSubscribers: StoreItemSubscribers = {}
 
-const parseType = (value: any, type?: string): any => {
+const parseType = (value: unknown, type?: string): unknown => {
   if (type === 'number') {
     return +value
   }
@@ -39,7 +39,7 @@ const parseType = (value: any, type?: string): any => {
 }
 
 export const refstorage = {
-  init: (key: string, Default?: any): void => {
+  init: (key: string, Default?: unknown): void => {
     if (!storeItemSubscribers[key]) {
       const defaultSetting = refstorage.getDefaultSetting(key)?.default
       storeItemSubscribers[key] = ref(
@@ -69,12 +69,12 @@ export const refstorage = {
     )
   },
 
-  ref: (key: string): Ref<any> => {
+  ref: (key: string): Ref<unknown> => {
     refstorage.init(key)
     return storeItemSubscribers[key]
   },
 
-  getSetting: (setting: Setting): any => {
+  getSetting: (setting: Setting): unknown => {
     const valueType = refstorage.getDefaultSetting(setting.key)?.valueType
     refstorage.init(setting.key, setting.default)
 
@@ -85,14 +85,14 @@ export const refstorage = {
     return this.getDefaultSetting(key)?.valueType ?? Default
   },
 
-  get: (key: string, Default?: any): any => {
+  get: (key: string, Default?: unknown): unknown => {
     const valueType = refstorage.getDefaultSetting(key)?.valueType
     refstorage.init(key, Default)
 
     return parseType(storeItemSubscribers[key].value, valueType)
   },
 
-  set: (key: string, value: any): void => {
+  set: (key: string, value: unknown): void => {
     vibrate()
 
     refstorage.init(key, value)

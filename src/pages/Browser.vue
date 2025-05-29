@@ -3,8 +3,6 @@
     <TheHeader title="Browser">
       <FlexSpacer />
       <ThemeSwitcher />
-      <ThemeSwitcher />
-      <ThemeSwitcher />
     </TheHeader>
     <h1>Browser</h1>
   </div>
