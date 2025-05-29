@@ -29,13 +29,11 @@ export const sqlDbDeck = async (
   deckId: string | number,
 ): Promise<SqlJsDatabase> => {
   if (!sqlDbCache[deckId]) {
-    const deck = (await (await idbDecks).get(deckId)) as Deck
-    if (!deck.decompressedFile.collection) {
+    const deck = (await (await idbDecks).get(deckId)) as unknown as Deck
+    if (!deck.decompressedFile?.collection) {
       console.error('Empty database, check the initialization!')
     }
-    sqlDbCache[deckId] = await initSqlDb(
-      deck.decompressedFile.collection as Uint8Array,
-    )
+    sqlDbCache[deckId] = await initSqlDb(deck.decompressedFile.collection)
   }
 
   return sqlDbCache[deckId]
