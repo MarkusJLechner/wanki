@@ -27,7 +27,7 @@ export class Counts {
         this.reviewCount += value
         break
       default:
-        throw new Error(index + ' does not exist')
+        throw new Error('Invalid count type' + (index as string))
     }
   }
 

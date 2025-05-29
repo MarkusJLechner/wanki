@@ -1,11 +1,14 @@
-import { fsrs, Rating, State } from 'ts-fsrs'
+import { fsrs, Grade, Rating, State } from 'ts-fsrs'
 import { wankidb } from '@/plugins/wankidb/db'
+import type { Card } from '@/plugins/wankidb/Card'
 import { CardType, QueueType } from '@/plugins/conts'
 import { creationTimestamp, getConf } from '@/plugins/collection'
 
 const scheduler = fsrs()
 
-function cardTypeToState(type: number): State {
+function cardTypeToState(
+  type: (typeof CardType)[keyof typeof CardType] | undefined,
+): State {
   switch (type) {
     case CardType.New:
       return State.New
@@ -20,7 +23,7 @@ function cardTypeToState(type: number): State {
   }
 }
 
-function stateToCard(state: State, card: any) {
+function stateToCard(state: State, card: Card): void {
   switch (state) {
     case State.New:
       card.type = CardType.New
@@ -41,13 +44,26 @@ function stateToCard(state: State, card: any) {
   }
 }
 
-function fromCard(card: any) {
-  let data: any = {}
+interface FSRSData {
+  due: Date
+  stability: number
+  difficulty: number
+  elapsed_days: number
+  scheduled_days: number
+  learning_steps: number
+  reps: number
+  lapses: number
+  state: State
+  last_review?: Date
+}
+
+function fromCard(card: Card): FSRSData {
+  let data: FSRSData = {} as FSRSData
   if (card.data) {
     try {
-      data = JSON.parse(card.data)
+      data = JSON.parse(card.data) as FSRSData
     } catch {
-      data = {}
+      data = {} as FSRSData
     }
   }
   return {
@@ -64,7 +80,7 @@ function fromCard(card: any) {
   }
 }
 
-function updateCard(card: any, next: any) {
+function updateCard(card: Card, next: FSRSData): void {
   const data = {
     due: next.due.getTime(),
     stability: next.stability,
@@ -84,13 +100,24 @@ function updateCard(card: any, next: any) {
   stateToCard(next.state, card)
 }
 
-export async function answerCard(card: any, ease: number) {
-  if (!card) return
+export async function answerCard(card: Card, ease: Rating): Promise<void> {
+  if (!card) {
+    return
+  }
   const now = new Date()
+
   const fsrsCard = fromCard(card)
-  const { card: nextCard, log } = scheduler.next(fsrsCard, now, ease as Rating)
+
+  const { card: nextCard, log } = scheduler.next(fsrsCard, now, ease as Grade)
   updateCard(card, nextCard)
+
   await card.save()
+
+  let timeTaken = 0
+  if (typeof card.timeTaken !== 'undefined') {
+    timeTaken = await card.timeTaken
+  }
+
   await wankidb.revlog.add({
     id: Date.now(),
     cid: card.id,
@@ -99,19 +126,27 @@ export async function answerCard(card: any, ease: number) {
     ivl: log.scheduled_days,
     lastIvl: log.last_elapsed_days,
     factor: nextCard.difficulty,
-    time: card.timeTaken ? await card.timeTaken : 0,
+    time: timeTaken,
     type:
       log.state === State.Review ? 1 : log.state === State.Relearning ? 2 : 0,
   })
 }
 
-export async function rolloverHour() {
-  return getConf('rollover', 4)
+export async function rolloverHour(): Promise<number> {
+  const roll = await getConf('rollover', 4)
+
+  if (typeof roll !== 'number') {
+    throw new Error('Invalid rollover hour')
+  }
+
+  return roll
 }
 
 export async function collectionCreatedAt() {
   const created = await creationTimestamp()
+
   const roll = await rolloverHour()
+
   const createdDate = new Date(created)
   createdDate.setHours(roll, 0, 0, 0)
   const now = Date.now()

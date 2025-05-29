@@ -1,7 +1,15 @@
-export const resolveObjectPath = (
-  object: any,
+export function resolveObjectPath<T, P extends Record<string, unknown>>(
+  object: P,
   path: string,
-  defaultValue: any,
-): any => {
-  return path.split('.').reduce((o, p) => (o ? o[p] : defaultValue), object)
+  defaultValue: T,
+): T {
+  return path
+    .split('.')
+    .reduce((current: unknown, property: string): unknown => {
+      if (current != null && typeof current === 'object') {
+        const obj = current as P
+        return obj[property]
+      }
+      return defaultValue
+    }, object) as T
 }

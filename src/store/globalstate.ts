@@ -3,7 +3,7 @@ import { vibrate } from '@/plugins/global'
 import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
 import { ToastType } from '@/plugins/conts'
-import { defaultSettings } from '@/plugins/defaultSettings'
+import { DefaultSettings, defaultSettings } from '@/plugins/defaultSettings'
 
 interface StoreItemSubscribers {
   [key: string]: Ref<unknown>
@@ -16,7 +16,7 @@ interface Setting {
 
 interface DefaultSetting {
   default?: unknown
-  valueType?: 'number' | 'boolean' | string
+  valueType?: 'number' | 'boolean' | (string & {})
 }
 
 interface Toast {
@@ -30,7 +30,11 @@ const storeItemSubscribers: StoreItemSubscribers = {}
 
 const parseType = (value: unknown, type?: string): unknown => {
   if (type === 'number') {
-    return +value
+    if (typeof value === 'string' || typeof value === 'number') {
+      return +value
+    } else {
+      throw new Error('Invalid number')
+    }
   }
   if (type === 'boolean') {
     return !!JSON.parse(String(value))
@@ -62,7 +66,7 @@ export const refstorage = {
     if (!path) {
       return null
     }
-    return resolveObjectPath(
+    return resolveObjectPath<DefaultSetting | null, DefaultSettings>(
       defaultSettings,
       path.replace('setting.', ''),
       null,

@@ -1,4 +1,5 @@
 import { openDB, DBSchema } from 'idb'
+import Dexie from 'dexie'
 import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql'
 
 // import WorkerBulkPut from '@/plugins/workers/wankidbBulkPut.js?worker'
@@ -176,8 +177,12 @@ export const importDeck = async (
 
   const cast = (
     json: string | Record<string, unknown>,
-  ): Record<string, unknown> =>
-    typeof json === 'string' ? JSON.parse(json) : json
+  ): Record<string, unknown> => {
+    if (typeof json === 'string') {
+      return JSON.parse(json) as Record<string, unknown>
+    }
+    return json
+  }
   const models = Object.values(cast(col[0].models) || {})
   const decks = Object.values(cast(col[0].decks) || {})
   const dconf = Object.values(cast(col[0].dconf) || {})
@@ -202,17 +207,20 @@ export const importDeck = async (
       new Promise((resolve, reject) => {
         // const worka = new WorkerBulkPut()
 
-        ;(async () => {
+        void (async () => {
           console.time('- ' + table)
           await wankidb.open()
-          await wankidb[table as keyof typeof wankidb]
+          const tableObj = wankidb[
+            table as keyof typeof wankidb
+          ] as Dexie.Table<Record<string, unknown>, unknown>
+          await tableObj
             .bulkPut(data)
             .then(() => {
               workerList[table] = true
               resolve(workerList)
             })
-            .catch((e) => {
-              reject(e.message)
+            .catch((e: Error) => {
+              reject(new Error(e.message))
             })
             .finally(() => {
               console.timeEnd('- ' + table)

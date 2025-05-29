@@ -3,13 +3,12 @@ import {
   createRouter,
   RouteRecordRaw,
   RouteLocationNormalized,
-  Position,
-  PositionResult,
 } from 'vue-router'
+import type { RouterScrollBehavior } from 'vue-router'
 
 if (!import.meta.hot) {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker')
+    void navigator.serviceWorker.register('/service-worker.js')
   }
 }
 
@@ -134,8 +133,8 @@ const router = createRouter({
   scrollBehavior(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    savedPosition?: Position,
-  ): PositionResult | void {
+    savedPosition: Parameters<RouterScrollBehavior>[2],
+  ) {
     if (savedPosition) {
       return savedPosition
     } else {

@@ -209,26 +209,29 @@ class WankiDexie extends Dexie {
 
 export const wankidb = (() => {
   const db = new WankiDexie(databaseName)
-  db.open()
+  void db.open()
   return db
 })()
 
 export const initSync = (): void => {
-  wankidb.open().then(() => {
-    // @ts-expect-error - Syncable is added by dexie-syncable plugin
-    wankidb.syncable.connect('websocket', 'ws://localhost:3344')
-    // @ts-expect-error - Syncable is added by dexie-syncable plugin
-    wankidb.syncable.on('statusChanged', function (newStatus: number) {
-      try {
-        // @ts-expect-error - Syncable is added by dexie-syncable plugin
-        const status = Dexie.Syncable.StatusTexts[newStatus]
-        console.log('Sync Status changed: ' + status)
-      } catch {
-        console.log('status error')
-      }
+  wankidb
+    .open()
+    .then(() => {
+      // wankidb.syncable.connect('websocket', 'ws://localhost:3344')
+      // wankidb.syncable.on('statusChanged', function (newStatus: number) {
+      //   try {
+      //     // @ts-expect-error - Syncable is added by dexie-syncable plugin
+      //     const status = Dexie.Syncable.StatusTexts[newStatus]
+      //     console.log('Sync Status changed: ' + status)
+      //   } catch {
+      //     console.log('status error')
+      //   }
+      // })
+      console.log('wankidb ws connect')
     })
-    console.log('wankidb ws connect')
-  })
+    .catch((err) => {
+      console.error('Failed to open wankidb', err)
+    })
 }
 
 // initSync()

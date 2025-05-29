@@ -25,7 +25,7 @@ interface ReviewingSettings {
   }
 }
 
-interface DefaultSettings {
+export interface DefaultSettings {
   general: GeneralSettings
   reviewing: ReviewingSettings
 }

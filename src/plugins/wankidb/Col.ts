@@ -7,11 +7,15 @@ import {
   ModelsObject,
 } from '@/plugins/wankidb/types'
 
-wankidb.col.hook('creating', (primKey, obj) => {
+wankidb.col.hook('creating', (_, obj) => {
   const cast = (
     json: unknown,
-  ): Configuration | ModelsObject | DecksObject | DConfObject | unknown =>
-    typeof json === 'string' ? JSON.parse(json) : json
+  ): Configuration | ModelsObject | DecksObject | DConfObject =>
+    (typeof json === 'string' ? JSON.parse(json) : json) as
+      | Configuration
+      | ModelsObject
+      | DecksObject
+      | DConfObject
   obj.conf = cast(obj.conf) as Configuration
   // obj.dconf = cast(obj.dconf) as DConfObject
   // obj.models = cast(obj.models) as ModelsObject
@@ -21,8 +25,12 @@ wankidb.col.hook('creating', (primKey, obj) => {
 wankidb.col.hook('reading', (obj) => {
   const parse = (
     json: unknown,
-  ): Configuration | ModelsObject | DecksObject | DConfObject | unknown =>
-    typeof json === 'string' ? JSON.parse(json) : json
+  ): Configuration | ModelsObject | DecksObject | DConfObject =>
+    (typeof json === 'string' ? JSON.parse(json) : json) as
+      | Configuration
+      | ModelsObject
+      | DecksObject
+      | DConfObject
   obj.conf = parse(obj.conf) as Configuration
   return Object.assign(new Col(), obj)
 })
