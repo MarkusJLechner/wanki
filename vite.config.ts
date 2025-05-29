@@ -6,7 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 import { execSync } from 'child_process'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
-const buildDate = new Date().toISOString().replace('T', ' ').slice(0, 16)
+const buildDate = new Date()
+  .toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })
+  .slice(0, 16)
 const commitHash = execSync('git rev-parse --short HEAD').toString().trim()
 
 const resolve = (dir: string): string => {
