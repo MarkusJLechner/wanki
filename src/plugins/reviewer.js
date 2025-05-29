@@ -1,6 +1,6 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import { QueueType } from '@/plugins/conts'
-import { collectionCreatedAt } from '@/plugins/scheduler'
+import { collectionCreatedAt } from '@/plugins/fsrs'
 import { deckConfig } from '@/plugins/collection'
 
 export async function getNextCard(deckId) {

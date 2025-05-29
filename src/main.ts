@@ -10,7 +10,7 @@ import ripple from '@/plugins/directives/ripple'
 import autofocus from '@/plugins/directives/autofocus'
 
 import '@/plugins/collection'
-import '@/plugins/scheduler'
+import '@/plugins/fsrs'
 import keepScroll from '@/plugins/directives/keepScroll'
 
 // Create the Vue app

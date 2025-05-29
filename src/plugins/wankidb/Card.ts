@@ -8,7 +8,7 @@ import {
   QueueTypeValues,
 } from '@/plugins/conts'
 import { cardDeckConfig } from '@/plugins/collection'
-import { collectionCreatedAt, rolloverHour } from '@/plugins/scheduler'
+import { collectionCreatedAt, rolloverHour } from '@/plugins/fsrs'
 
 // Define interfaces for related types
 export interface Note {
