@@ -25,37 +25,6 @@ interface Card {
   startTimer?: () => void
 }
 
-// Using type imports from wankidb/db.ts would be better,
-// but for simplicity we're defining the interfaces here
-type Deck = {
-  id?: number
-  terms?: Record<string, unknown>
-  separate?: boolean
-  collapsed?: boolean
-  newToday?: number[]
-  timeToday?: number[]
-  dyn?: number
-  conf?: number
-  return?: boolean
-  revToday?: number[]
-  lrnToday?: number[]
-  mod?: number
-  name?: string
-  usn?: number
-  delays?: number[]
-  resched?: boolean
-  desc?: string
-}
-
-type DeckConfig = {
-  new?: {
-    perDay?: number
-  }
-  rev?: {
-    perDay?: number
-  }
-}
-
 export async function getNextCard(
   deckId: string | number,
 ): Promise<Card | null> {

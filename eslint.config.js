@@ -1,6 +1,7 @@
 import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import vue from 'eslint-plugin-vue'
+import vueParser from 'vue-eslint-parser'
 import prettierPlugin from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
@@ -51,12 +52,13 @@ export default defineConfig([
   {
     files: ['**/*.vue'],
     languageOptions: {
-      parser: vue.parser,
+      parser: vueParser,
       parserOptions: {
         ...parserOptions,
         parser: tsParser,
-        project: true,
+        project: ['./tsconfig.json', './tsconfig.node.json'],
         tsconfigRootDir: __dirname,
+        extraFileExtensions: ['.vue'],
       },
     },
     plugins: {
@@ -65,7 +67,6 @@ export default defineConfig([
     },
     rules: {
       'vue/no-multiple-template-root': 'off',
-      ...tsPlugin.configs.recommended.rules,
     },
   },
 
@@ -89,16 +90,31 @@ export default defineConfig([
       parser: tsParser,
       parserOptions: {
         ...parserOptions,
-        project: true,
+        project: ['./tsconfig.json', './tsconfig.node.json'],
         tsconfigRootDir: __dirname,
+        extraFileExtensions: ['.vue'],
       },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
     },
     rules: {
-      ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': 'error',
+    },
+  },
+
+  // Relax rules for test files
+  {
+    files: ['tests/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/require-await': 'off',
+      quotes: 'off',
     },
   },
 ])
