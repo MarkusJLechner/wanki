@@ -31,7 +31,7 @@ export class BaseTable<COLUMNS extends string[] = string[]> {
     }
 
     this.tableColumns.forEach((name) => {
-      this[name as keyof this] = entry[name]
+      ;(this as Record<string, unknown>)[name] = entry[name]
     })
     return this
   }

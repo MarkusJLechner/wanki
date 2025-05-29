@@ -14,17 +14,14 @@ interface DecompressResult {
 export const decompressFile = (file: File): DecompressResult => {
   const workerDecompress = new WorkerDecompressFile()
   const promise = new Promise<DecompressedFile>((resolve, reject) => {
-    workerDecompress.onmessage = (event: MessageEvent) => {
-      const data = event.data as unknown[]
-      const decompressedfile = data[1] as DecompressedFile
+    workerDecompress.onmessage = (event: MessageEvent<unknown>) => {
+      const decompressedfile = (event.data as unknown[])[1] as DecompressedFile
       if (decompressedfile) {
         resolve(decompressedfile)
       }
     }
 
-    workerDecompress.onerror = (e: ErrorEvent) => {
-      reject(new Error(`Worker error: ${e.message || 'Unknown error'}`))
-    }
+    workerDecompress.onerror = (e: ErrorEvent) => reject(new Error(e.message))
   })
   workerDecompress.postMessage({
     file,
@@ -41,9 +38,7 @@ interface PlayOptions {
 
 type PlayFunction = (options?: PlayOptions) => Promise<void>
 
-export const fun = async (
-  parsedDeck: DecompressedFile,
-): Promise<PlayFunction> => {
+export const fun = (parsedDeck: DecompressedFile): PlayFunction => {
   return async function play({
     max = 5,
     start = 0,
@@ -54,7 +49,8 @@ export const fun = async (
         setTimeout(resolve, time)
       })
       try {
-        ;(await media(parsedDeck)).play(ii + start)
+        const playMedia = media(parsedDeck)
+        await playMedia(ii + start)
       } catch (e) {
         console.error(e)
       }
@@ -62,9 +58,9 @@ export const fun = async (
   }
 }
 
-export const media = (
-  parsedDeck: DecompressedFile,
-): ((index: string | number) => Promise<void>) => {
+type MediaPlayFunction = (index: number | string) => Promise<void>
+
+export const media = (parsedDeck: DecompressedFile): MediaPlayFunction => {
   return async function play(index: number | string): Promise<void> {
     let mediaIndex: number
 

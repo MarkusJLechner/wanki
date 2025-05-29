@@ -314,13 +314,10 @@ export const getFileMimeType = (file: Uint8Array): string => {
 }
 
 export function replaceMediaFromNote(
-  string: unknown,
+  text: string,
   replace: string = '',
-): unknown {
-  if (typeof string === 'string') {
-    return string.replace(regexMedia, replace)
-  }
-  return string
+): string {
+  return text.replace(regexMedia, replace)
 }
 
 export async function replaceAsync(

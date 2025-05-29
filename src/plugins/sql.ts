@@ -1,6 +1,12 @@
 import initSqlJs from 'sql.js/dist/sql-asm'
 import { idbDecks } from '@/plugins/idb'
 
+interface Deck {
+  decompressedFile: {
+    collection: Uint8Array
+  }
+}
+
 // Define types for SQL.js
 interface SqlJsDatabase {
   export: () => Uint8Array
@@ -23,7 +29,7 @@ export const sqlDbDeck = async (
   deckId: string | number,
 ): Promise<SqlJsDatabase> => {
   if (!sqlDbCache[deckId]) {
-    const deck = await (await idbDecks).get(deckId)
+    const deck = (await (await idbDecks).get(deckId)) as Deck
     if (!deck.decompressedFile.collection) {
       console.error('Empty database, check the initialization!')
     }

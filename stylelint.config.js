@@ -1,7 +1,5 @@
 export default {
-  extends: ['stylelint-config-standard'],
   rules: {
-    indentation: 2,
     'at-rule-no-unknown': [
       true,
       {
@@ -11,10 +9,11 @@ export default {
           'variants',
           'responsive',
           'screen',
+          'custom-variant',
         ],
       },
     ],
-    'declaration-block-trailing-semicolon': null,
+    'length-zero-no-unit': null,
     'no-descending-specificity': null,
   },
 }

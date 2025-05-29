@@ -7,6 +7,12 @@
 */
 
 import Dexie from 'dexie'
+
+interface DexieWithSyncable {
+  Syncable: {
+    registerSyncProtocol: (name: string, protocol: unknown) => void
+  }
+}
 ;(() => {
   // Constants:
   const RECONNECT_DELAY = 5000 // Reconnect delay in case of errors such as network down.
@@ -48,7 +54,7 @@ import Dexie from 'dexie'
     partial?: boolean
   }
 
-  ;(Dexie.Syncable as { registerSyncProtocol: Function }).registerSyncProtocol(
+  ;(Dexie as unknown as DexieWithSyncable).Syncable.registerSyncProtocol(
     'websocket',
     {
       sync(
@@ -146,7 +152,7 @@ import Dexie from 'dexie'
         // it is important that queries starts running first when db is in sync.
         let isFirstRound = true
         // When message arrive from the server, deal with the message accordingly:
-        ws.onmessage = ({ data }) => {
+        ws.onmessage = ({ data }: MessageEvent<string>) => {
           try {
             // Assume we have a server that should send JSON messages of the following format:
             // {
