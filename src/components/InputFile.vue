@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'border-blue-500': onHover, 'border-blue-500': isFocused }"
+    :class="{ 'border-blue-500': onHover || isFocused }"
     class="dragover relative flex min-h-[120px] w-full cursor-pointer border-2 border-dashed bg-gray-600 text-center font-medium hover:border-blue-200 focus:border-blue-200 active:border-blue-200"
     @click="$refs.file.click()"
     @dragleave="dragleave"
