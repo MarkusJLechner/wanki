@@ -1,4 +1,11 @@
-import { createWebHashHistory, createRouter } from 'vue-router'
+import {
+  createWebHashHistory,
+  createRouter,
+  RouteRecordRaw,
+  RouteLocationNormalized,
+  Position,
+  PositionResult,
+} from 'vue-router'
 
 if (!import.meta.hot) {
   if ('serviceWorker' in navigator) {
@@ -23,7 +30,7 @@ import Gestures from 'pages/Settings/Gestures.vue'
 import Reviewing from 'pages/Settings/Reviewing.vue'
 import Shared from '@/pages/Shared.vue'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Overview',
@@ -124,7 +131,7 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to: RouteLocationNormalized, from: RouteLocationNormalized, savedPosition?: Position): PositionResult | void {
     if (savedPosition) {
       return savedPosition
     } else {
