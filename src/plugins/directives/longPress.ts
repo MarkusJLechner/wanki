@@ -8,7 +8,7 @@ export default {
     { value }: DirectiveBinding<(e: MouseEvent | TouchEvent) => void>,
   ) {
     if (typeof value !== 'function') {
-      console.warn(`Expect a function, got ${value}`)
+      console.warn(`Expect a function, got ${String(value)}`)
       return
     }
 

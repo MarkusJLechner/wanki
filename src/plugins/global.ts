@@ -115,7 +115,7 @@ export function promptFile(
 
       input.click()
     } catch (e) {
-      reject(e)
+      reject(e instanceof Error ? e : new Error(String(e)))
     }
   })
 }
@@ -136,7 +136,7 @@ export function promiseProgress<T>(
   progressCallback({ percent: 0, total: l, value: 0, payload: null })
 
   for (const p of proms) {
-    p.then((pl) => {
+    void p.then((pl) => {
       d++
       const percent = (d * 100) / proms.length
       progressCallback({ percent, total: l, value: d, payload: pl })
@@ -314,9 +314,9 @@ export const getFileMimeType = (file: Uint8Array): string => {
 }
 
 export function replaceMediaFromNote(
-  string: string | unknown,
+  string: unknown,
   replace: string = '',
-): string | unknown {
+): unknown {
   if (typeof string === 'string') {
     return string.replace(regexMedia, replace)
   }
@@ -330,7 +330,7 @@ export async function replaceAsync(
 ): Promise<string> {
   const promises: Promise<string>[] = []
   str.replace(regex, (match, ...args) => {
-    const promise = asyncFn(match, ...args)
+    const promise = asyncFn(match, ...(args as unknown[]))
     promises.push(promise)
     return match
   })

@@ -15,13 +15,16 @@ export const decompressFile = (file: File): DecompressResult => {
   const workerDecompress = new WorkerDecompressFile()
   const promise = new Promise<DecompressedFile>((resolve, reject) => {
     workerDecompress.onmessage = (event: MessageEvent) => {
-      const decompressedfile = event.data[1]
+      const data = event.data as unknown[]
+      const decompressedfile = data[1] as DecompressedFile
       if (decompressedfile) {
         resolve(decompressedfile)
       }
     }
 
-    workerDecompress.onerror = (e: ErrorEvent) => reject(e)
+    workerDecompress.onerror = (e: ErrorEvent) => {
+      reject(new Error(`Worker error: ${e.message || 'Unknown error'}`))
+    }
   })
   workerDecompress.postMessage({
     file,
@@ -59,11 +62,9 @@ export const fun = async (
   }
 }
 
-type MediaPlayFunction = (index: number | string) => Promise<void>
-
-export const media = async (
+export const media = (
   parsedDeck: DecompressedFile,
-): Promise<MediaPlayFunction> => {
+): ((index: string | number) => Promise<void>) => {
   return async function play(index: number | string): Promise<void> {
     let mediaIndex: number
 

@@ -122,7 +122,7 @@ export const idb = (() => {
       return dbPromise.getAll(storeName) as Promise<StoreValue[]>
     }
     async function close(): Promise<void> {
-      return dbPromise.close()
+      await dbPromise.close()
     }
 
     return {

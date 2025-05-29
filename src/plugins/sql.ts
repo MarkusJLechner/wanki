@@ -27,7 +27,9 @@ export const sqlDbDeck = async (
     if (!deck.decompressedFile.collection) {
       console.error('Empty database, check the initialization!')
     }
-    sqlDbCache[deckId] = await initSqlDb(deck.decompressedFile.collection)
+    sqlDbCache[deckId] = await initSqlDb(
+      deck.decompressedFile.collection as Uint8Array,
+    )
   }
 
   return sqlDbCache[deckId]
