@@ -1,11 +1,11 @@
 <template>
-  <div
+  <button
     v-ripple
     class="inline-flex items-center justify-center rounded-full border-white bg-gray-400 text-gray-900 shadow-md dark:bg-blue-500 dark:text-white"
     :class="computedClass"
   >
     <i :class="{ [icon]: icon, [computedSize]: computedSize }" />
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">

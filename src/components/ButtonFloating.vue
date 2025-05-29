@@ -33,6 +33,7 @@
         border: !show,
       }"
       @click="onClick"
+      data-test="floating-button"
     />
   </div>
 </template>
