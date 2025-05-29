@@ -10,65 +10,77 @@ export class Deck extends BaseTable {
   /***
    * "name of deck",
    */
-  name
+  name?: string
+
   /***
    * "extended review card limit (for custom study)
    * Potentially absent, in this case it's considered to be 10 by aqt.customstudy",
    */
-  extendRev
+  extendRev?: number
+
   /***
    * "usn: Update sequence number: used in same way as other usn vales in db",
    */
-  usn
+  usn?: number
+
   /***
    * "true when deck is collapsed",
    */
-  collapsed
+  collapsed?: boolean
+
   /***
    * "true when deck collapsed in browser",
    */
-  browserCollapsed
+  browserCollapsed?: boolean
+
   /***
    * two number array.
    * First one is the number of days that have passed between the collection was created and the deck was last updated
    * The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
    * BEWARE, it's changed in anki.sched(v2).Scheduler._updateStats and anki.sched(v2).Scheduler._updateCutoff.update  but can't be found by grepping 'newToday', because it's instead written as type+"Today" with type which may be new/rev/lrnToday
    */
-  newToday
-  revToday
-  lrnToday
+  newToday?: [number, number]
+  revToday?: [number, number]
+  lrnToday?: [number, number]
+
   /***
    *
    */
-  timeToday
+  timeToday?: [number, number]
+
   /***
    * "1 if dynamic (AKA filtered) deck",
    */
-  dyn
+  dyn?: number
+
   /***
    * "extended new card limit (for custom study).
    * Potentially absent, in this case it's considered to be 10 by aqt.customstudy",
    */
-  extendNew
+  extendNew?: number
+
   /***
    * "id of option group from dconf in `col` table. Or absent if the deck is dynamic.
    * Its absent in filtered deck",
    */
-  conf
+  conf?: number
+
   /***
    * "deck ID (automatically generated long)",
    */
-  id
+  id?: number
+
   /***
    * "last modification time",
    */
-  mod
+  mod?: number
+
   /***
    * "deck description"
    */
-  desc
+  desc?: string
 
-  constructor(load) {
+  constructor(load?: Record<string, unknown>) {
     super(
       'decks',
       [

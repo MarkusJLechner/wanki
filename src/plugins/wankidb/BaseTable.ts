@@ -1,3 +1,5 @@
+// https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
+
 import { wankidb } from '@/plugins/wankidb/db'
 
 export class BaseTable {

@@ -149,7 +149,7 @@ class WankiDexie extends Dexie {
     super(name)
     this.version(1).stores({
       cards:
-        'id,nid,did,ord,mod,usn,type,queue,due,ivl,factor,reps,lapses,left,odue,odid,flags,data',
+        'id,nid,did,ord,mod,usn,type,queue,due,ivl,factor,reps,lapses,left,odue,odid,flags,data,[did+queue+due]',
       col: 'id,crt,mod,scm,ver,dty,usn,ls,conf',
       tags: '++id,*tag',
       graves: 'usn,oid,type',
