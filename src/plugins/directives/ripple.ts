@@ -18,12 +18,16 @@ function setProps(modifiers: string[], props: RippleProps): void {
   })
 }
 
-interface RippleDirective extends ObjectDirective {
+interface RippleDirective
+  extends ObjectDirective<HTMLElement, RippleOptions | string> {
   color?: string
 }
 
 const Ripple: RippleDirective = {
-  mounted: function (el: HTMLElement, binding: DirectiveBinding) {
+  mounted: function (
+    el: HTMLElement,
+    binding: DirectiveBinding<RippleOptions | string>,
+  ) {
     // Default values.
     const props: RippleProps = {
       event: ['mousedown', 'touchstart'],

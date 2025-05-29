@@ -5,27 +5,30 @@ interface ScrollPosition {
   top: number
 }
 
-function setPosition(el: HTMLElement, binding: DirectiveBinding): void {
+function setPosition(
+  el: HTMLElement,
+  binding: DirectiveBinding<string | null>,
+): void {
   if (binding.value === null) {
     return
   }
   const id = binding.value + window.location.hash
-  let storedPosition = localStorage.getItem(id)
+  const storedPosition = localStorage.getItem(id)
   if (storedPosition) {
-    storedPosition = JSON.parse(storedPosition) as ScrollPosition
-    el.scrollLeft = storedPosition.left
-    el.scrollTop = storedPosition.top
+    const parsedPosition = JSON.parse(storedPosition) as ScrollPosition
+    el.scrollLeft = parsedPosition.left
+    el.scrollTop = parsedPosition.top
   }
 }
 
 let scrollFn: ((event: Event) => void) | undefined
 
 export default {
-  updated(el: HTMLElement, binding: DirectiveBinding) {
+  updated(el: HTMLElement, binding: DirectiveBinding<string | null>) {
     setPosition(el, binding)
   },
 
-  beforeMount(el: HTMLElement, binding: DirectiveBinding) {
+  beforeMount(el: HTMLElement, binding: DirectiveBinding<string | null>) {
     if (binding.value === null) {
       return
     }
@@ -51,7 +54,7 @@ export default {
     }
   },
 
-  mounted(el: HTMLElement, binding: DirectiveBinding) {
+  mounted(el: HTMLElement, binding: DirectiveBinding<string | null>) {
     setPosition(el, binding)
   },
-} as ObjectDirective
+} as ObjectDirective<HTMLElement, string | null>

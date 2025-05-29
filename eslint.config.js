@@ -9,6 +9,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
+import * as tsEslint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -51,13 +52,20 @@ export default defineConfig([
     files: ['**/*.vue'],
     languageOptions: {
       parser: vue.parser,
-      parserOptions,
+      parserOptions: {
+        ...parserOptions,
+        parser: tsParser,
+        project: true,
+        tsconfigRootDir: __dirname,
+      },
     },
     plugins: {
       vue,
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
       'vue/no-multiple-template-root': 'off',
+      ...tsPlugin.configs.recommended.rules,
     },
   },
 
@@ -68,13 +76,21 @@ export default defineConfig([
     },
   },
 
+  // Apply the recommended type-checked rules to TypeScript files
+  ...tsEslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
+  })),
+
+  // Additional TypeScript-specific configuration
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts', '**/*.vue'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ...parserOptions,
-        project: './tsconfig.json',
+        project: true,
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {
@@ -82,6 +98,7 @@ export default defineConfig([
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': 'error',
     },
   },
 ])

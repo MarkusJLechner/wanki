@@ -5,7 +5,7 @@ import path from 'path'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const resolve = (dir) => {
+const resolve = (dir: string) => {
   return path.resolve(dirname, dir)
 }
 
