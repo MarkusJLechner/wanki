@@ -15,7 +15,6 @@ import keepScroll from '@/plugins/directives/keepScroll'
 
 // Create the Vue app
 const app = createApp(App)
-app.config.devtools = true
 app.use(router)
 app.use(store)
 
@@ -27,7 +26,6 @@ app.directive('ripple', ripple)
 
 // Set up global properties
 app.config.globalProperties.$wanki = wanki.default
-// @ts-ignore - Adding wanki to window
 window.wanki = wanki.default
 
 // Mount the app
