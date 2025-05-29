@@ -20,7 +20,9 @@ class MockCard {
   lapses = 0
   data = ''
   save = vi.fn().mockResolvedValue(undefined)
-  get timeTaken() { return Promise.resolve(0) }
+  get timeTaken() {
+    return Promise.resolve(0)
+  }
 }
 
 describe('fsrs answerCard', () => {

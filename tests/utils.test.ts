@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { resolveObjectPath } from '../src/plugins/utils'
 
-
 describe('resolveObjectPath', () => {
   it('returns nested value when path exists', () => {
     const obj = { a: { b: { c: 1 } } }

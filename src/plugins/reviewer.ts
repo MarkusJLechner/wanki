@@ -135,7 +135,10 @@ export async function getDueCounts(
         }
         break
       case QueueType.Review:
-        if (card.due && ((card.due < 1e12 && card.due <= today) || card.due <= now)) {
+        if (
+          card.due &&
+          ((card.due < 1e12 && card.due <= today) || card.due <= now)
+        ) {
           reviewCount += 1
         }
         break

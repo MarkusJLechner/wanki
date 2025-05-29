@@ -26,6 +26,7 @@ const parserOptions = {
 
 export default defineConfig([
   {
+    ignores: ['dist/**/*', 'build/**/*.js'],
     languageOptions: {
       parserOptions,
       globals: {

@@ -2,7 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import BaseModal from '../../src/components/BaseModal.vue'
 
-vi.mock('../../src/store/globalstate.ts', () => ({ modalOpened: { value: false } }))
+vi.mock('../../src/store/globalstate.ts', () => ({
+  modalOpened: { value: false },
+}))
 
 describe('BaseModal.vue', () => {
   it('emits open and close events', async () => {

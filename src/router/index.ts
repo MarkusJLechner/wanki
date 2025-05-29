@@ -131,7 +131,11 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
-  scrollBehavior(to: RouteLocationNormalized, from: RouteLocationNormalized, savedPosition?: Position): PositionResult | void {
+  scrollBehavior(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    savedPosition?: Position,
+  ): PositionResult | void {
     if (savedPosition) {
       return savedPosition
     } else {

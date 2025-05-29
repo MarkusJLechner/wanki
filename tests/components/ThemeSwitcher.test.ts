@@ -3,13 +3,15 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import ThemeSwitcher from '../../src/components/ThemeSwitcher.vue'
 
-vi.mock('../../src/components/ButtonIcon.vue', () => ({ default: { template: '<button class="btn" @click="$emit(\'click\')" />' } }))
+vi.mock('../../src/components/ButtonIcon.vue', () => ({
+  default: { template: '<button class="btn" @click="$emit(\'click\')" />' },
+}))
 vi.mock('../../src/store/globalstate', () => ({
   refstorage: {
     get: vi.fn().mockReturnValue(false),
     toggle: vi.fn(),
-    ref: vi.fn().mockReturnValue(ref(false))
-  }
+    ref: vi.fn().mockReturnValue(ref(false)),
+  },
 }))
 
 describe('ThemeSwitcher.vue', () => {

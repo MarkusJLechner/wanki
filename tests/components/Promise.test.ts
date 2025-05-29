@@ -6,7 +6,9 @@ import PromiseComponent from '../../src/components/Promise.vue'
 describe('Promise.vue', () => {
   it('exposes result when promise resolves', async () => {
     let resolveFn: (v: string) => void = () => {}
-    const promise = new Promise<string>((resolve) => { resolveFn = resolve })
+    const promise = new Promise<string>((resolve) => {
+      resolveFn = resolve
+    })
 
     const wrapper = mount(PromiseComponent, {
       props: { promise },

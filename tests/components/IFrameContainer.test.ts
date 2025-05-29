@@ -6,14 +6,31 @@ vi.mock('vue', async (importOriginal) => {
   return { ...actual, createApp: vi.fn(() => ({ mount: vi.fn() })) }
 })
 
-Object.defineProperty(window, 'ResizeObserver', { writable: true, value: class { observe() {} disconnect() {} } })
-Object.defineProperty(window, 'MutationObserver', { writable: true, value: class { observe() {} disconnect() {} } })
+Object.defineProperty(window, 'ResizeObserver', {
+  writable: true,
+  value: class {
+    observe() {}
+    disconnect() {}
+  },
+})
+Object.defineProperty(window, 'MutationObserver', {
+  writable: true,
+  value: class {
+    observe() {}
+    disconnect() {}
+  },
+})
 Object.defineProperty(window.HTMLIFrameElement.prototype, 'contentDocument', {
   writable: true,
-  value: { body: { appendChild: vi.fn(), scrollHeight: 0 }, head: { appendChild: vi.fn() } }
+  value: {
+    body: { appendChild: vi.fn(), scrollHeight: 0 },
+    head: { appendChild: vi.fn() },
+  },
 })
 
-const IFrameContainer = (await import('../../src/components/IFrameContainer.js')).default
+const IFrameContainer = (
+  await import('../../src/components/IFrameContainer.js')
+).default
 
 describe('IFrameContainer', () => {
   it('renders iframe element', () => {

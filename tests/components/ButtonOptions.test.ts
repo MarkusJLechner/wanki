@@ -3,7 +3,10 @@ import { mount } from '@vue/test-utils'
 import ButtonOptions from '../../src/components/ButtonOptions.vue'
 
 vi.mock('../../src/components/ButtonIcon.vue', () => ({
-  default: { template: '<button @click="$emit(\'click\')"><slot name="content" /></button>' },
+  default: {
+    template:
+      '<button @click="$emit(\'click\')"><slot name="content" /></button>',
+  },
 }))
 vi.mock('../../src/components/List.vue', () => ({
   default: { template: '<ul><li class="item" /></ul>' },

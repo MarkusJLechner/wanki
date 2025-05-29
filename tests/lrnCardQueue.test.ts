@@ -9,7 +9,7 @@ describe('LrnCardQueue', () => {
   it('adds cards sorted by due date', () => {
     queue.add(5, 1)
     queue.add(1, 2)
-    expect(queue.queue.map(c => c.cid)).toEqual([2, 1])
+    expect(queue.queue.map((c) => c.cid)).toEqual([2, 1])
     expect(queue.getFirstDue()).toBe(1)
   })
 

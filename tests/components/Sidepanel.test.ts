@@ -2,8 +2,12 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Sidepanel from '../../src/components/Sidepanel.vue'
 
-vi.mock('../../src/components/ButtonIcon.vue', () => ({ default: { template: '<button class="btn" />' } }))
-vi.mock('../../src/components/List.vue', () => ({ default: { template: '<ul class="list" />' } }))
+vi.mock('../../src/components/ButtonIcon.vue', () => ({
+  default: { template: '<button class="btn" />' },
+}))
+vi.mock('../../src/components/List.vue', () => ({
+  default: { template: '<ul class="list" />' },
+}))
 vi.mock('vue-router', () => ({ onBeforeRouteLeave: vi.fn() }))
 
 describe('Sidepanel.vue', () => {

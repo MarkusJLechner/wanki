@@ -57,13 +57,9 @@ const Ripple: RippleDirective = {
 
     const move = (e: MouseEvent | TouchEvent) => {
       destx =
-        'clientX' in e
-          ? e.clientX
-          : (e.touches && e.touches[0].clientX) || 0
+        'clientX' in e ? e.clientX : (e.touches && e.touches[0].clientX) || 0
       desty =
-        'clientY' in e
-          ? e.clientY
-          : (e.touches && e.touches[0].clientY) || 0
+        'clientY' in e ? e.clientY : (e.touches && e.touches[0].clientY) || 0
       if (
         Math.abs(initx - destx) > thresholdMove ||
         Math.abs(inity - desty) > thresholdMove
@@ -80,7 +76,11 @@ const Ripple: RippleDirective = {
       el.addEventListener(e, move as EventListener, { passive: true }),
     )
 
-    function rippler(event: Event, el: HTMLElement, value?: RippleOptions | string) {
+    function rippler(
+      event: Event,
+      el: HTMLElement,
+      value?: RippleOptions | string,
+    ) {
       if (typeof value === 'object' && value?.disable) {
         return
       }
@@ -118,7 +118,8 @@ const Ripple: RippleDirective = {
         dx =
           ('clientX' in event
             ? mouseEvent.clientX
-            : (touchEvent.touches && touchEvent.touches[0].clientX) || 0) - left,
+            : (touchEvent.touches && touchEvent.touches[0].clientX) || 0) -
+          left,
         dy =
           ('clientY' in event
             ? mouseEvent.clientY
