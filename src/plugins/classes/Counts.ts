@@ -1,21 +1,21 @@
-export const CountType = {
-  New: 'New',
-  Learn: 'Learn',
-  Review: 'Review',
+export enum CountType {
+  New = 'New',
+  Learn = 'Learn',
+  Review = 'Review',
 }
 
 export class Counts {
-  newCount
-  learnCount
-  reviewCount
+  newCount: number
+  learnCount: number
+  reviewCount: number
 
-  constructor(newCount, learnCount, reviewCount) {
+  constructor(newCount: number, learnCount: number, reviewCount: number) {
     this.newCount = newCount
     this.learnCount = learnCount
     this.reviewCount = reviewCount
   }
 
-  changeCount(index, value) {
+  changeCount(index: CountType, value: number): void {
     switch (index) {
       case CountType.New:
         this.newCount += value
@@ -31,23 +31,23 @@ export class Counts {
     }
   }
 
-  addNew() {
+  addNew(): void {
     this.newCount += 1
   }
 
-  addLearn() {
+  addLearn(): void {
     this.learnCount += 1
   }
 
-  addReview() {
+  addReview(): void {
     this.reviewCount += 1
   }
 
-  total() {
+  total(): number {
     return this.newCount + this.learnCount + this.reviewCount
   }
 
-  equals(count) {
+  equals(count: Counts | null): boolean {
     if (this === count) {
       return true
     }

@@ -2,8 +2,7 @@ import { LrnCard } from '@/plugins/classes/LrnCard'
 
 class LrnCardQueue {
   isFilled = false
-
-  queue = []
+  queue: LrnCard[] = []
 
   /**
    * Add a learning card to the queue, maintaining sort order.
@@ -11,14 +10,14 @@ class LrnCardQueue {
    * @param {number} due - Due timestamp for the learning card
    * @param {number} cardId - Identifier of the card
    */
-  add(due, cardId) {
+  add(due: number, cardId: number): void {
     this.queue.push(new LrnCard(due, cardId))
     this.isFilled = true
     this.sort()
   }
 
   /** Sort the queue by due date. */
-  sort() {
+  sort(): void {
     this.queue.sort((a, b) => a.due - b.due)
   }
 
@@ -27,7 +26,7 @@ class LrnCardQueue {
    *
    * @returns {number} the earliest due time or 0 if empty
    */
-  getFirstDue() {
+  getFirstDue(): number {
     if (this.queue.length === 0) {
       return 0
     }
@@ -35,7 +34,7 @@ class LrnCardQueue {
   }
 
   /** Remove all queued learning cards. */
-  clear() {
+  clear(): void {
     this.queue.length = 0
     this.isFilled = false
   }
@@ -45,7 +44,7 @@ class LrnCardQueue {
    *
    * @returns {boolean}
    */
-  isEmpty() {
+  isEmpty(): boolean {
     return this.queue.length === 0
   }
 }

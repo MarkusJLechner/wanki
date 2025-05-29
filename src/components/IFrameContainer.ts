@@ -6,32 +6,35 @@ import {
   onBeforeUpdate,
   watch,
   onUnmounted,
+  Ref,
+  PropType,
+  SetupContext,
 } from 'vue'
 
 export default {
   name: 'IFrameContainer',
   props: {
     css: {
-      type: String,
+      type: String as PropType<string>,
       default: '',
     },
 
     bodyClass: {
-      type: String,
+      type: String as PropType<string>,
       default: '',
     },
   },
 
-  setup(props, { slots }) {
-    const iframeRef = ref(null)
-    const iframeBody = ref(null)
-    const iframeHead = ref(null)
-    const iframeStyle = ref(null)
-    let iframeApp = null
-    let resizeObserver = null
+  setup(props: { css: string; bodyClass: string }, { slots }: SetupContext) {
+    const iframeRef: Ref<HTMLIFrameElement | null> = ref(null)
+    const iframeBody: Ref<HTMLElement | null> = ref(null)
+    const iframeHead: Ref<HTMLElement | null> = ref(null)
+    const iframeStyle: Ref<HTMLStyleElement | null> = ref(null)
+    let iframeApp: ReturnType<typeof createApp> | null = null
+    let resizeObserver: ResizeObserver | null = null
 
     // Function to adjust iframe height based on content
-    const adjustIframeHeight = () => {
+    const adjustIframeHeight = (): void => {
       if (iframeRef.value && iframeBody.value) {
         const height = iframeBody.value.scrollHeight
         iframeRef.value.height = `${height}px`
@@ -39,28 +42,38 @@ export default {
     }
 
     onMounted(() => {
+      if (!iframeRef.value || !iframeRef.value.contentDocument) return
+
       iframeBody.value = iframeRef.value.contentDocument.body
       iframeHead.value = iframeRef.value.contentDocument.head
 
       const el = document.createElement('div')
-      iframeBody.value.appendChild(el)
+      if (iframeBody.value) {
+        iframeBody.value.appendChild(el)
+      }
+
       iframeStyle.value = document.createElement('style')
       iframeStyle.value.innerHTML = props.css
-      iframeHead.value.appendChild(iframeStyle.value)
 
-      if (props.bodyClass) {
+      if (iframeHead.value) {
+        iframeHead.value.appendChild(iframeStyle.value)
+      }
+
+      if (props.bodyClass && iframeBody.value) {
         iframeBody.value.setAttribute('class', props.bodyClass)
       }
 
       watch(
         () => props.bodyClass,
         (value) => {
-          iframeBody.value.setAttribute('class', value)
+          if (iframeBody.value) {
+            iframeBody.value.setAttribute('class', value)
+          }
         },
       )
 
       // Create a ResizeObserver to monitor content size changes
-      if (window.ResizeObserver) {
+      if (window.ResizeObserver && iframeBody.value) {
         resizeObserver = new ResizeObserver(() => {
           adjustIframeHeight()
         })
@@ -68,16 +81,18 @@ export default {
       }
 
       // Set up a MutationObserver to detect DOM changes
-      const mutationObserver = new MutationObserver(() => {
-        adjustIframeHeight()
-      })
+      if (iframeBody.value) {
+        const mutationObserver = new MutationObserver(() => {
+          adjustIframeHeight()
+        })
 
-      mutationObserver.observe(iframeBody.value, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        characterData: true,
-      })
+        mutationObserver.observe(iframeBody.value, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          characterData: true,
+        })
+      }
 
       // Initial height adjustment
       adjustIframeHeight()
@@ -85,13 +100,13 @@ export default {
       iframeApp = createApp({
         name: 'IframeRender',
         setup() {
-          return () => slots.default()
+          return () => slots.default && slots.default()
         },
       }).mount(el)
     })
 
     onBeforeUpdate(() => {
-      if (!iframeApp || !iframeRef.value) {
+      if (!iframeApp || !iframeRef.value || !iframeStyle.value) {
         return
       }
       if (props.css) {

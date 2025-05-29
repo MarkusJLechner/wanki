@@ -2,8 +2,21 @@ import Dexie from 'dexie'
 // import 'dexie-observable'
 // import 'dexie-syncable'
 // import './dbSync'
+import { Configuration } from '@/plugins/wankidb/types'
 
 export const databaseName = 'wankidb'
+
+export type Database =
+  | 'cards'
+  | 'col'
+  | 'tags'
+  | 'graves'
+  | 'notes'
+  | 'revlog'
+  | 'media'
+  | 'dconf'
+  | 'models'
+  | 'decks'
 
 // Define interfaces for each table
 interface Card {
@@ -36,7 +49,7 @@ interface Col {
   dty?: number
   usn?: number
   ls?: number
-  conf?: Record<string, unknown>
+  conf?: Configuration
 }
 
 interface Tag {

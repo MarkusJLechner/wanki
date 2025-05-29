@@ -1,19 +1,29 @@
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
 import { wankidb } from '@/plugins/wankidb/db'
+import {
+  Configuration,
+  DecksObject,
+  DConfObject,
+  ModelsObject,
+} from '@/plugins/wankidb/types'
 
 wankidb.col.hook('creating', (primKey, obj) => {
-  const cast = (json: unknown): Record<string, unknown> | unknown =>
+  const cast = (
+    json: unknown,
+  ): Configuration | ModelsObject | DecksObject | DConfObject | unknown =>
     typeof json === 'string' ? JSON.parse(json) : json
-  obj.conf = cast(obj.conf)
-  // obj.dconf = cast(obj.dconf)
-  // obj.models = cast(obj.models)
-  // obj.decks = cast(obj.decks)
+  obj.conf = cast(obj.conf) as Configuration
+  // obj.dconf = cast(obj.dconf) as DConfObject
+  // obj.models = cast(obj.models) as ModelsObject
+  // obj.decks = cast(obj.decks) as DecksObject
 })
 
 wankidb.col.hook('reading', (obj) => {
-  const parse = (json: unknown): Record<string, unknown> | unknown =>
+  const parse = (
+    json: unknown,
+  ): Configuration | ModelsObject | DecksObject | DConfObject | unknown =>
     typeof json === 'string' ? JSON.parse(json) : json
-  obj.conf = parse(obj.conf)
+  obj.conf = parse(obj.conf) as Configuration
   return Object.assign(new Col(), obj)
 })
 
@@ -63,30 +73,39 @@ export class Col extends BaseTable {
   ls?: number
 
   /***
-   * json object containing configuration options that are synced. Described below in "configuration JSONObjects"
+   * JSON object containing configuration options that are synced.
+   * Contains settings like curDeck, activeDecks, newSpread, collapseTime, timeLim, estTimes, dueCounts,
+   * curModel, nextPos, sortType, sortBackwards, addToCur, dayLearnFirst, newBury, lastUnburied, activeCols.
+   * See Configuration interface for details.
    */
-  conf?: Record<string, unknown>
+  conf?: Configuration
 
   /***
-   * json object of json object(s) representing the models (aka Note types)
-   * keys of this object are strings containing integers: "creation time in epoch milliseconds" of the models
-   * values of this object are other json objects of the form described below in "Models JSONObjects"
+   * JSON object of JSON object(s) representing the models (aka Note types).
+   * Keys of this object are strings containing integers: "creation time in epoch milliseconds" of the models.
+   * Values of this object are other JSON objects containing fields like css, did, flds, id, latexPost, latexPre,
+   * mod, name, req, sortf, tags, tmpls, type, usn, vers.
+   * See ModelsObject and Model interfaces for details.
    */
-  models?: Record<string, unknown>
+  models?: ModelsObject
 
   /***
-   * json object of json object(s) representing the deck(s)
-   * keys of this object are strings containing integers: "deck creation time in epoch milliseconds" for most decks, "1" for the default deck
-   * values of this object are other json objects of the form described below in "Decks JSONObjects"
+   * JSON object of JSON object(s) representing the deck(s).
+   * Keys of this object are strings containing integers: "deck creation time in epoch milliseconds" for most decks, "1" for the default deck.
+   * Values of this object are other JSON objects containing fields like name, extendRev, usn, collapsed, browserCollapsed,
+   * newToday, revToday, lrnToday, timeToday, dyn, extendNew, conf, id, mod, desc.
+   * See DecksObject and Deck interfaces for details.
    */
-  decks?: Record<string, unknown>
+  decks?: DecksObject
 
   /***
-   * json object of json object(s) representing the options group(s) for decks
-   * keys of this object are strings containing integers: "options group creation time in epoch milliseconds" for most groups, "1" for the default option group
-   * values of this object are other json objects of the form described below in "DConf JSONObjects"
+   * JSON object of JSON object(s) representing the options group(s) for decks.
+   * Keys of this object are strings containing integers: "options group creation time in epoch milliseconds" for most groups, "1" for the default option group.
+   * Values of this object are other JSON objects containing fields like autoplay, dyn, id, lapse, leechAction,
+   * maxTaken, mod, name, new, replayq, rev, timer, usn.
+   * See DConfObject and DConf interfaces for details.
    */
-  dconf?: Record<string, unknown>
+  dconf?: DConfObject
 
   /***
    * a cache of tags used in the collection (This list is displayed in the browser. Potentially at other place)

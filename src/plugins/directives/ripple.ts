@@ -1,14 +1,31 @@
-function setProps(modifiers, props) {
+import { DirectiveBinding, ObjectDirective } from 'vue'
+
+interface RippleOptions {
+  disable?: boolean
+  [key: string]: unknown
+}
+
+interface RippleProps {
+  event: string | string[]
+  eventStop: string[]
+  transition: number
+}
+
+function setProps(modifiers: string[], props: RippleProps): void {
   modifiers.forEach(function (item) {
     if (isNaN(Number(item))) props.event = item
-    else props.transition = item
+    else props.transition = Number(item)
   })
 }
 
-const Ripple = {
-  mounted: function (el, binding) {
+interface RippleDirective extends ObjectDirective {
+  color?: string
+}
+
+const Ripple: RippleDirective = {
+  mounted: function (el: HTMLElement, binding: DirectiveBinding) {
     // Default values.
-    const props = {
+    const props: RippleProps = {
       event: ['mousedown', 'touchstart'],
       eventStop: ['click', 'mouseout', 'touchend', 'touchcancel'],
       transition: 300,
@@ -18,7 +35,7 @@ const Ripple = {
     props.event.forEach((e) =>
       el.addEventListener(
         e,
-        function (event) {
+        function (event: Event) {
           rippler(event, el, binding.value)
         },
         { passive: true },
@@ -38,28 +55,47 @@ const Ripple = {
     let desty = 0
     let thresholdMove = 10
 
-    const move = (e) => {
-      destx = e.clientX || (e.touches && e.touches[0].clientX)
-      desty = e.clientY || (e.touches && e.touches[0].clientY)
+    const move = (e: MouseEvent | TouchEvent) => {
+      destx =
+        'clientX' in e
+          ? e.clientX
+          : (e.touches && e.touches[0].clientX) || 0
+      desty =
+        'clientY' in e
+          ? e.clientY
+          : (e.touches && e.touches[0].clientY) || 0
       if (
         Math.abs(initx - destx) > thresholdMove ||
         Math.abs(inity - desty) > thresholdMove
       ) {
         document
           .querySelectorAll('.ripple')
-          .forEach((e) => (e.style.backgroundColor = 'rgba(0, 0, 0, 0)'))
+          .forEach(
+            (e) =>
+              ((e as HTMLElement).style.backgroundColor = 'rgba(0, 0, 0, 0)'),
+          )
       }
     }
     ;['mousemove', 'touchmove'].forEach((e) =>
-      el.addEventListener(e, move, { passive: true }),
+      el.addEventListener(e, move as EventListener, { passive: true }),
     )
 
-    function rippler(event, el) {
-      if (typeof binding.value === 'object' && binding.value.disable) {
+    function rippler(event: Event, el: HTMLElement, value?: RippleOptions | string) {
+      if (typeof value === 'object' && value?.disable) {
         return
       }
-      initx = event.clientX || event.touches[0].clientX
-      inity = event.clientY || event.touches[0].clientY
+
+      const touchEvent = event as TouchEvent
+      const mouseEvent = event as MouseEvent
+
+      initx =
+        'clientX' in event
+          ? mouseEvent.clientX
+          : (touchEvent.touches && touchEvent.touches[0].clientX) || 0
+      inity =
+        'clientY' in event
+          ? mouseEvent.clientY
+          : (touchEvent.touches && touchEvent.touches[0].clientY) || 0
       destx = initx
       desty = inity
 
@@ -79,8 +115,14 @@ const Ripple = {
         top = rect.top,
         width = target.offsetWidth,
         height = target.offsetHeight,
-        dx = (event.clientX || event.touches[0].clientX) - left,
-        dy = (event.clientY || event.touches[0].clientY) - top,
+        dx =
+          ('clientX' in event
+            ? mouseEvent.clientX
+            : (touchEvent.touches && touchEvent.touches[0].clientX) || 0) - left,
+        dy =
+          ('clientY' in event
+            ? mouseEvent.clientY
+            : (touchEvent.touches && touchEvent.touches[0].clientY) || 0) - top,
         maxX = Math.max(dx, width - dx),
         maxY = Math.max(dy, height - dy),
         style = window.getComputedStyle(target),
@@ -103,7 +145,7 @@ const Ripple = {
       ripple.style.borderRadius = '50%'
       ripple.style.pointerEvents = 'none'
       ripple.style.position = 'relative'
-      ripple.style.zIndex = style.zIndex + 9999
+      ripple.style.zIndex = style.zIndex
       ripple.style.backgroundColor = bg
 
       //Styles for rippleContainer
@@ -187,7 +229,11 @@ const Ripple = {
         }, props.transition + 250)
       }
 
-      if (props.event.includes(event.type)) {
+      if (
+        Array.isArray(props.event)
+          ? props.event.includes(event.type)
+          : props.event === event.type
+      ) {
         props.eventStop.forEach((e) =>
           el.addEventListener(e, clearRipple, false),
         )

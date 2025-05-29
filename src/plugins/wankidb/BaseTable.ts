@@ -1,14 +1,14 @@
 // https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
 
-import { wankidb } from '@/plugins/wankidb/db'
+import { Database, wankidb } from '@/plugins/wankidb/db'
 
 export class BaseTable {
-  tableName: string
+  tableName: Database
   tableColumns: string[]
   loadPromise?: Promise<BaseTable>
 
   constructor(
-    tableName: string,
+    tableName: Database,
     tableColumns: string[],
     load?: Record<string, unknown>,
   ) {
@@ -26,6 +26,9 @@ export class BaseTable {
       throw new Error('No table name defined')
     }
     const entry = await wankidb[this.tableName].get(get)
+    if (!entry) {
+      throw new Error('Entry not found')
+    }
 
     this.tableColumns.forEach((name) => {
       this[name as keyof this] = entry[name]
