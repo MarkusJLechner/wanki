@@ -1,36 +1,67 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
+
+// Define interfaces for related types
+export interface ModelField {
+  name?: string
+  font?: string
+  media?: string[]
+  ord?: number
+  rtl?: boolean
+  size?: number
+  sticky?: boolean
+  [key: string]: unknown
+}
+
+export interface Template {
+  afmt?: string
+  bafmt?: string
+  bqfmt?: string
+  did?: number | null
+  name?: string
+  ord?: number
+  qfmt?: string
+  [key: string]: unknown
+}
+
 wankidb.models.hook('reading', (obj) => Object.assign(new Model(), obj))
 
 export class Model extends BaseTable {
   /***
    * model ID, matches notes.mid
    */
-  id
+  id?: number
+
   /***
    * Legacy version number (unused), use an empty array []
    */
-  vers
+  vers?: unknown[]
+
   /***
    * model name
    */
-  name
+  name?: string
+
   /***
    * Anki saves the tags of the last added note to the current model, use an empty array []
    */
-  tags
+  tags?: string[]
+
   /***
    * deck id (available in col table)
    */
-  did
+  did?: number
+
   /***
    * usn: Update sequence number: used in same way as other usn vales in db
    */
-  usn
+  usn?: number
+
   /***
    * req is unused in modern clients. May exist for backwards compatibility.
    */
-  req
+  req?: Record<string, unknown>
+
   /***
    * JSONArray containing object for each field in the model as follows:
    * {
@@ -43,11 +74,13 @@ export class Model extends BaseTable {
    *   sticky : "sticky fields retain the value that was last added when adding new notes"
    * }
    */
-  flds
+  flds?: ModelField[]
+
   /***
    * Integer specifying which field is used for sorting in the browser
    */
-  sortf
+  sortf?: number
+
   /***
    * JSONArray containing object of CardTemplate for each card in model
    * {
@@ -60,29 +93,34 @@ export class Model extends BaseTable {
    *   qfmt : "question format string"
    * }
    */
-  tmpls
+  tmpls?: Template[]
+
   /***
    * modification time in seconds
    */
-  mod
+  mod?: number
+
   /***
    * String added to end of LaTeX expressions (usually \\end{document})
    */
-  latexPost
+  latexPost?: string
+
   /***
    * Integer specifying what type of model. 0 for standard, 1 for cloze
    */
-  type
+  type?: number
+
   /***
    * CSS, shared for all templates
    */
-  css
+  css?: string
+
   /***
    * preamble for LaTeX expressions
    */
-  latexPre
+  latexPre?: string
 
-  constructor(load) {
+  constructor(load?: Record<string, unknown>) {
     super(
       'models',
       [

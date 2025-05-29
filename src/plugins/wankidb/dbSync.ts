@@ -11,29 +11,71 @@ import Dexie from 'dexie'
   // Constants:
   const RECONNECT_DELAY = 5000 // Reconnect delay in case of errors such as network down.
 
+  // Define interfaces for the sync protocol
+  interface SyncContext {
+    clientIdentity?: string
+    save: () => void
+  }
+
+  interface SyncProtocolOptions {
+    [key: string]: unknown
+  }
+
+  type OnChangesAcceptedCallback = () => void
+  type OnSuccessCallback = (result: {
+    react: (
+      changes: unknown[],
+      baseRevision: unknown,
+      partial: boolean,
+      onChangesAccepted: OnChangesAcceptedCallback,
+    ) => void
+    disconnect: () => void
+  }) => void
+  type OnErrorCallback = (error: unknown, reconnectDelay: number) => void
+  type ApplyRemoteChangesCallback = (
+    changes: unknown[],
+    currentRevision: unknown,
+    partial: boolean,
+  ) => void
+
+  interface ServerRequest {
+    type: 'clientIdentity' | 'changes' | 'ack' | 'error'
+    clientIdentity?: string
+    message?: string
+    requestId?: string
+    changes?: unknown[]
+    currentRevision?: unknown
+    partial?: boolean
+  }
+
   Dexie.Syncable.registerSyncProtocol('websocket', {
     sync(
-      context,
-      url,
-      options,
-      baseRevision,
-      syncedRevision,
-      changes,
-      partial,
-      applyRemoteChanges,
-      onChangesAccepted,
-      onSuccess,
-      onError,
+      context: SyncContext,
+      url: string,
+      options: SyncProtocolOptions,
+      baseRevision: unknown,
+      syncedRevision: unknown,
+      changes: unknown[],
+      partial: boolean,
+      applyRemoteChanges: ApplyRemoteChangesCallback,
+      onChangesAccepted: OnChangesAcceptedCallback,
+      onSuccess: OnSuccessCallback,
+      onError: OnErrorCallback,
     ) {
       // The following vars are needed because we must know which callback to ack when server sends it's ack to us.
       let requestId = 0
-      const acceptCallbacks = {}
+      const acceptCallbacks: Record<string, OnChangesAcceptedCallback> = {}
 
       // Connect the WebSocket to given url:
       const ws = new WebSocket(url)
 
       // sendChanges() method:
-      function sendChanges(changes, baseRevision, partial, onChangesAccepted) {
+      function sendChanges(
+        changes: unknown[],
+        baseRevision: unknown,
+        partial: boolean,
+        onChangesAccepted: OnChangesAcceptedCallback,
+      ) {
         ++requestId
         acceptCallbacks[requestId.toString()] = onChangesAccepted
 
@@ -61,7 +103,7 @@ import Dexie from 'dexie'
       }
 
       // When WebSocket opens, send our changes to the server.
-      ws.onopen = (event) => {
+      ws.onopen = () => {
         // Initiate this socket connection by sending our clientIdentity. If we dont have a clientIdentity yet,
         // server will call back with a new client identity that we should use in future WebSocket connections.
         ws.send(
@@ -114,12 +156,12 @@ import Dexie from 'dexie'
           //     lastRevision: last revision of changes sent (applicable if type="changes")
           //     partial: true if server has additionalChanges to send. False if these changes were the last known. (applicable if type="changes")
           // }
-          const requestFromServer = JSON.parse(data)
+          const requestFromServer = JSON.parse(data) as ServerRequest
           if (requestFromServer.type === 'changes') {
             applyRemoteChanges(
-              requestFromServer.changes,
+              requestFromServer.changes || [],
               requestFromServer.currentRevision,
-              requestFromServer.partial,
+              !!requestFromServer.partial,
             )
             if (isFirstRound && !requestFromServer.partial) {
               // Since this is the first sync round and server sais we've got all changes - now is the time to call onsuccess()
@@ -137,14 +179,17 @@ import Dexie from 'dexie'
             }
           } else if (requestFromServer.type === 'ack') {
             const requestId = requestFromServer.requestId
-            const acceptCallback = acceptCallbacks[requestId.toString()]
-            acceptCallback() // Tell framework that server has acknowledged the changes sent.
-            delete acceptCallbacks[requestId.toString()]
+            if (requestId) {
+              const acceptCallback = acceptCallbacks[requestId]
+              if (acceptCallback) {
+                acceptCallback() // Tell framework that server has acknowledged the changes sent.
+                delete acceptCallbacks[requestId]
+              }
+            }
           } else if (requestFromServer.type === 'clientIdentity') {
             context.clientIdentity = requestFromServer.clientIdentity
             context.save()
           } else if (requestFromServer.type === 'error') {
-            const requestId = requestFromServer.requestId
             ws.close()
             onError(requestFromServer.message, Infinity) // Don't reconnect - an error in application level means we have done something wrong.
           }

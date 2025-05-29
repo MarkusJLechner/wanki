@@ -70,10 +70,51 @@ interface Deck {
   [key: string]: unknown
 }
 
+// Interface for the lapse configuration
+interface DeckConfigLapse {
+  delays?: number[]
+  leechAction?: number
+  leechFails?: number
+  minInt?: number
+  mult?: number
+}
+
+// Interface for the review configuration
+interface DeckConfigRev {
+  bury?: boolean
+  ease4?: number
+  fuzz?: number
+  ivlFct?: number
+  maxIvl?: number
+  minSpace?: number
+  perDay?: number
+}
+
+// Interface for the new cards configuration
+interface DeckConfigNew {
+  bury?: boolean
+  delays?: number[]
+  initialFactor?: number
+  ints?: number[]
+  order?: number
+  perDay?: number
+  separate?: boolean
+}
+
 // Interface for the configuration returned by cardDeckConfig
 interface DeckConfig {
+  id?: number
+  name?: string
+  autoplay?: boolean
+  dyn?: number
+  lapse?: DeckConfigLapse
   maxTaken: number
-  [key: string]: unknown
+  mod?: number
+  replayq?: boolean
+  rev?: DeckConfigRev
+  timer?: number
+  usn?: number
+  new?: DeckConfigNew
 }
 
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))

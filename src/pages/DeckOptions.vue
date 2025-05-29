@@ -35,14 +35,14 @@ const deck = ref<any>(null)
 const dconf = ref<any>(null)
 const deckid = ref(1)
 
-const newPerDay = ref<number | null>(null)
-const maxReviews = ref<number | null>(null)
-const ignoreReviewLimit = ref(false)
-const newSteps = ref('')
-const newOrder = ref(NewCardOrder.Due)
-const lapseSteps = ref('')
-const leechThreshold = ref<number | null>(null)
-const leechAction = ref(Leech.Suspend)
+const newPerDay = refstorage.ref('deck.options.new.perDay')
+const maxReviews = refstorage.ref('deck.options.rev.perDay')
+const ignoreReviewLimit = refstorage.ref('deck.options.new.ignoreReviewLimit')
+const newSteps = refstorage.ref('deck.options.new.steps')
+const newOrder = refstorage.ref('deck.options.new.order')
+const lapseSteps = refstorage.ref('deck.options.lapse.steps')
+const leechThreshold = refstorage.ref('deck.options.lapse.leechThreshold')
+const leechAction = refstorage.ref('deck.options.lapse.leechAction')
 
 const orderItems = [
   { text: 'Random', value: NewCardOrder.Random },

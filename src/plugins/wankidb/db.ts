@@ -80,18 +80,47 @@ interface Media {
   name?: string
 }
 
+interface DconfLapse {
+  delays?: number[]
+  leechAction?: number
+  leechFails?: number
+  minInt?: number
+  mult?: number
+}
+
+interface DconfRev {
+  bury?: boolean
+  ease4?: number
+  fuzz?: number
+  ivlFct?: number
+  maxIvl?: number
+  minSpace?: number
+  perDay?: number
+}
+
+interface DconfNew {
+  bury?: boolean
+  delays?: number[]
+  initialFactor?: number
+  ints?: number[]
+  order?: number
+  perDay?: number
+  separate?: boolean
+}
+
 interface Dconf {
   id?: number
   name?: string
-  replayq?: boolean
-  lapse?: Record<string, unknown>
-  rev?: Record<string, unknown>
-  timer?: number
-  maxTaken?: number
-  usn?: number
-  new?: Record<string, unknown>
-  mod?: number
   autoplay?: boolean
+  dyn?: number
+  lapse?: DconfLapse
+  maxTaken?: number
+  mod?: number
+  replayq?: boolean
+  rev?: DconfRev
+  timer?: number
+  usn?: number
+  new?: DconfNew
 }
 
 interface Model {
