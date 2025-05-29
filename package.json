@@ -9,6 +9,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "test:watch": "vitest run",
     "lint": "npm run lint:js && npm run lint:style",
     "lint:js": "eslint . --ext .ts,.js,.vue --cache --cache-location .eslintcache",
@@ -37,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/coverage-v8": "^3.1.4",
     "@vue/compiler-sfc": "^3.5.14",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.0.0",
@@ -54,6 +56,6 @@
     "stylelint-config-standard": "^38.0.0",
     "typescript": "^5.4.5",
     "vite": "^6.3.5",
-    "vitest": "^1.5.0"
+    "vitest": "^3.1.4"
   }
 }
