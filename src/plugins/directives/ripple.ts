@@ -6,14 +6,14 @@ interface RippleOptions {
 }
 
 interface RippleProps {
-  event: string | string[]
+  event: string[]
   eventStop: string[]
   transition: number
 }
 
 function setProps(modifiers: string[], props: RippleProps): void {
   modifiers.forEach(function (item) {
-    if (isNaN(Number(item))) props.event = item
+    if (isNaN(Number(item))) props.event = [item]
     else props.transition = Number(item)
   })
 }
@@ -57,7 +57,7 @@ const Ripple: RippleDirective = {
     let inity = 0
     let destx = 0
     let desty = 0
-    let thresholdMove = 10
+    const thresholdMove = 10
 
     const move = (e: MouseEvent | TouchEvent) => {
       destx =
@@ -219,7 +219,11 @@ const Ripple: RippleDirective = {
         setTimeout(function () {
           let clearPosition = true
           for (let i = 0; i < target.childNodes.length; i++) {
-            if (target.childNodes[i].className === 'ripple-container') {
+            const node = target.childNodes[i]
+            if (
+              node instanceof Element &&
+              node.className === 'ripple-container'
+            ) {
               clearPosition = false
             }
           }
@@ -234,11 +238,7 @@ const Ripple: RippleDirective = {
         }, props.transition + 250)
       }
 
-      if (
-        Array.isArray(props.event)
-          ? props.event.includes(event.type)
-          : props.event === event.type
-      ) {
+      if (props.event.includes(event.type)) {
         props.eventStop.forEach((e) =>
           el.addEventListener(e, clearRipple, false),
         )
