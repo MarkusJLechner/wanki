@@ -23,10 +23,10 @@ import {
   replaceAsync,
   replaceMediaFromNote,
 } from '@/plugins/global'
-import IFrameContainer from '@/components/IFrameContainer.js'
+import IFrameContainer from '@/components/IFrameContainer'
 import { refstorage } from '@/store/globalstate'
 import ReviewMedia from '@/components/ReviewMedia.vue'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { wankidb } from '@/plugins/wankidb/db'
 
 interface Card {
   template: Promise<any>

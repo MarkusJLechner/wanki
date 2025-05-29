@@ -17,14 +17,14 @@ import {
   DYN_ADDED,
   DYN_DUEPRIORITY,
   DYN_DUE,
-} from './conts.js'
-import { wankidb } from './wankidb/db.js'
-import { Card } from './wankidb/Card.js' // Assuming Card.js is correctly imported by wankidb hook
-import { Deck } from './wankidb/Deck.js' // Assuming Deck.js is correctly imported by wankidb hook
-import { Col } from './wankidb/Col.js' // Assuming Col.js is correctly imported by wankidb hook
+} from './conts'
+import { wankidb } from './wankidb/db'
+import { Card } from './wankidb/Card' // Assuming Card.js is correctly imported by wankidb hook
+import { Deck } from './wankidb/Deck' // Assuming Deck.js is correctly imported by wankidb hook
+import { Col } from './wankidb/Col' // Assuming Col.js is correctly imported by wankidb hook
 // Note and Model classes might be needed for some operations like leech tagging or dynamic deck search term parsing
-import { Note } from './wankidb/Note.js'
-import { Model } from './wankidb/Model.js'
+import { Note } from './wankidb/Note'
+import { Model } from './wankidb/Model'
 
 import {
   cardDeckConfig as getCardDeckConfigUtil, // Renamed to avoid conflict if used as method

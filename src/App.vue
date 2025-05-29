@@ -19,8 +19,8 @@
 import { ref, onMounted, onBeforeMount, watch } from 'vue'
 import { useRouter, RouteLocationNormalized } from 'vue-router'
 import { clearToasts, refstorage } from '@/store/globalstate'
-import { persist } from '@/plugins/idb.js'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { persist } from '@/plugins/idb'
+import { wankidb } from '@/plugins/wankidb/db'
 import BackgroundTask from '@/components/BackgroundTask.vue'
 import Toasts from '@/components/Toasts.vue'
 

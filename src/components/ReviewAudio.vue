@@ -23,10 +23,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { refstorage } from '@/store/globalstate'
-import { defaultSettings } from '@/plugins/defaultSettings.js'
+import { defaultSettings } from '@/plugins/defaultSettings'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import { getFileMimeType, sleep } from '@/plugins/global'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { wankidb } from '@/plugins/wankidb/db'
 
 interface Props {
   blob?: string | null

@@ -17,7 +17,7 @@
 import { ref, computed, watch } from 'vue'
 import ReviewAudio from '@/components/ReviewAudio.vue'
 import { refstorage } from '@/store/globalstate'
-import { defaultSettings } from '@/plugins/defaultSettings.js'
+import { defaultSettings } from '@/plugins/defaultSettings'
 
 interface Props {
   mediaList?: any[]

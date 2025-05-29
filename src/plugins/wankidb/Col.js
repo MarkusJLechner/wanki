@@ -1,5 +1,5 @@
-import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { BaseTable } from '@/plugins/wankidb/BaseTable'
+import { wankidb } from '@/plugins/wankidb/db'
 wankidb.col.hook('creating', (primKey, obj) => {
   const cast = (json) => (typeof json === 'string' ? JSON.parse(json) : json)
   obj.conf = cast(obj.conf)

@@ -1,8 +1,8 @@
 import { openDB } from 'idb'
-import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql.js'
+import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql'
 
 import WorkerBulkPut from '@/plugins/workers/wankidbBulkPut.js?worker'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { wankidb } from '@/plugins/wankidb/db'
 
 export const persist = () => {
   return navigator.storage.persist().then(function (persistent) {

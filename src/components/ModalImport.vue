@@ -54,9 +54,9 @@ import {
   promiseProgress,
   promptFile,
 } from 'plugins/global'
-import { decompressFile } from '@/plugins/importer.js'
+import { decompressFile } from '@/plugins/importer'
 import InputFile from '@/components/InputFile.vue'
-import { importDeck, persist } from '@/plugins/idb.js'
+import { importDeck, persist } from '@/plugins/idb'
 import LoadingIcon from '@/components/LoadingIcon.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 

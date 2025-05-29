@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { wankidb } from '@/plugins/wankidb/db.js'
-import { NewCardOrder, Leech } from '@/plugins/conts.js'
+import { wankidb } from '@/plugins/wankidb/db'
+import { NewCardOrder, Leech } from '@/plugins/conts'
 import { refstorage } from '@/store/globalstate'
 import TheHeader from '@/components/TheHeader.vue'
 import MainContent from '@/components/MainContent.vue'
@@ -90,7 +90,7 @@ const listItemsDailyLimits: ListItem[] = [
         dconf.value.new.perDay = newPerDay.value
         save()
       }
-    }
+    },
   },
   {
     text: 'Maximum reviews/day',
@@ -104,7 +104,7 @@ const listItemsDailyLimits: ListItem[] = [
         dconf.value.rev.perDay = maxReviews.value
         save()
       }
-    }
+    },
   },
   {
     text: 'New cards ignore review limit',
@@ -117,8 +117,8 @@ const listItemsDailyLimits: ListItem[] = [
         ignoreReviewLimit.value = dconf.value.new.ignoreReviewLimit
         save()
       }
-    }
-  }
+    },
+  },
 ]
 
 const listItemsNewCards: ListItem[] = [
@@ -134,7 +134,7 @@ const listItemsNewCards: ListItem[] = [
         dconf.value.new.delays = parseSteps(newSteps.value)
         save()
       }
-    }
+    },
   },
   {
     text: 'New cards order',
@@ -142,7 +142,7 @@ const listItemsNewCards: ListItem[] = [
       title: 'New cards order',
       key: 'deck.options.new.order',
       default: NewCardOrder.Due,
-      items: orderItems
+      items: orderItems,
     },
     click: () => {
       if (dconf.value) {
@@ -150,8 +150,8 @@ const listItemsNewCards: ListItem[] = [
         dconf.value.new.order = newOrder.value
         save()
       }
-    }
-  }
+    },
+  },
 ]
 
 const listItemsLapses: ListItem[] = [
@@ -167,7 +167,7 @@ const listItemsLapses: ListItem[] = [
         dconf.value.lapse.delays = parseSteps(lapseSteps.value)
         save()
       }
-    }
+    },
   },
   {
     text: 'Leech threshold',
@@ -181,7 +181,7 @@ const listItemsLapses: ListItem[] = [
         dconf.value.lapse.leechFails = leechThreshold.value
         save()
       }
-    }
+    },
   },
   {
     text: 'Leech action',
@@ -189,7 +189,7 @@ const listItemsLapses: ListItem[] = [
       title: 'Leech action',
       key: 'deck.options.lapse.leechAction',
       default: Leech.Suspend,
-      items: lapseActionItems
+      items: lapseActionItems,
     },
     click: () => {
       if (dconf.value) {
@@ -197,8 +197,8 @@ const listItemsLapses: ListItem[] = [
         dconf.value.lapse.leechAction = leechAction.value
         save()
       }
-    }
-  }
+    },
+  },
 ]
 
 function formatSteps(steps: number[] = []) {
@@ -316,22 +316,37 @@ onMounted(async () => {
     refstorage.set('deck.options.rev.perDay', dconf.value.rev.perDay)
   }
   if (dconf.value.new?.ignoreReviewLimit !== undefined) {
-    refstorage.set('deck.options.new.ignoreReviewLimit', dconf.value.new.ignoreReviewLimit)
+    refstorage.set(
+      'deck.options.new.ignoreReviewLimit',
+      dconf.value.new.ignoreReviewLimit,
+    )
   }
   if (dconf.value.new?.delays) {
-    refstorage.set('deck.options.new.steps', formatSteps(dconf.value.new.delays))
+    refstorage.set(
+      'deck.options.new.steps',
+      formatSteps(dconf.value.new.delays),
+    )
   }
   if (dconf.value.new?.order !== undefined) {
     refstorage.set('deck.options.new.order', dconf.value.new.order)
   }
   if (dconf.value.lapse?.delays) {
-    refstorage.set('deck.options.lapse.steps', formatSteps(dconf.value.lapse.delays))
+    refstorage.set(
+      'deck.options.lapse.steps',
+      formatSteps(dconf.value.lapse.delays),
+    )
   }
   if (dconf.value.lapse?.leechFails !== undefined) {
-    refstorage.set('deck.options.lapse.leechThreshold', dconf.value.lapse.leechFails)
+    refstorage.set(
+      'deck.options.lapse.leechThreshold',
+      dconf.value.lapse.leechFails,
+    )
   }
   if (dconf.value.lapse?.leechAction !== undefined) {
-    refstorage.set('deck.options.lapse.leechAction', dconf.value.lapse.leechAction)
+    refstorage.set(
+      'deck.options.lapse.leechAction',
+      dconf.value.lapse.leechAction,
+    )
   }
 })
 </script>

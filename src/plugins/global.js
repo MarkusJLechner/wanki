@@ -1,6 +1,6 @@
 import { refstorage } from '@/store/globalstate'
-import { defaultSettings } from './defaultSettings.js'
-import { resolveObjectPath } from './utils.js'
+import { defaultSettings } from './defaultSettings'
+import { resolveObjectPath } from './utils'
 
 export const vibrate = (pattern = 30) => {
   if (refstorage.getSetting(defaultSettings.general.vibrate)) {

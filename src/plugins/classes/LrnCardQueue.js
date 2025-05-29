@@ -1,4 +1,4 @@
-import { LrnCard } from '@/plugins/classes/LrnCard.js'
+import { LrnCard } from '@/plugins/classes/LrnCard'
 
 class LrnCardQueue {
   isFilled = false

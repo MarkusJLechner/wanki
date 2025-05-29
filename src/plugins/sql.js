@@ -1,5 +1,5 @@
-import initSqlJs from 'sql.js/dist/sql-asm.js'
-import { idbDecks, tableColJsonParse } from '@/plugins/idb.js'
+import initSqlJs from 'sql.js/dist/sql-asm'
+import { idbDecks, tableColJsonParse } from '@/plugins/idb'
 
 const sqlDbCache = {}
 

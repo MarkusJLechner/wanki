@@ -1,4 +1,4 @@
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { wankidb } from '@/plugins/wankidb/db'
 
 export async function cardDeckConfig(card, dynamicDeck = false) {
   return deckConfig(card[dynamicDeck ? 'odid' : 'did'])

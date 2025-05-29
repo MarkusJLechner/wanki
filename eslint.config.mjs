@@ -68,7 +68,7 @@ export default defineConfig([
 
   // JavaScript files configuration
   {
-    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    files: ['**/*', '**/*.mjs', '**/*.cjs'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 'latest',

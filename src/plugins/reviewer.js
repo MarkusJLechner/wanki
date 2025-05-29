@@ -1,7 +1,7 @@
-import { wankidb } from '@/plugins/wankidb/db.js'
-import { QueueType } from '@/plugins/conts.js'
-import { collectionCreatedAt } from '@/plugins/scheduler.js'
-import { deckConfig } from '@/plugins/collection.js'
+import { wankidb } from '@/plugins/wankidb/db'
+import { QueueType } from '@/plugins/conts'
+import { collectionCreatedAt } from '@/plugins/scheduler'
+import { deckConfig } from '@/plugins/collection'
 
 export async function getNextCard(deckId) {
   deckId = +deckId || 1

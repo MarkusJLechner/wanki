@@ -7,8 +7,8 @@ import {
   QueueType,
   StatisticType,
   ToastType,
-} from '@/plugins/conts.js'
-import { wankidb } from '@/plugins/wankidb/db.js'
+} from '@/plugins/conts'
+import { wankidb } from '@/plugins/wankidb/db'
 import {
   cardDeckConfig,
   creationTimestamp,
@@ -16,11 +16,11 @@ import {
   getConf,
   getDecks,
   setConf,
-} from '@/plugins/collection.js'
-import { debug, info, log } from '@/plugins/log.js'
-import { Counts } from '@/plugins/classes/Counts.js'
-import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue.js'
-import { LrnCard } from '@/plugins/classes/LrnCard.js'
+} from '@/plugins/collection'
+import { debug, info, log } from '@/plugins/log'
+import { Counts } from '@/plugins/classes/Counts'
+import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue'
+import { LrnCard } from '@/plugins/classes/LrnCard'
 import { addToast } from '@/store/globalstate'
 
 const reportLimit = 99999

@@ -22,7 +22,7 @@ import { refstorage } from '@/store/globalstate'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import Sidepanel from '@/components/Sidepanel.vue'
 import SidepanelHeader from '@/components/SidepanelHeader.vue'
-import { wipeDatabase } from '@/plugins/wankidb/db.js'
+import { wipeDatabase } from '@/plugins/wankidb/db'
 
 interface Props {
   title?: string

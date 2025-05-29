@@ -1,9 +1,9 @@
 import { ref, watch, Ref } from 'vue'
-import { vibrate } from '@/plugins/global.js'
+import { vibrate } from '@/plugins/global'
 import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
-import { ToastType } from '@/plugins/conts.js'
-import { defaultSettings } from '@/plugins/defaultSettings.js'
+import { ToastType } from '@/plugins/conts'
+import { defaultSettings } from '@/plugins/defaultSettings'
 
 interface StoreItemSubscribers {
   [key: string]: Ref<any>

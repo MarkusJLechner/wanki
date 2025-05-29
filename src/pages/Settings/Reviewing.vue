@@ -13,7 +13,7 @@ import { ref } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 import Group from '@/components/Group.vue'
-import { defaultSettings } from '@/plugins/defaultSettings.js'
+import { defaultSettings } from '@/plugins/defaultSettings'
 
 interface AudioItem {
   text: string

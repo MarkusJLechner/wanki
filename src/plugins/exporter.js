@@ -1,4 +1,4 @@
-import { idbDecks } from '@/plugins/idb.js'
+import { idbDecks } from '@/plugins/idb'
 import { zipSync } from 'fflate'
 
 export const exportDeck = async (deckId) => {

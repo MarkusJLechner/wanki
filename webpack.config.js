@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default {
   resolve: {
-    extensions: ['.js', '.json', '.vue'],
+    extensions: ['', '.json', '.vue'],
     alias: {
       '@': resolve(__dirname, './src'),
     },

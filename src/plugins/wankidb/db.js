@@ -1,7 +1,7 @@
 import Dexie from 'dexie'
 // import 'dexie-observable'
 // import 'dexie-syncable'
-// import './dbSync.js'
+// import './dbSync'
 
 export const databaseName = 'wankidb'
 

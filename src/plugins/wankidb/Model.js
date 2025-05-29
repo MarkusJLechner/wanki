@@ -1,5 +1,5 @@
-import { wankidb } from '@/plugins/wankidb/db.js'
-import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
+import { wankidb } from '@/plugins/wankidb/db'
+import { BaseTable } from '@/plugins/wankidb/BaseTable'
 wankidb.models.hook('reading', (obj) => Object.assign(new Model(), obj))
 
 export class Model extends BaseTable {

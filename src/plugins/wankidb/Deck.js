@@ -1,5 +1,5 @@
-import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
-import { wankidb } from '@/plugins/wankidb/db.js'
+import { BaseTable } from '@/plugins/wankidb/BaseTable'
+import { wankidb } from '@/plugins/wankidb/db'
 
 wankidb.decks.hook('reading', (obj) => Object.assign(new Deck(), obj))
 

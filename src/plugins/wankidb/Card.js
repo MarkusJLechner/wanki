@@ -1,8 +1,8 @@
-import { wankidb } from '@/plugins/wankidb/db.js'
-import { BaseTable } from '@/plugins/wankidb/BaseTable.js'
-import { CardType, getConstName, QueueType } from '@/plugins/conts.js'
-import { cardDeckConfig } from '@/plugins/collection.js'
-import { collectionCreatedAt, rolloverHour } from '@/plugins/scheduler.js'
+import { wankidb } from '@/plugins/wankidb/db'
+import { BaseTable } from '@/plugins/wankidb/BaseTable'
+import { CardType, getConstName, QueueType } from '@/plugins/conts'
+import { cardDeckConfig } from '@/plugins/collection'
+import { collectionCreatedAt, rolloverHour } from '@/plugins/scheduler'
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 
 /***

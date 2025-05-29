@@ -28,7 +28,7 @@ import {
   _daysLate,
   collectionCreatedAt,
   rolloverHour,
-} from '../src/plugins/scheduler.js'
+} from '../src/plugins/scheduler'
 import {
   CardType,
   QueueType,
@@ -36,13 +36,13 @@ import {
   Leech,
   NewCardOrder,
   StatisticType,
-} from '../src/plugins/conts.js'
-import * as collection from '../src/plugins/collection.js'
-import * as globalstate from '../src/store/globalstate.js'
-import { wankidb } from '../src/plugins/wankidb/db.js'
+} from '../src/plugins/conts'
+import * as collection from '../src/plugins/collection'
+import * as globalstate from '../src/store/globalstate'
+import { wankidb } from '../src/plugins/wankidb/db'
 
 // Mock dependencies
-vi.mock('../src/plugins/wankidb/db.js', () => {
+vi.mock('../src/plugins/wankidb/db', () => {
   return {
     wankidb: {
       revlog: {
@@ -60,7 +60,7 @@ vi.mock('../src/plugins/wankidb/db.js', () => {
   }
 })
 
-vi.mock('../src/plugins/collection.js', () => {
+vi.mock('../src/plugins/collection', () => {
   return {
     cardDeckConfig: vi.fn(),
     creationTimestamp: vi.fn(),
@@ -71,7 +71,7 @@ vi.mock('../src/plugins/collection.js', () => {
   }
 })
 
-vi.mock('../src/store/globalstate.js', () => {
+vi.mock('../src/store/globalstate', () => {
   return {
     addToast: vi.fn(),
   }
