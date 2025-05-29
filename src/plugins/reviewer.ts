@@ -3,30 +3,88 @@ import { QueueType } from '@/plugins/conts'
 import { collectionCreatedAt } from '@/plugins/fsrs'
 import { deckConfig } from '@/plugins/collection'
 
-export async function getNextCard(deckId) {
+interface Card {
+  id?: number
+  nid?: number
+  did?: number
+  ord?: number
+  mod?: number
+  usn?: number
+  type?: number
+  queue?: number
+  due?: number
+  ivl?: number
+  factor?: number
+  reps?: number
+  lapses?: number
+  left?: number
+  odue?: number
+  odid?: number
+  flags?: number
+  data?: string
+  startTimer?: () => void
+}
+
+// Using type imports from wankidb/db.ts would be better,
+// but for simplicity we're defining the interfaces here
+type Deck = {
+  id?: number
+  terms?: Record<string, unknown>
+  separate?: boolean
+  collapsed?: boolean
+  newToday?: number[]
+  timeToday?: number[]
+  dyn?: number
+  conf?: number
+  return?: boolean
+  revToday?: number[]
+  lrnToday?: number[]
+  mod?: number
+  name?: string
+  usn?: number
+  delays?: number[]
+  resched?: boolean
+  desc?: string
+}
+
+type DeckConfig = {
+  new?: {
+    perDay?: number
+  }
+  rev?: {
+    perDay?: number
+  }
+}
+
+export async function getNextCard(
+  deckId: string | number,
+): Promise<Card | null> {
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
   const { today } = await collectionCreatedAt()
   const now = Date.now()
 
-  const dueLearns = []
-  const dueReviews = []
-  const newCards = []
+  const dueLearns: Card[] = []
+  const dueReviews: Card[] = []
+  const newCards: Card[] = []
 
   cards.forEach((card) => {
     switch (card.queue) {
       case QueueType.Learn:
-        if (card.due <= now) {
+        if (card.due && card.due <= now) {
           dueLearns.push(card)
         }
         break
       case QueueType.DayLearnRelearn:
-        if (card.due <= today) {
+        if (card.due && card.due <= today) {
           dueLearns.push(card)
         }
         break
       case QueueType.Review:
-        if ((card.due < 1e12 && card.due <= today) || card.due <= now) {
+        if (
+          card.due &&
+          ((card.due < 1e12 && card.due <= today) || card.due <= now)
+        ) {
           dueReviews.push(card)
         }
         break
@@ -38,7 +96,7 @@ export async function getNextCard(deckId) {
     }
   })
 
-  const sortFn = (a, b) => a.due - b.due
+  const sortFn = (a: Card, b: Card) => (a.due || 0) - (b.due || 0)
   dueLearns.sort(sortFn)
   dueReviews.sort(sortFn)
   newCards.sort(sortFn)
@@ -50,7 +108,9 @@ export async function getNextCard(deckId) {
   return next
 }
 
-export async function getDueCounts(deckId) {
+export async function getDueCounts(
+  deckId: string | number,
+): Promise<[number, number, number]> {
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
   const deck = await wankidb.decks.get({ id: deckId })
@@ -65,17 +125,17 @@ export async function getDueCounts(deckId) {
   cards.forEach((card) => {
     switch (card.queue) {
       case QueueType.Learn:
-        if (card.due <= now) {
+        if (card.due && card.due <= now) {
           learnCount += 1
         }
         break
       case QueueType.DayLearnRelearn:
-        if (card.due <= today) {
+        if (card.due && card.due <= today) {
           learnCount += 1
         }
         break
       case QueueType.Review:
-        if ((card.due < 1e12 && card.due <= today) || card.due <= now) {
+        if (card.due && ((card.due < 1e12 && card.due <= today) || card.due <= now)) {
           reviewCount += 1
         }
         break

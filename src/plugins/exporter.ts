@@ -1,8 +1,23 @@
 import { idbDecks } from '@/plugins/idb'
 import { zipSync } from 'fflate'
 
-export const exportDeck = async (deckId) => {
-  const deck = await (await idbDecks).get(deckId)
+interface DecompressedFile {
+  collection: Uint8Array
+  media: Record<string, unknown>[] | Uint8Array
+  files: Uint8Array[]
+}
+
+interface Deck {
+  id?: string
+  name: string
+  decompressedFile: DecompressedFile
+  tables?: {
+    col: Record<string, unknown>
+  }
+}
+
+export const exportDeck = async (deckId: string): Promise<void> => {
+  const deck = (await (await idbDecks).get(deckId)) as Deck | undefined
   if (!deck) {
     throw new Error('Could not find deck')
   }
@@ -19,15 +34,15 @@ export const exportDeck = async (deckId) => {
         [index]: item,
       }
     },
-    {},
+    {} as Record<string | number, Uint8Array>,
   )
   decompressedFile['collection.anki2'] = deck.decompressedFile.collection
-  decompressedFile.media = deck.decompressedFile.media
+  decompressedFile.media = deck.decompressedFile.media as Uint8Array
 
   const deckNameSanitized = deck.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()
   const filename = `${deckNameSanitized}.apkg`
 
-  const compressed = await new Promise((resolve) => {
+  const compressed = await new Promise<Uint8Array>((resolve) => {
     resolve(
       zipSync(decompressedFile, {
         // GZIP-specific: the filename to use when decompressed
@@ -46,7 +61,10 @@ export const exportDeck = async (deckId) => {
   await downloadBlob(compressed, filename, 'application/zip')
 }
 
-export const downloadURL = async (data, fileName) => {
+export const downloadURL = async (
+  data: string,
+  fileName: string,
+): Promise<void> => {
   const a = document.createElement('a')
   a.href = data
   a.download = fileName
@@ -56,7 +74,11 @@ export const downloadURL = async (data, fileName) => {
   a.remove()
 }
 
-export const downloadBlob = async (data, fileName, mimeType) => {
+export const downloadBlob = async (
+  data: Uint8Array | Blob,
+  fileName: string,
+  mimeType: string,
+): Promise<void> => {
   const blob = new Blob([data], {
     type: mimeType,
   })
@@ -65,7 +87,7 @@ export const downloadBlob = async (data, fileName, mimeType) => {
 
   await downloadURL(url, fileName)
 
-  return new Promise((resolve) =>
+  return new Promise<void>((resolve) =>
     setTimeout(() => {
       window.URL.revokeObjectURL(url)
       resolve()

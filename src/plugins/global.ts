@@ -2,29 +2,44 @@ import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from './defaultSettings'
 import { resolveObjectPath } from './utils'
 
-export const vibrate = (pattern = 30) => {
+export const vibrate = (pattern: number = 30): void => {
   if (refstorage.getSetting(defaultSettings.general.vibrate)) {
     navigator.vibrate(pattern)
   }
 }
 
-export const isMobile =
+export const isMobile: boolean =
   'ontouchstart' in document.documentElement &&
   /mobi/i.test(navigator.userAgent)
 
-export const sleep = (timeout) =>
+export const sleep = (timeout: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, timeout))
+
+interface TimerOptions {
+  duration?: number
+  callback?: (timer: number, formattedTime: string) => void
+  runOnStart?: boolean
+}
+
+interface Timer {
+  start: () => void
+  pause: () => void
+  set: (duration: number) => void
+  reset: () => void
+}
 
 export function createTimer({
   duration = 60,
   callback = () => {},
   runOnStart = true,
-}) {
+}: TimerOptions = {}): Timer {
   let timer = 0
   let paused = !runOnStart
-  let minutes, seconds
-  let interval = null
-  const set = (duration) => {
+  let minutes: string | number
+  let seconds: string | number
+  let interval: number | null = null
+
+  const set = (duration: number): void => {
     interval = setInterval(function () {
       if (!paused) {
         minutes = parseInt('' + timer / 60, 10)
@@ -36,7 +51,9 @@ export function createTimer({
         callback(timer, minutes + ':' + seconds)
 
         if (timer++ >= duration) {
-          clearInterval(interval)
+          if (interval !== null) {
+            clearInterval(interval)
+          }
           interval = null
         }
       }
@@ -47,14 +64,18 @@ export function createTimer({
     set(duration)
   }
 
-  const start = () => {
+  const start = (): void => {
     if (interval === null) {
       set(duration)
     }
     paused = false
   }
-  const pause = () => (paused = true)
-  const reset = () => {
+
+  const pause = (): void => {
+    paused = true
+  }
+
+  const reset = (): void => {
     timer = 0
     callback(0, '00:00')
     start()
@@ -68,22 +89,30 @@ export function createTimer({
   }
 }
 
-export function promptFile(accept, multiple = false) {
+export function promptFile(
+  accept: string,
+  multiple: boolean = false,
+): Promise<File | File[]> {
   const input = document.createElement('input')
   input.type = 'file'
   input.multiple = multiple
   input.accept = accept
+
   return new Promise(function (resolve, reject) {
     try {
-      document.activeElement.onfocus = function () {
-        document.activeElement.onfocus = null
+      document.activeElement!.onfocus = function () {
+        if (document.activeElement) {
+          document.activeElement.onfocus = null
+        }
         setTimeout(resolve, 200)
       }
+
       input.onchange = function () {
-        const files = Array.from(input.files)
+        const files = Array.from(input.files || [])
         if (multiple) return resolve(files)
         resolve(files[0])
       }
+
       input.click()
     } catch (e) {
       reject(e)
@@ -91,10 +120,21 @@ export function promptFile(accept, multiple = false) {
   })
 }
 
-export function promiseProgress(proms, progressCallback) {
+interface ProgressData<T> {
+  percent: number
+  total: number
+  value: number
+  payload: T | null
+}
+
+export function promiseProgress<T>(
+  proms: Promise<T>[],
+  progressCallback: (data: ProgressData<T>) => void,
+): Promise<T[]> {
   let d = 0
   const l = proms.length
   progressCallback({ percent: 0, total: l, value: 0, payload: null })
+
   for (const p of proms) {
     p.then((pl) => {
       d++
@@ -102,21 +142,37 @@ export function promiseProgress(proms, progressCallback) {
       progressCallback({ percent, total: l, value: d, payload: pl })
     })
   }
+
   return Promise.all(proms)
 }
 
-export function deferPromise(obj = {}) {
-  obj.resolve = () => {}
-  obj.reject = () => {}
-  obj.promise = new Promise((resolve, reject) => {
-    obj.resolve = resolve
-    obj.reject = reject
-  })
-
-  return obj
+interface DeferredPromise<T> {
+  promise: Promise<T>
+  resolve: (value: T | PromiseLike<T>) => void
+  reject: (reason?: unknown) => void
 }
 
-export function addTask(task) {
+export function deferPromise<T>(
+  obj: Partial<DeferredPromise<T>> = {},
+): DeferredPromise<T> {
+  const deferred = obj as DeferredPromise<T>
+  deferred.resolve = () => {}
+  deferred.reject = () => {}
+
+  deferred.promise = new Promise<T>((resolve, reject) => {
+    deferred.resolve = resolve
+    deferred.reject = reject
+  })
+
+  return deferred
+}
+
+interface Task {
+  id: string | number
+  [key: string]: unknown
+}
+
+export function addTask(task: Task): number {
   const unique = Math.floor(Math.random() * 6)
   document.dispatchEvent(
     new CustomEvent('background/task', { detail: { ...task, unique } }),
@@ -124,7 +180,7 @@ export function addTask(task) {
   return unique
 }
 
-export function finishTask(id) {
+export function finishTask(id: string | number): void {
   document.dispatchEvent(
     new CustomEvent('background/task', {
       detail: { id, unique: id, remove: true },
@@ -132,42 +188,50 @@ export function finishTask(id) {
   )
 }
 
-export async function playAudio(uint8) {
+export async function playAudio(uint8: Uint8Array): Promise<void> {
   const blob = new Blob([uint8])
 
   if (!blob) {
     throw new Error('File is empty')
   }
 
-  const url = await URL.createObjectURL(blob)
+  const url = URL.createObjectURL(blob)
   const audio = new Audio()
   audio.src = url
   await audio.play()
 }
 
+interface MediaMatch {
+  type: string
+  media: string
+}
+
 const regexMedia = /\[(?<type>[^:\[\]]+):(?<media>[^\]]+)]/gm
-export function getMediaFromNote(string) {
+
+export function getMediaFromNote(string: string): MediaMatch[] {
   const regex = regexMedia
-  let m
-  let matches = []
+  let m: RegExpExecArray | null
+  const matches: MediaMatch[] = []
 
   while ((m = regex.exec(string)) !== null) {
     if (m.index === regex.lastIndex) {
       regex.lastIndex++
     }
-    matches.push(m.groups)
+    if (m.groups) {
+      matches.push(m.groups as MediaMatch)
+    }
   }
 
   return matches
 }
 
-export const getFileMimeType = (file) => {
+export const getFileMimeType = (file: Uint8Array): string => {
   const arr = file.subarray(0, 4)
   let header = ''
   for (let i = 0; i < arr.length; i++) {
     header += arr[i].toString(16)
   }
-  let type
+  let type: string
   switch (header) {
     case '89504e47':
       type = 'image/png'
@@ -187,12 +251,19 @@ export const getFileMimeType = (file) => {
       break
   }
   return type
-  // Making the function async.
-  // noinspection UnreachableCodeJS
-  return new Promise((resolve) => {
+
+  // The code below is unreachable due to the return statement above
+  // Keeping it commented for reference
+  /*
+  return new Promise<string | undefined>((resolve) => {
     let fileReader = new FileReader()
     fileReader.onloadend = (event) => {
-      const byteArray = new Uint8Array(event.target.result)
+      if (!event.target || !event.target.result) {
+        resolve(undefined)
+        return
+      }
+
+      const byteArray = new Uint8Array(event.target.result as ArrayBuffer)
 
       // Checking if it's JPEG. For JPEG we need to check the first 2 bytes.
       // We can check further if more specific type is needed.
@@ -207,7 +278,7 @@ export const getFileMimeType = (file) => {
       const headerString = td.decode(byteArray)
 
       // Array to be iterated [<string signature>, <MIME type>]
-      const mimeTypes = [
+      const mimeTypes: [string, string][] = [
         // Images
         ['PNG', 'image/png'],
         // Audio
@@ -232,30 +303,39 @@ export const getFileMimeType = (file) => {
       }
 
       // If not is found we resolve with a blank argument
-      resolve()
+      resolve(undefined)
     }
     // Slice enough bytes to get readable strings.
     // I chose 32 arbitrarily. Note that some headers are offset by
     // a number of bytes.
-    fileReader.readAsArrayBuffer(file.slice(0, 32))
+    fileReader.readAsArrayBuffer(new Blob([file.slice(0, 32)]))
   })
+  */
 }
 
-export function replaceMediaFromNote(string, replace = '') {
+export function replaceMediaFromNote(
+  string: string | unknown,
+  replace: string = '',
+): string | unknown {
   if (typeof string === 'string') {
     return string.replace(regexMedia, replace)
   }
   return string
 }
 
-export async function replaceAsync(str, regex, asyncFn) {
-  const promises = []
+export async function replaceAsync(
+  str: string,
+  regex: RegExp,
+  asyncFn: (match: string, ...args: unknown[]) => Promise<string>,
+): Promise<string> {
+  const promises: Promise<string>[] = []
   str.replace(regex, (match, ...args) => {
     const promise = asyncFn(match, ...args)
     promises.push(promise)
+    return match
   })
   const data = await Promise.all(promises)
-  return str.replace(regex, () => data.shift())
+  return str.replace(regex, () => data.shift() || '')
 }
 
 // Re-export resolveObjectPath from utils.js for backward compatibility

@@ -1,4 +1,36 @@
-export const defaultSettings = {
+interface GeneralSettings {
+  fetchSync: boolean
+  automaticSync: boolean
+  displaySync: boolean
+  shareFeature: boolean
+  blinkLight: boolean
+  vibrate: { key: string; default: boolean }
+  useCard: {
+    default: string
+    items: Array<{ text: string; value: string }>
+  }
+}
+
+interface ReviewingSettings {
+  audioControls: { key: string; default: boolean }
+  autoPlayAudio: { key: string; default: boolean }
+  alignAudioButtonsRight: {
+    key: string
+    default: boolean
+  }
+  autoPlayAudioDelay: {
+    key: string
+    valueType: string
+    default: number
+  }
+}
+
+interface DefaultSettings {
+  general: GeneralSettings
+  reviewing: ReviewingSettings
+}
+
+export const defaultSettings: DefaultSettings = {
   general: {
     fetchSync: false,
     automaticSync: false,
