@@ -1,5 +1,9 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
+
+// Import the Model interface from Card.ts
+import { Model } from './Card'
+
 wankidb.notes.hook('reading', (obj) => Object.assign(new Note(), obj))
 
 /***
@@ -9,64 +13,63 @@ wankidb.notes.hook('reading', (obj) => Object.assign(new Note(), obj))
 export class Note extends BaseTable {
   /***
    * epoch miliseconds of when the note was created
-   * @returns {number}
    */
-  id
+  id?: number
+
   /***
    * globally unique id, almost certainly used for syncing
-   * @returns {number}
    */
-  guid
+  guid?: string
+
   /***
    * model id
-   * @returns {number}
    */
-  mid
+  mid?: number
+
   /***
    * modification timestamp, epoch seconds
-   * @returns {number}
    */
-  mod
+  mod?: number
+
   /***
    * update sequence number: for finding diffs when syncing.
    *   See the description in the cards table for more info
-   * @returns {number}
    */
-  usn
+  usn?: number
+
   /***
    * space-separated string of tags.
    *   includes space at the beginning and end, for LIKE "% tag %" queries
-   * @returns {string}
    */
-  tags
+  tags?: string
+
   /***
    * the values of the fields in this note. separated by 0x1f (31) character.
-   * @returns {number}
    */
-  flds
+  flds?: string
+
   /***
    * sort field: used for quick sorting and duplicate check. The sort field is an integer so that when users are sorting on a field that contains only numbers, they are sorted in numeric instead of lexical order. Text is stored in this integer field.
-   * @returns {number}
    */
-  sfld
+  sfld?: string
+
   /***
    * field checksum used for duplicate check.
    *   integer representation of first 8 digits of sha1 hash of the first field
-   * @returns {number}
    */
-  csum
-  /***
-   * unused
-   * @returns {number}
-   */
-  flags
-  /***
-   * unused
-   * @returns {string}
-   */
-  data
+  csum?: number
 
-  constructor(load) {
+  /***
+   * unused
+   */
+  flags?: number
+
+  /***
+   * unused
+   */
+  data?: string
+
+  constructor(load?: Record<string, unknown>) {
     super(
       'notes',
       [
@@ -86,11 +89,14 @@ export class Note extends BaseTable {
     )
   }
 
-  addTag(tag) {
+  addTag(tag: string): void {
+    if (this.tags === undefined) {
+      this.tags = ''
+    }
     this.tags = (this.tags + ` ${tag}`).trim()
   }
 
-  get model() {
+  get model(): Promise<Model> {
     return (async () => {
       let model = await wankidb.models.get({ id: this.mid })
       if (!model) {

@@ -1,8 +1,81 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
-import { CardType, getConstName, QueueType } from '@/plugins/conts'
+import {
+  CardType,
+  CardTypeValues,
+  getConstName,
+  QueueType,
+  QueueTypeValues,
+} from '@/plugins/conts'
 import { cardDeckConfig } from '@/plugins/collection'
 import { collectionCreatedAt, rolloverHour } from '@/plugins/scheduler'
+
+// Define interfaces for related types
+export interface Note {
+  id?: number
+  guid?: string
+  mid?: number
+  mod?: number
+  usn?: number
+  tags?: string
+  flds?: string
+  sfld?: string
+  csum?: number
+  flags?: number
+  data?: string
+  model: Promise<Model>
+}
+
+export interface Model {
+  id?: number
+  vers?: number
+  name?: string
+  tags?: string
+  did?: number
+  usn?: number
+  req?: Record<string, unknown>
+  flds?: ModelField[]
+  sortf?: number
+  tmpls?: Template[]
+  mod?: number
+  latexPost?: string
+  type?: number
+  css?: string
+  latexPre?: string
+}
+
+export interface ModelField {
+  name?: string
+  ord?: number
+  sticky?: boolean
+  rtl?: boolean
+  font?: string
+  size?: number
+  [key: string]: unknown
+}
+
+export interface Template {
+  name?: string
+  ord?: number
+  qfmt?: string
+  afmt?: string
+  bqfmt?: string
+  bafmt?: string
+  [key: string]: unknown
+}
+
+interface Deck {
+  id?: number
+  name?: string
+  [key: string]: unknown
+}
+
+// Interface for the configuration returned by cardDeckConfig
+interface DeckConfig {
+  maxTaken: number
+  [key: string]: unknown
+}
+
 wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 
 /***
@@ -12,43 +85,43 @@ wankidb.cards.hook('reading', (obj) => Object.assign(new Card(), obj))
 export class Card extends BaseTable {
   /***
    * the epoch milliseconds of when the card was created
-   * @returns {number}
    */
-  id
+  id?: number
+
   /***
    * notes.id
-   * @returns {number}
    */
-  nid
+  nid?: number
+
   /***
    * deck id (available in col table)
-   * @returns {number}
    */
-  did
+  did?: number
+
   /***
    * ordinal : identifies which of the card templates or cloze deletions it corresponds to
    *  for card templates, valid values are from 0 to num templates - 1
    *  for cloze deletions, valid values are from 0 to max cloze index - 1 (they're 0 indexed despite the first being called `c1`)
-   * @returns {number}
    */
-  ord
+  ord?: number
+
   /***
    * modificaton time as epoch seconds
-   * @returns {number}
    */
-  mod
+  mod?: number
+
   /***
    * update sequence number : used to figure out diffs when syncing.
    *  value of -1 indicates changes that need to be pushed to server.
    *  usn < server usn indicates changes that need to be pulled from server.
-   * @returns {number}
    */
-  usn
+  usn?: number
+
   /***
    * 0=new, 1=learning, 2=review, 3=relearning
-   * @returns {number}
    */
-  type
+  type?: CardTypeValues
+
   /***
    * -3=user buried(In scheduler 2),
    *  -2=sched buried (In scheduler 2),
@@ -57,69 +130,70 @@ export class Card extends BaseTable {
    *  0=new, 1=learning, 2=review (as for type)
    *  3=in learning, next rev in at least a day after the previous review
    *  4=preview
-   * @returns {number}
    */
-  queue
+  queue?: QueueTypeValues
+
   /***
    * Due is used differently for different card types:
    *  new: note id or random int
    *  due: integer day, relative to the collection's creation time
    *  learning: integer timestamp in second
-   * @returns {number}
    */
-  due
+  due?: number
+
   /***
    * interval (used in SRS algorithm). Negative = seconds, positive = days
-   * @returns {number}
    */
-  ivl
+  ivl?: number
+
   /***
-   * The ease factor of the card in permille (parts per thousand). If the ease factor is 2500, the card’s interval will be multiplied by 2.5 the next time you press Good.
-   * @returns {number}
+   * The ease factor of the card in permille (parts per thousand). If the ease factor is 2500, the card's interval will be multiplied by 2.5 the next time you press Good.
    */
-  factor
+  factor?: number
+
   /***
    * number of reviews
-   * @returns {number}
    */
-  reps
+  reps?: number
+
   /***
    * the number of times the card went from a "was answered correctly"
    *  to "was answered incorrectly" state
-   * @returns {number}
    */
-  lapses
+  lapses?: number
+
   /***
    * of the form a*1000+b, with:
    *  b the number of reps left till graduation
    *  a the number of reps left today
-   * @returns {number}
    */
-  left
+  left?: number
+
   /***
    * original due: In filtered decks, it's the original due date that the card had before moving to filtered.
    * If the card lapsed in scheduler1, then it's the value before the lapse. (This is used when switching to scheduler 2. At this time, cards in learning becomes due again, with their previous due date)
    * In any other case it's 0.
-   * @returns {number}
    */
-  odue
+  odue?: number
+
   /***
    * original did: only used when the card is currently in filtered deck
-   * @returns {number}
    */
-  odid
+  odid?: number
+
   /***
    * an integer. This integer mod 8 represents a "flag", which can be see in browser and while reviewing a note. Red 1, Orange 2, Green 3, Blue 4, no flag: 0. This integer divided by 8 represents currently nothing
-   * @returns {number}
    */
-  flags
+  flags?: number
+
   /***
    * currently unused
-   * @returns {string}
    */
-  data
+  data?: string
 
-  constructor(load) {
+  timerStarted: number
+
+  constructor(load?: Record<string, unknown>) {
     super(
       'cards',
       [
@@ -148,33 +222,33 @@ export class Card extends BaseTable {
     this.timerStarted = 0
   }
 
-  isInDynamicDeck() {
+  isInDynamicDeck(): boolean {
     return !!this.odid
   }
 
-  get note() {
+  get note(): Promise<Note> {
     return wankidb.notes.get({ id: this.nid })
   }
 
-  get deck() {
+  get deck(): Promise<Deck> {
     return wankidb.decks.get({ id: this.did })
   }
 
-  get model() {
+  get model(): Promise<Model> {
     return (async () => {
       const note = await this.note
       return note.model
     })()
   }
 
-  get template() {
+  get template(): Promise<Template | undefined> {
     return (async () => {
       const model = await this.model
-      return model?.tmpls[this.ord]
+      return model?.tmpls?.[this.ord as number]
     })()
   }
 
-  get fields() {
+  get fields(): Promise<Array<ModelField & { fieldValue: string }>> {
     return (async () => {
       const model = await this.model
       const note = await this.note
@@ -182,48 +256,56 @@ export class Card extends BaseTable {
         return []
       }
       const noteFields = note.flds.split('\u001f')
-      return model?.flds.map((modelFields, index) => {
-        return {
-          ...modelFields,
-          fieldValue: noteFields[index],
-        }
-      })
+      if (!model?.flds) {
+        return []
+      }
+
+      const result: Array<ModelField & { fieldValue: string }> = []
+      for (let i = 0; i < model.flds.length; i++) {
+        result.push({
+          ...model.flds[i],
+          fieldValue: noteFields[i] || '',
+        })
+      }
+      return result
     })()
   }
 
-  get css() {
+  get css(): Promise<string> {
     return (async () => {
       const model = await this.model
-      return model.css
+      return model.css || ''
     })()
   }
 
-  increaseRepetition() {
-    this.reps++
+  increaseRepetition(): void {
+    if (this.reps !== undefined) {
+      this.reps++
+    }
   }
 
-  get queueType() {
+  get queueType(): string | undefined {
     return getConstName(QueueType, this.queue)
   }
 
-  get cardType() {
+  get cardType(): string | undefined {
     return getConstName(CardType, this.type)
   }
 
-  get dueDate() {
+  get dueDate(): Promise<Date> {
     return (async () => {
       if (this.due === 1 || this.queue === QueueType.Suspended) {
         return new Date(0)
       }
 
-      let date
+      let date: Date
 
       switch (this.type) {
         case CardType.New:
           date = new Date()
           break
         case CardType.Learn:
-          date = new Date(this.due)
+          date = new Date(this.due as number)
           break
         case CardType.Relearning:
           date = new Date()
@@ -232,11 +314,12 @@ export class Card extends BaseTable {
           if (('' + this.due).length < 13) {
             const { today } = await collectionCreatedAt()
             const dateToday = new Date()
-            dateToday.setDate(dateToday.getDate() + (this.due - today))
+            const dueOffset = (this.due as number) - today
+            dateToday.setDate(dateToday.getDate() + dueOffset)
             date = dateToday
             date.setHours(await rolloverHour(), 0, 0)
           } else {
-            date = new Date(this.due)
+            date = new Date(this.due as number)
           }
           break
         default:
@@ -244,7 +327,7 @@ export class Card extends BaseTable {
           break
       }
 
-      if (isNaN(date)) {
+      if (isNaN(date.getTime())) {
         return new Date()
       }
 
@@ -252,38 +335,47 @@ export class Card extends BaseTable {
     })()
   }
 
-  startTimer() {
+  startTimer(): void {
     this.timerStarted = new Date().getTime()
   }
 
-  get timeTaken() {
+  get timeTaken(): Promise<number> {
     return (async () => {
       const now = new Date().getTime()
       const total = Math.floor(now - this.timerStarted)
-      return Math.min(total, await this.timeLimit)
+      const limit = await this.timeLimit
+      return Math.min(total, limit)
     })()
   }
 
-  get timeLimit() {
-    return (async () => {
-      const conf = await cardDeckConfig(this, this.isInDynamicDeck())
-      return conf.maxTaken * 1000
-    })()
+  // Get the time limit for this card
+  async getTimeLimit(): Promise<number> {
+    // Get the deck configuration
+    const conf = (await cardDeckConfig(
+      this,
+      this.isInDynamicDeck(),
+    )) as DeckConfig
+    // Return the max time in milliseconds
+    return conf.maxTaken * 1000
   }
 
-  isTypeNew() {
+  get timeLimit(): Promise<number> {
+    return this.getTimeLimit()
+  }
+
+  isTypeNew(): boolean {
     return this.type === CardType.New
   }
 
-  isTypeLearn() {
+  isTypeLearn(): boolean {
     return this.type === CardType.Learn
   }
 
-  isTypeReview() {
+  isTypeReview(): boolean {
     return this.type === CardType.Review
   }
 
-  isTypeRelearning() {
+  isTypeRelearning(): boolean {
     return this.type === CardType.Relearning
   }
 }
