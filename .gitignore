@@ -8,3 +8,5 @@ dist-ssr
 collection.anki2
 .eslintcache
 .stylelintcache
+coverage
+.nyc_output
