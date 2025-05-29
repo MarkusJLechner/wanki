@@ -18,8 +18,12 @@ export type Database =
   | 'models'
   | 'decks'
 
+export interface BaseTableType extends Record<string, unknown> {
+  save: () => Promise<void>
+}
+
 // Define interfaces for each table
-interface Card {
+interface Card extends BaseTableType {
   id?: number
   nid?: number
   did?: number
@@ -40,7 +44,7 @@ interface Card {
   data?: string
 }
 
-interface Col {
+export interface Col extends BaseTableType {
   id?: number
   crt?: number
   mod?: number
@@ -52,18 +56,18 @@ interface Col {
   conf?: Configuration
 }
 
-interface Tag {
+interface Tag extends BaseTableType {
   id?: number
   tag?: string[]
 }
 
-interface Grave {
+interface Grave extends BaseTableType {
   usn?: number
   oid?: number
   type?: number
 }
 
-interface Note {
+interface Note extends BaseTableType {
   id?: number
   guid?: string
   mid?: number
@@ -77,7 +81,7 @@ interface Note {
   data?: string
 }
 
-interface Revlog {
+interface Revlog extends BaseTableType {
   id?: number
   cid?: number
   usn?: number
@@ -154,7 +158,7 @@ interface Model {
   latexPre?: string
 }
 
-interface Deck {
+interface Deck extends BaseTableType {
   id?: number
   terms?: Record<string, unknown>
   separate?: boolean

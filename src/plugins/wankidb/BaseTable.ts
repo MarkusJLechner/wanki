@@ -2,14 +2,14 @@
 
 import { Database, wankidb } from '@/plugins/wankidb/db'
 
-export class BaseTable {
+export class BaseTable<COLUMNS extends string[] = string[]> {
   tableName: Database
-  tableColumns: string[]
-  loadPromise?: Promise<BaseTable>
+  tableColumns: COLUMNS
+  loadPromise?: Promise<BaseTable<COLUMNS>>
 
   constructor(
     tableName: Database,
-    tableColumns: string[],
+    tableColumns: COLUMNS,
     load?: Record<string, unknown>,
   ) {
     this.tableName = tableName
@@ -21,7 +21,7 @@ export class BaseTable {
     return this
   }
 
-  async load(get: Record<string, unknown>): Promise<BaseTable> {
+  async load(get: Record<string, unknown>): Promise<BaseTable<COLUMNS>> {
     if (!this.tableName) {
       throw new Error('No table name defined')
     }
@@ -46,7 +46,7 @@ export class BaseTable {
     )
   }
 
-  async save(): Promise<BaseTable> {
+  async save(): Promise<BaseTable<COLUMNS>> {
     await wankidb[this.tableName].put(this.getObj())
     return this
   }

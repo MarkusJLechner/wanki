@@ -296,6 +296,9 @@ export class Card extends BaseTable {
       if (!note) {
         return []
       }
+      if (!note.flds) {
+        throw new Error('No fields')
+      }
       const noteFields = note.flds.split('\u001f')
       if (!model?.flds) {
         return []

@@ -1,4 +1,4 @@
-import { wankidb } from '@/plugins/wankidb/db'
+import { Col, wankidb } from '@/plugins/wankidb/db'
 
 export async function cardDeckConfig(
   card: Record<string, unknown>,
@@ -18,23 +18,29 @@ export async function deckConfig(
 
   const configId = +(deck.conf || 1)
 
-  return wankidb.dconf.get({ id: configId }) as Promise<Record<string, unknown>>
+  return wankidb.dconf.get({ id: configId }) as unknown as Promise<
+    Record<string, unknown>
+  >
 }
 
 export async function getCol(): Promise<Record<string, unknown>> {
-  return wankidb.col.get({ id: 1 }) as Promise<Record<string, unknown>>
+  return wankidb.col.get({ id: 1 }) as unknown as Promise<
+    Record<string, unknown>
+  >
 }
 
 export async function getColKey<T>(
   key?: string,
   fallback?: T,
-): Promise<T | Record<string, unknown>> {
+): Promise<T | Col> {
   const col = await wankidb.col.get({ id: 1 })
+
   if (!col) {
     console.error('No collection found')
     return fallback as T
   }
-  return key ? ((col[key] ?? fallback) as T) : (col as Record<string, unknown>)
+
+  return key ? ((col[key as keyof typeof col] ?? fallback) as T) : col
 }
 
 export async function creationTimestamp(): Promise<number> {
@@ -56,7 +62,7 @@ export async function getConf<T>(
     console.error('No collection found')
     return fallback as T
   }
-  const conf = col.conf as Record<string, unknown>
+  const conf = col.conf as unknown as Record<string, unknown>
   return key ? ((conf[key] ?? fallback) as T) : conf
 }
 
@@ -69,7 +75,7 @@ export async function setConf<T>(
     throw new Error('No collection found or conf is undefined')
   }
 
-  const conf = col.conf as Record<string, unknown>
+  const conf = col.conf as unknown as Record<string, unknown>
   conf[key] = value
 
   await col.save()
@@ -77,5 +83,7 @@ export async function setConf<T>(
 }
 
 export function getDecks(): Promise<Record<string, unknown>[]> {
-  return wankidb.decks.toArray() as Promise<Record<string, unknown>[]>
+  return wankidb.decks.toArray() as unknown as Promise<
+    Record<string, unknown>[]
+  >
 }
