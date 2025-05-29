@@ -18,13 +18,7 @@
 import { computed } from 'vue'
 import Spacer from '@/components/Spacer.vue'
 import Button from '@/components/Button.vue'
-
-interface Action {
-  type?: string
-  text?: string | (() => string)
-  emit?: string
-  [key: string]: any
-}
+import type { Action } from '@/components/ButtonActions'
 
 interface Props {
   confirm?: boolean | string
@@ -100,11 +94,14 @@ const canAction = (action: Action): boolean => {
   return true
 }
 
-const getValue = (obj: any): any => {
-  return typeof obj === 'function' ? obj() : obj
+const getValue = (
+  obj: unknown,
+): string | number | boolean | object | null | undefined => {
+  return typeof obj === 'function' ? (obj as () => string)() : obj
 }
 
-const getComponent = (action: Action): any => {
+// Using a more generic component type
+const getComponent = (action: Action): { __name: string } => {
   return action.type === 'spacer' ? Spacer : Button
 }
 

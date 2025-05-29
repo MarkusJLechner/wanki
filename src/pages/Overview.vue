@@ -194,7 +194,7 @@ async function updateDeckList(): Promise<void> {
   })
 
   const mapper: Record<string, any> = {}
-  let root = { children: [] }
+  const root = { children: [] }
 
   for (const deck of decks.value) {
     let splits = deck.name.split('::'),

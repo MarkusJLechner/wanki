@@ -39,7 +39,7 @@
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
             class="grow overflow-y-auto"
-            :class="{ 'p-4': !noGutters, [contentClass]: !!contentClass }"
+            :class="{ 'p-4': !noGutters, ['' + contentClass]: !!contentClass }"
           >
             <slot />
           </div>
@@ -65,18 +65,13 @@ import { ref, watch, onMounted } from 'vue'
 import ButtonActions from '@/components/ButtonActions.vue'
 import { modalOpened } from '@/store/globalstate.ts'
 import { onBeforeRouteLeave } from 'vue-router'
-
-interface Action {
-  text: string
-  value: string | number
-  [key: string]: any
-}
+import type { Action } from '@/components/ButtonActions'
 
 interface Props {
   modelValue?: boolean
   loading?: boolean
   title?: string
-  cancelText?: string | Function
+  cancelText?: string | (() => string)
   noGutters?: boolean
   confirm?: boolean | string
   contentClass?: string
@@ -131,6 +126,7 @@ onMounted(() => {
   })
 })
 
+// This function is exported for programmatic modal opening
 const open = () => {
   emit('open')
   emit('update:modelValue', true)
@@ -155,7 +151,9 @@ const closeModal = () => {
   show.value = false
 }
 
-const onAction = (action: Action) => {
+const onAction = (action: Action): void => {
   emit('click:action', action)
 }
+
+defineExpose({ open, closeModal })
 </script>

@@ -154,7 +154,7 @@ function parseTemplate(templateString: string, fields: any[]) {
 
   const regex = /{{(?<field>.*?)}}/gm
   let m
-  let matches = []
+  const matches = []
   while ((m = regex.exec(templateString)) !== null) {
     if (m.index === regex.lastIndex) {
       regex.lastIndex++

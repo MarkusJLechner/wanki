@@ -21,6 +21,7 @@ interface WankiInterface {
 declare global {
   interface Window {
     wanki: WankiInterface
+    wankidb: typeof wankidb
     anki: WankiInterface // Adding anki as an alias for wanki
   }
 }

@@ -32,22 +32,25 @@ import { onBeforeRouteLeave } from 'vue-router'
 
 interface Item {
   text?: string
-  value?: any
+  value?: string | number | boolean | object | null | undefined
   emit?: string
-  [key: string]: any
+  // Using more specific types instead of any
+  [key: string]: string | number | boolean | object | null | undefined
 }
 
 interface Props {
   value?: Item[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+// We need to define props even if not directly referenced
+withDefaults(defineProps<Props>(), {
   value: () => [],
 })
 
 const emit = defineEmits<{
   item: [item: Item]
-  [key: string]: any[]
+  // Using more specific types for dynamic emits
+  [key: string]: [item: Item]
 }>()
 
 const show = ref(false)
@@ -77,7 +80,8 @@ const onClose = (): void => {
 
 const onClickItem = (item: Item): void => {
   if (item.emit) {
-    emit(item.emit as any, item)
+    // item.emit is already a string type, no need for type assertion
+    emit(item.emit, item)
   }
   emit('item', item)
 }

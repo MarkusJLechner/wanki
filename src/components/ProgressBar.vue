@@ -106,7 +106,7 @@ const computedColor = computed((): ColorType => {
   if (!inProgress.value) {
     return 'green'
   }
-  return props.color as ColorType
+  return props.color
 })
 </script>
 

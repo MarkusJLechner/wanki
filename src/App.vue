@@ -2,7 +2,10 @@
   <main class="h-full bg-gray-200 text-lg dark:bg-gray-600 dark:text-white">
     <Toasts />
     <router-view v-slot="{ Component, route }">
-      <transition appear :name="route.meta.transition || transitionName">
+      <transition
+        appear
+        :name="(route.meta.transition as string | undefined) || transitionName"
+      >
         <keep-alive include="Overview">
           <component
             :is="Component"
@@ -26,14 +29,15 @@ import Toasts from '@/components/Toasts.vue'
 
 const router = useRouter()
 const transitionName = ref('fade')
-let prevHeight = ref('')
+const prevHeight = ref('')
 
 // Initialize storage
 const initStorage = async () => {
   await persist()
 }
 
-// Transition methods
+// Transition methods - currently not used but kept for future implementation
+// These methods will be used when implementing custom transitions
 const beforeLeave = (element: HTMLElement) => {
   prevHeight.value = getComputedStyle(element).height
 }
@@ -77,8 +81,7 @@ onBeforeMount(() => {
 
 // Setup on component mount
 onMounted(() => {
-  initStorage()
-  // @ts-ignore - Adding wankidb to window
+  void initStorage()
   window.wankidb = wankidb
 
   const htmlClasses = document.querySelector('html')?.classList
@@ -98,6 +101,8 @@ onMounted(() => {
     }
   }
 })
+
+defineExpose({ afterEnter, enter, beforeLeave })
 </script>
 
 <style scoped>

@@ -49,7 +49,7 @@ interface ButtonItem {
   href?: string
 }
 
-const props = defineProps<{
+defineProps<{
   modelValue: ButtonItem[]
 }>()
 
@@ -63,7 +63,9 @@ const onClick = () => {
   }
 }
 
-const onClickItem = (item: ButtonItem) => {
+// Parameter is required for type safety but not used in the function body
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const onClickItem = (_item: ButtonItem) => {
   onClose()
 }
 
