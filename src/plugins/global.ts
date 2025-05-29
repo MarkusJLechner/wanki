@@ -21,7 +21,7 @@ interface TimerOptions {
   runOnStart?: boolean
 }
 
-interface Timer {
+export interface Timer {
   start: () => void
   pause: () => void
   set: (duration: number) => void

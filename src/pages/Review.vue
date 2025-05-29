@@ -58,12 +58,11 @@ import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import ButtonOptions from '@/components/ButtonOptions.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ButtonsReview from '@/components/ButtonsReview.vue'
-import { createTimer } from '@/plugins/global'
+import { createTimer, Timer } from '@/plugins/global'
 import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
-import { addToast } from '@/store/globalstate'
 import { wankidb } from '@/plugins/wankidb/db'
-import { ToastType, CardType, QueueType } from '@/plugins/conts'
+import { CardType, QueueType } from '@/plugins/conts'
 import { answerCard } from '@/plugins/fsrs'
 import { getNextCard, getDueCounts } from '@/plugins/reviewer'
 import ReviewDebug from '@/components/ReviewDebug.vue'
@@ -77,7 +76,7 @@ const deckid = ref(1)
 const deck = ref(null)
 const card = ref(null)
 const showAnswer = ref(false)
-const timer = ref(null)
+const timer = ref<Timer | null>(null)
 const timerText = ref('00:00')
 const timerDuration = ref(0)
 const remaining = ref([0, 0, 0])
@@ -162,9 +161,9 @@ void initializeData()
 
 // Lifecycle hooks
 onMounted(() => {
-  loadNextCard()
-  addToast({ type: ToastType.info, text: 'Started review' })
-  timer.value.start()
+  void loadNextCard()
+  // addToast({ type: ToastType.info, text: 'Started review' })
+  timer.value?.start()
 })
 
 onUnmounted(() => {

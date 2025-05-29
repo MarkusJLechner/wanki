@@ -69,6 +69,8 @@ export default defineConfig([
     rules: {
       'vue/no-multiple-template-root': 'off',
       ...tsPlugin.configs['recommended'].rules,
+
+      '@typescript-eslint/no-unsafe-call': 'off',
     },
   },
 
