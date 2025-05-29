@@ -49,6 +49,7 @@ export default defineConfig([
     },
   },
 
+  // Apply the recommended Vue rules
   {
     files: ['**/*.vue'],
     languageOptions: {
@@ -67,8 +68,25 @@ export default defineConfig([
     },
     rules: {
       'vue/no-multiple-template-root': 'off',
+      ...tsPlugin.configs['recommended'].rules,
     },
   },
+
+  // Apply the recommended type-checked rules to Vue files
+  ...tsEslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        ...parserOptions,
+        parser: tsParser,
+        project: ['./tsconfig.json', './tsconfig.node.json'],
+        tsconfigRootDir: __dirname,
+        extraFileExtensions: ['.vue'],
+      },
+    },
+  })),
 
   {
     files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
