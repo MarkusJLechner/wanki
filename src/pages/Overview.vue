@@ -15,6 +15,12 @@
 
     <ButtonFloating :model-value="optionsFloating" />
 
+    <div
+      class="fixed bottom-2.5 left-2.5 z-10 text-[0.7rem] text-inherit opacity-60"
+    >
+      Build: {{ buildDate }}
+    </div>
+
     <MainContent
       v-keep-scroll="'overview'"
       :pull-to-refresh="() => pullToRefresh()"
@@ -114,6 +120,9 @@ import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
 import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+
+// Build date from Vite environment variable
+const buildDate = __BUILD_DATE__ as string
 
 const router = useRouter()
 

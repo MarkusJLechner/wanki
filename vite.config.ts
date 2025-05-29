@@ -5,6 +5,7 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
+const buildDate = new Date().toISOString().replace('T', ' ').slice(0, 16)
 
 const resolve = (dir: string): string => {
   return path.resolve(dirname, dir)
@@ -30,5 +31,8 @@ export default defineConfig({
   plugins: [vue(), tailwindcss()],
   build: {
     target: ['last 2 versions'],
+  },
+  define: {
+    __BUILD_DATE__: JSON.stringify(buildDate),
   },
 })
