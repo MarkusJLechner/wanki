@@ -97,11 +97,139 @@ const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),
 )
 
+interface RadioItem {
+  /**
+   * Display text for the radio option
+   */
+  text: string
+  /**
+   * Value associated with the radio option
+   */
+  value: string | number
+}
+
+interface ListItemRadio {
+  /**
+   * Title displayed in the radio modal
+   */
+  title: string
+  /**
+   * Storage key for saving the selected value
+   */
+  key: string
+  /**
+   * Default value when no selection is made
+   */
+  default: string | number
+  /**
+   * Array of radio options to display
+   */
+  items: Array<RadioItem>
+}
+
+interface ListItem {
+  /**
+   * Main text displayed for the list item
+   */
+  text?: string
+  /**
+   * Secondary text displayed below the main text
+   */
+  subtext?: string | (() => string)
+  /**
+   * Storage key for toggle state
+   */
+  toggle?: string
+  /**
+   * Default value for toggle
+   */
+  toggleDefault?: boolean
+  /**
+   * Icon class to display before the text
+   */
+  icon?: string | (() => string)
+  /**
+   * Type of list item (e.g., 'textfield')
+   */
+  kind?: string
+  /**
+   * Storage key for item value
+   */
+  key?: string
+  /**
+   * Placeholder text for input fields
+   */
+  placeholder?: string
+  /**
+   * Visual type of the item (e.g., 'seperator')
+   */
+  type?: string
+  /**
+   * Title for modals triggered by this item
+   */
+  title?: string
+  /**
+   * Radio configuration for this item
+   */
+  radio?: ListItemRadio
+  /**
+   * Boolean value or function returning boolean
+   */
+  boolean?: boolean | (() => boolean)
+  /**
+   * Loading state indicator
+   */
+  loading?: boolean | (() => boolean)
+  /**
+   * Custom component to render
+   */
+  component?: any
+  /**
+   * CSS class to apply to the item
+   */
+  class?: string
+  /**
+   * Inline styles to apply to the item
+   */
+  style?: any
+  /**
+   * Function called when item is clicked
+   */
+  click?: (item: ListItem) => void
+  /**
+   * Route to navigate to when clicked
+   */
+  route?: string
+  /**
+   * Query parameters for route navigation
+   */
+  routeQuery?: Record<string, string>
+  /**
+   * Function to dispatch when item is clicked
+   */
+  dispatch?: (item: ListItem) => void
+}
+
 interface Props {
-  value: Array<any>
+  /**
+   * Array of list items to display
+   */
+  value: Array<ListItem>
+  /**
+   * Whether to remove padding around the list
+   */
   noGutters?: boolean
+  /**
+   * Whether to use compact spacing for list items
+   */
   dense?: boolean
+  /**
+   * Whether to hide separators between list items
+   */
   noSeparation?: boolean
+  /**
+   * Property name to use for item text
+   */
   itemTextKey?: string
 }
 
@@ -114,19 +242,19 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  item: [item: any]
-  'long-press': [item: any]
+  item: [item: ListItem]
+  'long-press': [item: ListItem]
 }>()
 const router = useRouter()
 
-const radio = ref(null)
-const textfield = ref(null)
+const radio = ref<ListItemRadio | null>(null)
+const textfield = ref<ListItem | null>(null)
 
-const isAnyLoading = () => {
+const isAnyLoading = (): string | null => {
   return props.value.some((v) => callFn(v, 'loading')) ? 'click' : null
 }
 
-const onLongPress = (item) => {
+const onLongPress = (item: ListItem): void => {
   if (isAnyLoading()) {
     return
   }
@@ -134,15 +262,15 @@ const onLongPress = (item) => {
   emit('long-press', item)
 }
 
-const getIcon = (item) => {
+const getIcon = (item: ListItem): string | undefined => {
   return callFn(item, 'icon')
 }
 
-const getText = (item) => {
+const getText = (item: ListItem): string | undefined => {
   return callFn(item, props.itemTextKey)
 }
 
-const getSubText = (item) => {
+const getSubText = (item: ListItem): string | undefined => {
   if (item.radio && item.radio.key) {
     const key = refstorage.get(item.radio.key, item.radio.default)
     return item.radio.items.find((item) => item.value === key)?.text
@@ -151,19 +279,19 @@ const getSubText = (item) => {
   return callFn(item, 'subtext')
 }
 
-const getBoolean = (item) => {
+const getBoolean = (item: ListItem): boolean => {
   if (item.toggle) {
     return !!refstorage.get(item.toggle)
   }
 
-  return callFn(item, 'boolean')
+  return !!callFn(item, 'boolean')
 }
 
-const getValueText = (item) => {
+const getValueText = (item: ListItem): any => {
   return refstorage.get(item.key)
 }
 
-const hasBoolean = (item) => {
+const hasBoolean = (item: ListItem): boolean => {
   if (item.toggle) {
     return true
   }
@@ -171,20 +299,21 @@ const hasBoolean = (item) => {
   return typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
 }
 
-const hasText = (item) => {
+const hasText = (item: ListItem): boolean => {
   if (item.kind && item.kind === 'textfield') {
     return true
   }
+  return false
 }
 
-const callFn = (item, key) => {
+const callFn = (item: ListItem, key: string): any => {
   if (typeof item[key] === 'function') {
     return item[key]()
   }
   return item[key]
 }
 
-const onClick = (item) => {
+const onClick = (item: ListItem): void => {
   if (isAnyLoading()) {
     return
   }
