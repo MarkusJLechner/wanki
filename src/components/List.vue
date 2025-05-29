@@ -76,6 +76,7 @@
   />
 
   <ModalTextfield
+    confirm
     :model-value="!!textfield"
     :title="textfield?.title"
     :storage-key="textfield?.key"
@@ -83,6 +84,7 @@
     :label="textfield?.label"
     :placeholder="textfield?.placeholder"
     @close="textfield = null"
+    @confirm="onConfirm(textfield)"
   />
 </template>
 
@@ -249,6 +251,11 @@ const router = useRouter()
 
 const radio = ref<ListItemRadio | null>(null)
 const textfield = ref<ListItem | null>(null)
+
+function onConfirm(item: ListItem | null): void {
+  // tbd
+  console.log(item)
+}
 
 const isAnyLoading = (): string | null => {
   return props.value.some((v) => callFn(v, 'loading')) ? 'click' : null
