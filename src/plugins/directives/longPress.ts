@@ -1,4 +1,5 @@
 import { DirectiveBinding, ObjectDirective } from 'vue'
+import { vibrate } from '@/plugins/global'
 
 const PRESS_TIMEOUT = 500
 
@@ -46,6 +47,7 @@ export default {
             return
           }
           onLongPress = true
+          vibrate()
           value(e)
         }, PRESS_TIMEOUT)
       }
