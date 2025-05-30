@@ -24,7 +24,7 @@ import List from '@/components/List.vue'
 interface Item {
   value: string
   selected?: boolean
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface Props {

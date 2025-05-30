@@ -13,7 +13,7 @@ import List from '@/components/List.vue'
 
 interface ListItem {
   // Define the structure of your list items here
-  [key: string]: any
+  [key: string]: unknown
 }
 
 const listItems = ref<ListItem[]>([])

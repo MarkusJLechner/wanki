@@ -39,7 +39,7 @@ interface Props {
   accept?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   accept: '',
 })
 

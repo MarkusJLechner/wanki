@@ -36,7 +36,7 @@ interface Props {
   autocomplete?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   modelValue: '',
   label: '',
   disabled: false,
