@@ -37,3 +37,13 @@ if (!import.meta.hot) {
     void navigator.serviceWorker.register('/service-worker.js')
   }
 }
+
+// Listen for the beforeinstallprompt event to automatically trigger the browser's installation dialog
+// .prompt() must be called with a user gesture. Better use a component
+// window.addEventListener('beforeinstallprompt', (event: Event) => {
+//   event.preventDefault()
+//
+//   if ('prompt' in event) {
+//     void (event as { prompt: () => Promise<void> }).prompt()
+//   }
+// })
