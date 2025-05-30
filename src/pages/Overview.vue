@@ -120,6 +120,8 @@ import ButtonIconReload from '@/components/ButtonIconReload.vue'
 import ButtonFloating from '@/components/ButtonFloating.vue'
 import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+import { getDueCounts } from '@/plugins/reviewer'
+import { Deck } from 'plugins/wankidb/types.ts'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__
@@ -136,8 +138,8 @@ const showModalDelete = ref(false)
 const showModalRename = ref(false)
 const loadingOnRename = ref(false)
 const loadingOnExport = ref(false)
-const inputRename = ref('')
-const modalOptionsItem = ref<any>(null)
+const inputRename = ref<string>('')
+const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([
   {
     text: 'Get shared deck',
@@ -196,17 +198,23 @@ function pullToRefresh(): void {
 
 async function updateDeckList(): Promise<void> {
   const deckArray = await wankidb.decks.toArray()
-  decks.value = deckArray.map((deck: any) => {
-    return {
-      text: deck.name.split('::'),
-      ...deck,
-    }
-  })
+  const deckData = await Promise.all(
+    deckArray.map(async (deck: any) => {
+      const [n, r, l] = await getDueCounts(deck.id)
+      return {
+        text: deck.name.split('::'),
+        ...deck,
+        newToday: [deck.newToday?.[0] ?? 0, n],
+        revToday: [deck.revToday?.[0] ?? 0, r],
+        lrnToday: [deck.lrnToday?.[0] ?? 0, l],
+      }
+    }),
+  )
 
   const mapper: Record<string, any> = {}
   const root = { children: [] }
 
-  for (const deck of decks.value) {
+  for (const deck of deckData) {
     let splits = deck.name.split('::'),
       path = ''
 
@@ -214,7 +222,12 @@ async function updateDeckList(): Promise<void> {
       path += `${id}`
 
       if (!mapper[path]) {
-        const o = { id, deck }
+        const o: any = { id, deck }
+        if (i === splits.length - 1) {
+          o.newToday = deck.newToday
+          o.revToday = deck.revToday
+          o.lrnToday = deck.lrnToday
+        }
         mapper[path] = o // set the new object with unique path
         parent.children = parent.children || []
         parent.children.push(o)
