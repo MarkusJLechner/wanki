@@ -6,6 +6,16 @@ vi.mock('../src/plugins/wankidb/db', () => {
   return {
     wankidb: {
       revlog: { add: vi.fn().mockResolvedValue(undefined) },
+      decks: {
+        get: vi.fn().mockResolvedValue({
+          newToday: [0, 0],
+          revToday: [0, 0],
+          save: vi.fn().mockResolvedValue(undefined),
+        }),
+      },
+      col: {
+        get: vi.fn().mockResolvedValue({ crt: Date.now() / 1000, conf: {} }),
+      },
     },
   }
 })

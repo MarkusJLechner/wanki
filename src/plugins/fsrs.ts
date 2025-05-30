@@ -109,9 +109,32 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
   const fsrsCard = fromCard(card)
 
   const { card: nextCard, log } = scheduler.next(fsrsCard, now, ease as Grade)
+
+  const originalType = card.type
   updateCard(card, nextCard)
 
   await card.save()
+
+  const deck = await wankidb.decks.get({ id: card.did })
+  if (deck) {
+    const { today } = await collectionCreatedAt()
+    deck.newToday = deck.newToday ?? [today, 0]
+    deck.revToday = deck.revToday ?? [today, 0]
+    if (deck.newToday[0] !== today) {
+      deck.newToday[0] = today
+      deck.newToday[1] = 0
+    }
+    if (deck.revToday[0] !== today) {
+      deck.revToday[0] = today
+      deck.revToday[1] = 0
+    }
+    if (originalType === CardType.New) {
+      deck.newToday[1] += 1
+    } else {
+      deck.revToday[1] += 1
+    }
+    await deck.save()
+  }
 
   let timeTaken = 0
   if (typeof card.timeTaken !== 'undefined') {

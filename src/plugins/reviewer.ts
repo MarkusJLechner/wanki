@@ -69,8 +69,39 @@ export async function getNextCard(
   dueLearns.sort(sortFn)
   dueReviews.sort(sortFn)
   newCards.sort(sortFn)
+  let next = dueLearns[0] || dueReviews[0] || null
 
-  const next = dueLearns[0] || dueReviews[0] || newCards[0] || null
+  if (!next && newCards[0]) {
+    const deck = await wankidb.decks.get({ id: deckId })
+    const conf = await deckConfig(deckId)
+
+    let allowNew = true
+    if (deck && conf) {
+      const newToday = deck.newToday || [0, 0]
+      const revToday = deck.revToday || [0, 0]
+
+      if (newToday[0] !== today) {
+        newToday[1] = 0
+      }
+      if (revToday[0] !== today) {
+        revToday[1] = 0
+      }
+
+      let newLimit = (conf.new?.perDay ?? 0) - newToday[1]
+      if (!conf.new?.ignoreReviewLimit) {
+        const revLimit = (conf.rev?.perDay ?? 0) - revToday[1]
+        if (revLimit <= 0) {
+          newLimit = 0
+        }
+      }
+      allowNew = newLimit > 0
+    }
+
+    if (allowNew) {
+      next = newCards[0]
+    }
+  }
+
   if (next && typeof next.startTimer === 'function') {
     next.startTimer()
   }
@@ -131,8 +162,11 @@ export async function getDueCounts(
       revToday[1] = 0
     }
 
-    const newLimit = Math.max(0, (conf.new?.perDay ?? 0) - newToday[1])
     const revLimit = Math.max(0, (conf.rev?.perDay ?? 0) - revToday[1])
+    let newLimit = Math.max(0, (conf.new?.perDay ?? 0) - newToday[1])
+    if (!conf.new?.ignoreReviewLimit && revLimit <= 0) {
+      newLimit = 0
+    }
     newCount = Math.min(newCount, newLimit)
     reviewCount = Math.min(reviewCount, revLimit)
   }

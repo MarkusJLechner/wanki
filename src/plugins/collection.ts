@@ -17,9 +17,19 @@ export async function deckConfig(
   }
 
   const configId = +(deck.conf || 1)
+  const col = await wankidb.col.get({ id: 1 })
+  if (col && col.dconf) {
+    const conf = (col.dconf as Record<string, Record<string, unknown>>)[
+      String(configId)
+    ]
+    if (conf) {
+      return conf
+    }
+  }
 
-  return wankidb.dconf.get({ id: configId }) as unknown as Promise<
-    Record<string, unknown>
+  return (await wankidb.dconf.get({ id: configId })) as unknown as Record<
+    string,
+    unknown
   >
 }
 

@@ -79,6 +79,8 @@ export interface DConfNew {
   order: number
   perDay: number
   separate: boolean
+  /** Whether new cards should ignore the daily review limit */
+  ignoreReviewLimit?: boolean
 }
 
 export interface DConfRev {
