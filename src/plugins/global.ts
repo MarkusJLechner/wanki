@@ -37,7 +37,7 @@ export function createTimer({
   let paused = !runOnStart
   let minutes: string | number
   let seconds: string | number
-  let interval: number | null = null
+  let interval: ReturnType<typeof setInterval> | null = null
 
   const set = (duration: number): void => {
     interval = setInterval(function () {
