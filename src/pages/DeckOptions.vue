@@ -27,6 +27,7 @@ import TheHeader from '@/components/TheHeader.vue'
 import MainContent from '@/components/MainContent.vue'
 import Group from '@/components/Group.vue'
 import List from '@/components/List.vue'
+import { ListItem } from '@/components/List'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,35 +55,13 @@ const lapseActionItems = [
   { text: 'Suspend card', value: Leech.Suspend },
 ]
 
-interface ListItem {
-  text: string
-  subtext?: string
-  toggle?: string
-  toggleDefault?: boolean
-  icon?: string
-  kind?: string
-  key?: string
-  placeholder?: string
-  type?: string
-  title?: string
-  radio?: {
-    title: string
-    key: string
-    default: string | number
-    items: Array<{
-      text: string
-      value: string | number
-    }>
-  }
-  click?: (item: any) => void
-}
-
 const listItemsDailyLimits: ListItem[] = [
   {
     text: 'New cards/day',
     kind: 'textfield',
     type: 'number',
-    key: 'deck.options.new.perDay',
+    storeLocal: 'deck.options.new.perDay',
+    storeDb: 'col.dconf.test',
     title: 'New cards/day',
     click: () => {
       if (dconf.value) {
@@ -96,7 +75,7 @@ const listItemsDailyLimits: ListItem[] = [
     text: 'Maximum reviews/day',
     kind: 'textfield',
     type: 'number',
-    key: 'deck.options.rev.perDay',
+    storeLocal: 'deck.options.rev.perDay',
     title: 'Maximum reviews/day',
     click: () => {
       if (dconf.value) {
@@ -126,7 +105,7 @@ const listItemsNewCards: ListItem[] = [
     text: 'Learning steps',
     kind: 'textfield',
     placeholder: 'e.g. 1m 10m 1h 4d',
-    key: 'deck.options.new.steps',
+    storeLocal: 'deck.options.new.steps',
     title: 'Learning steps',
     click: () => {
       if (dconf.value) {
@@ -159,7 +138,7 @@ const listItemsLapses: ListItem[] = [
     text: 'Relearning steps',
     kind: 'textfield',
     placeholder: 'e.g. 10m 1h',
-    key: 'deck.options.lapse.steps',
+    storeLocal: 'deck.options.lapse.steps',
     title: 'Relearning steps',
     click: () => {
       if (dconf.value) {
@@ -173,7 +152,7 @@ const listItemsLapses: ListItem[] = [
     text: 'Leech threshold',
     kind: 'textfield',
     type: 'number',
-    key: 'deck.options.lapse.leechThreshold',
+    storeLocal: 'deck.options.lapse.leechThreshold',
     title: 'Leech threshold',
     click: () => {
       if (dconf.value) {

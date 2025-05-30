@@ -28,23 +28,7 @@ import Group from '@/components/Group.vue'
 import MainContent from '@/components/MainContent.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
-
-interface ListItem {
-  text: string
-  subtext?: string
-  toggle?: string
-  toggleDefault?: boolean
-  icon?: string
-  radio?: {
-    title: string
-    key: string
-    default: string
-    items: Array<{
-      text: string
-      value: string
-    }>
-  }
-}
+import { ListItem } from 'components/List.ts'
 
 const listItemsSync: ListItem[] = [
   {

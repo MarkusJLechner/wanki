@@ -79,7 +79,7 @@
     confirm
     :model-value="!!textfield"
     :title="textfield?.title"
-    :storage-key="textfield?.key"
+    :storage-key="textfield?.storeLocal"
     :type="textfield?.type"
     :label="textfield?.label"
     :placeholder="textfield?.placeholder"
@@ -89,153 +89,25 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
+import {
+  defineAsyncComponent,
+  ref,
+  watch,
+  watchEffect,
+  onBeforeUnmount,
+} from 'vue'
 import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
 import ModalTextfield from '@/components/ModalTextfield.vue'
+import { wankidb } from '@/plugins/wankidb/db'
+import { ListItem, ListProps, ListItemRadio } from '@/components/List'
 const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),
 )
 
-interface RadioItem {
-  /**
-   * Display text for the radio option
-   */
-  text: string
-  /**
-   * Value associated with the radio option
-   */
-  value: string | number
-}
-
-interface ListItemRadio {
-  /**
-   * Title displayed in the radio modal
-   */
-  title: string
-  /**
-   * Storage key for saving the selected value
-   */
-  key: string
-  /**
-   * Default value when no selection is made
-   */
-  default: string | number
-  /**
-   * Array of radio options to display
-   */
-  items: Array<RadioItem>
-}
-
-interface ListItem {
-  /**
-   * Main text displayed for the list item
-   */
-  text?: string
-  /**
-   * Secondary text displayed below the main text
-   */
-  subtext?: string | (() => string)
-  /**
-   * Storage key for toggle state
-   */
-  toggle?: string
-  /**
-   * Default value for toggle
-   */
-  toggleDefault?: boolean
-  /**
-   * Icon class to display before the text
-   */
-  icon?: string | (() => string)
-  /**
-   * Type of list item (e.g., 'textfield')
-   */
-  kind?: string
-  /**
-   * Storage key for item value
-   */
-  key?: string
-  /**
-   * Placeholder text for input fields
-   */
-  placeholder?: string
-  /**
-   * Visual type of the item (e.g., 'seperator')
-   */
-  type?: string
-  /**
-   * Title for modals triggered by this item
-   */
-  title?: string
-  /**
-   * Radio configuration for this item
-   */
-  radio?: ListItemRadio
-  /**
-   * Boolean value or function returning boolean
-   */
-  boolean?: boolean | (() => boolean)
-  /**
-   * Loading state indicator
-   */
-  loading?: boolean | (() => boolean)
-  /**
-   * Custom component to render
-   */
-  component?: any
-  /**
-   * CSS class to apply to the item
-   */
-  class?: string
-  /**
-   * Inline styles to apply to the item
-   */
-  style?: any
-  /**
-   * Function called when item is clicked
-   */
-  click?: (item: ListItem) => void
-  /**
-   * Route to navigate to when clicked
-   */
-  route?: string
-  /**
-   * Query parameters for route navigation
-   */
-  routeQuery?: Record<string, string>
-  /**
-   * Function to dispatch when item is clicked
-   */
-  dispatch?: (item: ListItem) => void
-}
-
-interface Props {
-  /**
-   * Array of list items to display
-   */
-  value: Array<ListItem>
-  /**
-   * Whether to remove padding around the list
-   */
-  noGutters?: boolean
-  /**
-   * Whether to use compact spacing for list items
-   */
-  dense?: boolean
-  /**
-   * Whether to hide separators between list items
-   */
-  noSeparation?: boolean
-  /**
-   * Property name to use for item text
-   */
-  itemTextKey?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<ListProps>(), {
   value: () => [],
   noGutters: false,
   dense: false,
@@ -251,6 +123,28 @@ const router = useRouter()
 
 const radio = ref<ListItemRadio | null>(null)
 const textfield = ref<ListItem | null>(null)
+
+const storeWatchers = new Map<string, () => void>()
+
+watchEffect(() => {
+  props.value.forEach((item) => {
+    if (
+      item.storeLocal &&
+      item.storeDb &&
+      !storeWatchers.has(item.storeLocal)
+    ) {
+      const stop = watch(refstorage.ref(item.storeLocal), (val) => {
+        void saveToDb(item.storeDb as string, val)
+      })
+      storeWatchers.set(item.storeLocal, stop)
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  storeWatchers.forEach((stop) => stop())
+  storeWatchers.clear()
+})
 
 function onConfirm(item: ListItem | null): void {
   // tbd
@@ -295,7 +189,10 @@ const getBoolean = (item: ListItem): boolean => {
 }
 
 const getValueText = (item: ListItem): any => {
-  return refstorage.get(item.key)
+  if (!item.storeLocal) {
+    return undefined
+  }
+  return refstorage.get(item.storeLocal)
 }
 
 const hasBoolean = (item: ListItem): boolean => {
@@ -318,6 +215,43 @@ const callFn = (item: ListItem, key: string): any => {
     return item[key]()
   }
   return item[key]
+}
+
+async function saveToDb(path: string, value: unknown): Promise<void> {
+  const [table, column, ...keys] = path.split('.')
+  if (table !== 'col') return
+
+  const col = await wankidb.col.get({ id: 1 })
+  if (!col) return
+
+  // todo return
+  return
+
+  let target: any = (col as any)[column]
+  if (keys.length) {
+    if (typeof target === 'string') {
+      try {
+        target = JSON.parse(target)
+      } catch {
+        target = {}
+      }
+    } else if (typeof target !== 'object' || target === null) {
+      target = {}
+    }
+
+    let obj = target
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i]
+      if (obj[k] === undefined) obj[k] = {}
+      obj = obj[k]
+    }
+    obj[keys[keys.length - 1]] = value
+    ;(col as any)[column] = target
+  } else {
+    ;(col as any)[column] = value
+  }
+
+  await col.save()
 }
 
 const onClick = (item: ListItem): void => {

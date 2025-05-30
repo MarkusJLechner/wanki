@@ -14,19 +14,9 @@ import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 import Group from '@/components/Group.vue'
 import { defaultSettings } from '@/plugins/defaultSettings'
+import { ListItem } from 'components/List.ts'
 
-interface AudioItem {
-  text: string
-  subtext: string
-  toggle?: string
-  kind?: string
-  title?: string
-  label?: string
-  placeholder?: string
-  key?: string
-}
-
-const listItemsAudio = ref<AudioItem[]>([
+const listItemsAudio = ref<ListItem[]>([
   {
     text: 'Show native Audio-Controls',
     subtext: 'Native controls have more functionality',
@@ -49,7 +39,7 @@ const listItemsAudio = ref<AudioItem[]>([
     title: 'Audio start delay',
     label: 'Time in ms',
     placeholder: 'Milliseconds',
-    key: defaultSettings.reviewing.autoPlayAudioDelay.key,
+    storeLocal: defaultSettings.reviewing.autoPlayAudioDelay.key,
   },
 ])
 </script>

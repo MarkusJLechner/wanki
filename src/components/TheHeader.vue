@@ -6,7 +6,7 @@
       <ButtonIcon icon="fas fa-arrow-left" @click="onBackButton" />
     </div>
     <slot name="sidepanel">
-      <Sidepanel v-if="!backButton" :items="sidepanel" />
+      <Sidepanel v-if="!backButton" :items="items" />
     </slot>
 
     <slot name="title">
@@ -23,6 +23,7 @@ import ButtonIcon from '@/components/ButtonIcon.vue'
 import Sidepanel from '@/components/Sidepanel.vue'
 import SidepanelHeader from '@/components/SidepanelHeader.vue'
 import { wipeDatabase } from '@/plugins/wankidb/db'
+import { ListItem } from 'components/List.ts'
 
 interface Props {
   title?: string
@@ -45,7 +46,7 @@ const handleWipeDatabase = async () => {
   location.reload()
 }
 
-const sidepanel = [
+const items: (ListItem & { doNotClose?: boolean })[] = [
   {
     component: SidepanelHeader,
     type: 'block',
