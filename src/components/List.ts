@@ -62,7 +62,10 @@ export interface ListItem {
   /**
    * Database path in the form "table.column.path"
    */
-  storeDb?: string
+  storeDb?: {
+    get: () => void
+    save: (value: any) => void
+  }
   /**
    * Placeholder text for input fields
    */

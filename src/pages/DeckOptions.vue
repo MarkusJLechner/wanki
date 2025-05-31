@@ -36,7 +36,7 @@ const deck = ref<any>(null)
 const dconf = ref<any>(null)
 const deckid = ref(1)
 
-const newPerDay = refstorage.ref('deck.options.new.perDay')
+// const newPerDay = refstorage.ref('deck.options.new.perDay')
 const maxReviews = refstorage.ref('deck.options.rev.perDay')
 const ignoreReviewLimit = refstorage.ref('deck.options.new.ignoreReviewLimit')
 const newSteps = refstorage.ref('deck.options.new.steps')
@@ -59,17 +59,16 @@ const listItemsDailyLimits: ListItem[] = [
   {
     text: 'New cards/day',
     kind: 'textfield',
+    label: 'New cards per day',
     type: 'number',
-    storeLocal: 'deck.options.new.perDay',
-    storeDb: 'col.dconf.test',
-    title: 'New cards/day',
-    click: () => {
-      if (dconf.value) {
-        dconf.value.new = dconf.value.new || {}
-        dconf.value.new.perDay = newPerDay.value
-        save()
-      }
+    storeDb: {
+      get: () => dconf.value?.new.perDay,
+      save: (value) => {
+        dconf.value.new.perDay = +value
+        void save()
+      },
     },
+    title: 'New cards/day',
   },
   {
     text: 'Maximum reviews/day',
@@ -212,13 +211,6 @@ async function save() {
   }
 }
 
-watch(newPerDay, (v) => {
-  if (!dconf.value) return
-  dconf.value.new = dconf.value.new || {}
-  dconf.value.new.perDay = +v
-  save()
-})
-
 watch(maxReviews, (v) => {
   if (!dconf.value) return
   dconf.value.rev = dconf.value.rev || {}
@@ -278,7 +270,6 @@ onMounted(async () => {
   dconf.value = await wankidb.dconf.get({ id: deck.value.conf || 1 })
   if (!dconf.value) return
 
-  newPerDay.value = dconf.value.new?.perDay ?? null
   maxReviews.value = dconf.value.rev?.perDay ?? null
   ignoreReviewLimit.value = dconf.value.new?.ignoreReviewLimit ?? false
   newSteps.value = formatSteps(dconf.value.new?.delays || [])

@@ -126,31 +126,12 @@ const textfield = ref<ListItem | null>(null)
 const radioInput = ref<string>('')
 const textfieldInput = ref<string>('')
 
-const storeWatchers = new Map<string, () => void>()
-
-watchEffect(() => {
-  props.value.forEach((item) => {
-    if (
-      item.storeLocal &&
-      item.storeDb &&
-      !storeWatchers.has(item.storeLocal)
-    ) {
-      const stop = watch(refstorage.ref(item.storeLocal), (val) => {
-        void saveToDb(item.storeDb as string, val)
-      })
-      storeWatchers.set(item.storeLocal, stop)
-    }
-  })
-})
-
-onBeforeUnmount(() => {
-  storeWatchers.forEach((stop) => stop())
-  storeWatchers.clear()
-})
-
 function onConfirm(item: ListItem | null, value: string): void {
   if (item && item.storeLocal) {
     refstorage.set(item.storeLocal, value)
+  }
+  if (item?.storeDb) {
+    item.storeDb.save(value)
   }
   textfield.value = null
 }
@@ -193,6 +174,9 @@ const getBoolean = (item: ListItem): boolean => {
 }
 
 const getValueText = (item: ListItem): any => {
+  if (item.storeDb) {
+    return item.storeDb.get()
+  }
   if (!item.storeLocal) {
     return undefined
   }
@@ -221,43 +205,6 @@ const callFn = (item: ListItem, key: string): any => {
   return item[key]
 }
 
-async function saveToDb(path: string, value: unknown): Promise<void> {
-  const [table, column, ...keys] = path.split('.')
-  if (table !== 'col') return
-
-  const col = await wankidb.col.get({ id: 1 })
-  if (!col) return
-
-  // todo return
-  return
-
-  let target: any = (col as any)[column]
-  if (keys.length) {
-    if (typeof target === 'string') {
-      try {
-        target = JSON.parse(target)
-      } catch {
-        target = {}
-      }
-    } else if (typeof target !== 'object' || target === null) {
-      target = {}
-    }
-
-    let obj = target
-    for (let i = 0; i < keys.length - 1; i++) {
-      const k = keys[i]
-      if (obj[k] === undefined) obj[k] = {}
-      obj = obj[k]
-    }
-    obj[keys[keys.length - 1]] = value
-    ;(col as any)[column] = target
-  } else {
-    ;(col as any)[column] = value
-  }
-
-  await col.save()
-}
-
 const onClick = (item: ListItem): void => {
   if (isAnyLoading()) {
     return
@@ -273,6 +220,8 @@ const onClick = (item: ListItem): void => {
   if (item.kind === 'textfield') {
     if (item.storeLocal) {
       textfieldInput.value = refstorage.get(item.storeLocal, '') as string
+    } else if (item.storeDb) {
+      textfieldInput.value = item.storeDb.get() as string
     } else {
       textfieldInput.value = ''
     }
