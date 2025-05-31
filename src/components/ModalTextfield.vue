@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
   confirm: false,
 })
 
-const modelValue = defineModel<string>()
+const modelValue = defineModel<string | number>()
 
 const emit = defineEmits<{
   close: []

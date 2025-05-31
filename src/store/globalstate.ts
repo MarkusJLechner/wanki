@@ -107,6 +107,9 @@ export const refstorage = {
   set: (key: StorageKey, value: unknown): void => {
     vibrate()
 
+    const valueType = refstorage.getDefaultSetting(key)?.valueType
+    value = parseType(value, valueType)
+
     refstorage.init(key, value)
 
     storeItemSubscribers[key].value = value

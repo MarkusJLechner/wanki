@@ -49,6 +49,8 @@ export type StorageKey =
 
 export const defaultSettings: DefaultSettings = {
   darkTheme: true,
+  // to not take this deck key. only for testing. is in wankidb
+  deck: { options: { new: { perDay: { valueType: 'number' } } } },
   general: {
     fetchSync: false,
     automaticSync: false,
