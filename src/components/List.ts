@@ -1,3 +1,5 @@
+import { StorageKey } from 'plugins/defaultSettings.ts'
+
 export interface RadioItem {
   /**
    * Display text for the radio option
@@ -17,7 +19,7 @@ export interface ListItemRadio {
   /**
    * Storage key for saving the selected value
    */
-  key: string
+  key: StorageKey
   /**
    * Default value when no selection is made
    */

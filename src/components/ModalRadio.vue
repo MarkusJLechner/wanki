@@ -1,19 +1,17 @@
 <template>
   <BaseModal
     no-gutters
-    :model-value="modelValue"
+    :model-value="show"
     :title="title"
     @close="$emit('close')"
   >
-    <InputRadio :items="radioItems" :value="computedValue" @item="onItem" />
+    <InputRadio :items="radioItems" :value="modelValue" @item="onItem" />
   </BaseModal>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import BaseModal from '@/components/BaseModal.vue'
 import InputRadio from '@/components/InputRadio.vue'
-import { refstorage } from '@/store/globalstate'
 
 interface RadioItem {
   value: string
@@ -22,33 +20,28 @@ interface RadioItem {
 }
 
 interface Props {
-  modelValue?: boolean
+  show?: boolean
   title?: string
   radioItems?: RadioItem[]
-  defaultValue?: string | null
-  storageKey?: string | null
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: true,
+const modelValue = defineModel<string>()
+
+withDefaults(defineProps<Props>(), {
+  show: true,
   title: '',
   radioItems: () => [],
-  defaultValue: null,
-  storageKey: null,
 })
 
 const emit = defineEmits<{
+  item: [RadioItem]
   close: []
 }>()
 
-const computedValue = computed(() => {
-  return refstorage.get(props.storageKey, props.defaultValue)
-})
-
 function onItem(item: RadioItem): void {
-  if (props.storageKey) {
-    refstorage.set(props.storageKey, item.value)
-  }
+  modelValue.value = item.value
+
+  emit('item', item)
 
   setTimeout(() => {
     emit('close')

@@ -16,15 +16,7 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
-  modelValue?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
-  modelValue: false,
+const modelValue = defineModel<boolean>({
+  default: false,
 })
-
-defineEmits<{
-  'update:modelValue': [value: boolean]
-}>()
 </script>

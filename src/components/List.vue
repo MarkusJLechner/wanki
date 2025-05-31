@@ -67,11 +67,11 @@
   </ul>
 
   <ModalRadio
-    :model-value="!!radio"
+    :show="!!radio"
+    v-model="radioInput"
     :title="radio?.title"
-    :storage-key="radio?.key"
     :radio-items="radio?.items"
-    :default-value="radio?.default"
+    @item="(item) => refstorage.set(radio!.key, item.value)"
     @close="radio = null"
   />
 
@@ -123,6 +123,7 @@ const router = useRouter()
 
 const radio = ref<ListItemRadio | null>(null)
 const textfield = ref<ListItem | null>(null)
+const radioInput = ref<string>('')
 
 const storeWatchers = new Map<string, () => void>()
 
@@ -262,6 +263,7 @@ const onClick = (item: ListItem): void => {
   emit('item', item)
 
   if (item.radio) {
+    radioInput.value = refstorage.get(item.radio.key, item.radio.default)
     radio.value = item.radio
   }
 
