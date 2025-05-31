@@ -77,14 +77,14 @@
 
   <ModalTextfield
     confirm
-    :model-value="!!textfield"
+    :show="!!textfield"
+    v-model="textfieldInput"
     :title="textfield?.title"
-    :storage-key="textfield?.storeLocal"
     :type="textfield?.type"
     :label="textfield?.label"
     :placeholder="textfield?.placeholder"
     @close="textfield = null"
-    @confirm="onConfirm(textfield)"
+    @confirm="(value) => onConfirm(textfield, value)"
   />
 </template>
 
@@ -124,6 +124,7 @@ const router = useRouter()
 const radio = ref<ListItemRadio | null>(null)
 const textfield = ref<ListItem | null>(null)
 const radioInput = ref<string>('')
+const textfieldInput = ref<string>('')
 
 const storeWatchers = new Map<string, () => void>()
 
@@ -147,9 +148,11 @@ onBeforeUnmount(() => {
   storeWatchers.clear()
 })
 
-function onConfirm(item: ListItem | null): void {
-  // tbd
-  console.log(item)
+function onConfirm(item: ListItem | null, value: string): void {
+  if (item && item.storeLocal) {
+    refstorage.set(item.storeLocal, value)
+  }
+  textfield.value = null
 }
 
 const isAnyLoading = (): string | null => {
@@ -268,6 +271,11 @@ const onClick = (item: ListItem): void => {
   }
 
   if (item.kind === 'textfield') {
+    if (item.storeLocal) {
+      textfieldInput.value = refstorage.get(item.storeLocal, '') as string
+    } else {
+      textfieldInput.value = ''
+    }
     textfield.value = item
   }
 

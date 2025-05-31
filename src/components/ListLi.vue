@@ -57,11 +57,11 @@
   </li>
 
   <ModalRadio
-    :model-value="!!radio"
+    :show="!!radio"
+    v-model="radioInput"
     :title="radio?.title"
-    :storage-key="radio?.key"
     :radio-items="radio?.items"
-    :default-value="radio?.default"
+    @item="(item) => refstorage.set(radio!.key, item.value)"
     @close="radio = null"
   />
 </template>
@@ -72,13 +72,14 @@ import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
+import { ListItem, ListItemRadio, RadioItem } from 'components/List.ts'
 
 const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),
 )
 
 interface Props {
-  item: Record<string, any>
+  item: ListItem
   noGutters?: boolean
   dense?: boolean
   noSeparation?: boolean
@@ -100,18 +101,19 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  item: [item: Record<string, any>]
-  'long-press': [item: Record<string, any>]
+  item: [item: ListItem]
+  'long-press': [item: ListItem]
 }>()
 
 const router = useRouter()
-const radio = ref<Record<string, any> | null>(null)
+const radio = ref<ListItemRadio | null>(null)
+const radioInput = ref<string>('')
 
 function isAnyLoading(): string | null {
   return props.isLoading ? 'click' : null
 }
 
-function onLongPress(item: Record<string, any>): void {
+function onLongPress(item: ListItem): void {
   if (isAnyLoading()) {
     return
   }
@@ -119,26 +121,24 @@ function onLongPress(item: Record<string, any>): void {
   emit('long-press', item)
 }
 
-function getIcon(item: Record<string, any>): any {
+function getIcon(item: ListItem): any {
   return callFn(item, 'icon')
 }
 
-function getText(item: Record<string, any>): any {
+function getText(item: ListItem): any {
   return callFn(item, props.itemTextKey)
 }
 
-function getSubText(item: Record<string, any>): any {
+function getSubText(item: ListItem): any {
   if (item.radio && item.radio.key) {
     const key = refstorage.get(item.radio.key, item.radio.default)
-    return item.radio.items.find(
-      (item: Record<string, any>) => item.value === key,
-    )?.text
+    return item.radio.items.find((item: ListItem) => item.value === key)?.text
   }
 
   return callFn(item, 'subtext')
 }
 
-function getBoolean(item: Record<string, any>): boolean {
+function getBoolean(item: ListItem): boolean {
   if (item.toggle) {
     return !!refstorage.get(item.toggle, !!item.toggleDefault)
   }
@@ -146,7 +146,7 @@ function getBoolean(item: Record<string, any>): boolean {
   return callFn(item, 'boolean')
 }
 
-function hasBoolean(item: Record<string, any>): boolean {
+function hasBoolean(item: ListItem): boolean {
   if (item.toggle) {
     return true
   }
@@ -154,14 +154,14 @@ function hasBoolean(item: Record<string, any>): boolean {
   return typeof item.boolean === 'boolean' || typeof item.boolean === 'function'
 }
 
-function callFn(item: Record<string, any>, key: string): any {
+function callFn(item: ListItem, key: string): any {
   if (typeof item[key] === 'function') {
     return item[key]()
   }
   return item[key]
 }
 
-function onClick(item: Record<string, any>): void {
+function onClick(item: ListItem): void {
   if (isAnyLoading()) {
     return
   }
@@ -169,6 +169,7 @@ function onClick(item: Record<string, any>): void {
   emit('item', item)
 
   if (item.radio) {
+    radioInput.value = refstorage.get(item.radio.key, item.radio.default)
     radio.value = item.radio
   }
 
@@ -181,7 +182,7 @@ function onClick(item: Record<string, any>): void {
   }
 
   if (item.route) {
-    router.push({ path: item.route })
+    void router.push({ path: item.route, query: item.routeQuery })
   }
 
   if (item.dispatch) {
