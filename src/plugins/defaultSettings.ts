@@ -26,11 +26,13 @@ interface ReviewingSettings {
 }
 
 export interface DefaultSettings {
+  darkTheme: boolean
   general: GeneralSettings
   reviewing: ReviewingSettings
 }
 
 export const defaultSettings: DefaultSettings = {
+  darkTheme: true,
   general: {
     fetchSync: false,
     automaticSync: false,
@@ -56,4 +58,4 @@ export const defaultSettings: DefaultSettings = {
       default: 600,
     },
   },
-}
+} as const

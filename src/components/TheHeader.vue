@@ -24,6 +24,7 @@ import Sidepanel from '@/components/Sidepanel.vue'
 import SidepanelHeader from '@/components/SidepanelHeader.vue'
 import { wipeDatabase } from '@/plugins/wankidb/db'
 import { ListItem } from 'components/List.ts'
+import { defaultSettings } from 'plugins/defaultSettings.ts'
 
 interface Props {
   title?: string
@@ -61,7 +62,9 @@ const items: (ListItem & { doNotClose?: boolean })[] = [
     doNotClose: true,
     toggle: 'darkTheme',
     icon: () =>
-      refstorage.get('darkTheme', false) ? 'fas fa-sun' : 'fas fa-moon',
+      refstorage.get('darkTheme', defaultSettings.darkTheme)
+        ? 'fas fa-sun'
+        : 'fas fa-moon',
     text: 'Dark mode',
   },
   { icon: 'fas fa-cog', text: 'Settings', route: '/settings/overview' },

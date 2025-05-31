@@ -67,14 +67,15 @@ import { answerCard } from '@/plugins/fsrs'
 import { getNextCard, getDueCounts } from '@/plugins/reviewer'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
+import { Deck } from 'plugins/wankidb/Deck.ts'
 
 const router = useRouter()
 const route = useRoute()
 
 const debug = ref(false)
 const deckid = ref(1)
-const deck = ref(null)
-const card = ref(null)
+const deck = ref<Deck | undefined>(undefined)
+const card = ref(undefined)
 const showAnswer = ref(false)
 const timer = ref<Timer | null>(null)
 const timerText = ref('00:00')
@@ -95,7 +96,9 @@ timer.value = createTimer({
 // Load deck (previously in created hook)
 const initializeData = async () => {
   deckid.value = +(route.query.deckid as string) || 1
-  deck.value = await wankidb.decks.get({ id: deckid.value })
+  deck.value = (await wankidb.decks.get({ id: deckid.value })) as
+    | Deck
+    | undefined
   if (!deck.value) {
     await router.push({ path: '/' })
   }

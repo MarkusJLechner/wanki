@@ -8,37 +8,92 @@ import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
-import * as tsEslint from 'typescript-eslint'
+import { configs as tsConfigs } from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-})
-
-const parserOptions = {
+const baseParserOptions = {
   ecmaVersion: 'latest',
   sourceType: 'module',
 }
+
+const tsParserOptions = {
+  ...baseParserOptions,
+  parser: tsParser,
+  project: ['./tsconfig.json', './tsconfig.node.json'],
+  tsconfigRootDir: __dirname,
+  extraFileExtensions: ['.vue'],
+}
+
+const globalsAll = {
+  ...globals.browser,
+  ...globals.node,
+}
+
+const commonPlugins = {
+  prettier: prettierPlugin,
+}
+
+const tsCommonPlugins = {
+  '@typescript-eslint': tsPlugin,
+}
+
+const tsCommonRules = {
+  '@typescript-eslint/no-explicit-any': 'off',
+  '@typescript-eslint/ban-ts-comment': [
+    'off',
+    {
+      'ts-expect-error': 'allow-with-description',
+      'ts-ignore': 'allow-with-description',
+      'ts-nocheck': true,
+      'ts-check': false,
+      minimumDescriptionLength: 5,
+    },
+  ],
+}
+
+const testRules = {
+  ...tsCommonRules,
+  '@typescript-eslint/no-unsafe-call': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  '@typescript-eslint/require-await': 'off',
+  quotes: 'off',
+}
+
+const tsTypeCheckedVueOverrides = tsConfigs.recommendedTypeChecked.map(
+  (config) => ({
+    ...config,
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: tsParserOptions,
+    },
+    rules: {
+      ...config.rules,
+      ...tsCommonRules,
+    },
+  }),
+)
+
+const tsTypeCheckedOverrides = tsConfigs.recommendedTypeChecked.map(
+  (config) => ({
+    ...config,
+    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
+  }),
+)
 
 export default defineConfig([
   {
     ignores: ['dist/**/*', 'build/**/*.js'],
     languageOptions: {
-      parserOptions,
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
+      parserOptions: baseParserOptions,
+      globals: globalsAll,
     },
-    plugins: {
-      prettier: prettierPlugin,
-    },
+    plugins: commonPlugins,
     rules: {
       ...prettierConfig.rules,
       indent: ['error', 2, { SwitchCase: 1 }],
@@ -49,92 +104,49 @@ export default defineConfig([
     },
   },
 
-  // Apply the recommended Vue rules
   {
     files: ['**/*.vue'],
     languageOptions: {
       parser: vueParser,
-      parserOptions: {
-        ...parserOptions,
-        parser: tsParser,
-        project: ['./tsconfig.json', './tsconfig.node.json'],
-        tsconfigRootDir: __dirname,
-        extraFileExtensions: ['.vue'],
-      },
+      parserOptions: tsParserOptions,
     },
     plugins: {
+      ...tsCommonPlugins,
       vue,
-      '@typescript-eslint': tsPlugin,
     },
     rules: {
       'vue/no-multiple-template-root': 'off',
-      ...tsPlugin.configs['recommended'].rules,
-
-      '@typescript-eslint/no-unsafe-call': 'off',
+      ...tsPlugin.configs.recommended.rules,
+      ...tsCommonRules,
     },
   },
 
-  // Apply the recommended type-checked rules to Vue files
-  ...tsEslint.configs.recommendedTypeChecked.map((config) => ({
-    ...config,
-    files: ['**/*.vue'],
-    languageOptions: {
-      parser: vueParser,
-      parserOptions: {
-        ...parserOptions,
-        parser: tsParser,
-        project: ['./tsconfig.json', './tsconfig.node.json'],
-        tsconfigRootDir: __dirname,
-        extraFileExtensions: ['.vue'],
-      },
-    },
-  })),
+  ...tsTypeCheckedVueOverrides,
 
-  {
-    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
-    languageOptions: {
-      parserOptions,
-    },
-  },
-
-  // Apply the recommended type-checked rules to TypeScript files
-  ...tsEslint.configs.recommendedTypeChecked.map((config) => ({
-    ...config,
-    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
-  })),
-
-  // Additional TypeScript-specific configuration
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     languageOptions: {
       parser: tsParser,
-      parserOptions: {
-        ...parserOptions,
-        project: ['./tsconfig.json', './tsconfig.node.json'],
-        tsconfigRootDir: __dirname,
-        extraFileExtensions: ['.vue'],
-      },
+      parserOptions: tsParserOptions,
     },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
+    plugins: tsCommonPlugins,
     rules: {
       '@typescript-eslint/no-unused-vars': 'error',
+      ...tsCommonRules,
     },
   },
 
-  // Relax rules for test files
+  ...tsTypeCheckedOverrides,
+
+  {
+    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+    languageOptions: {
+      parserOptions: baseParserOptions,
+    },
+  },
+
   {
     files: ['tests/**/*.ts'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/require-await': 'off',
-      quotes: 'off',
-    },
+    rules: testRules,
   },
 ])

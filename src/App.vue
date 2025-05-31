@@ -26,6 +26,7 @@ import { persist } from '@/plugins/idb'
 import { wankidb } from '@/plugins/wankidb/db'
 import BackgroundTask from '@/components/BackgroundTask.vue'
 import Toasts from '@/components/Toasts.vue'
+import { defaultSettings } from 'plugins/defaultSettings.ts'
 
 const router = useRouter()
 const transitionName = ref('fade')
@@ -94,7 +95,7 @@ onMounted(() => {
       }
     })
 
-    if (refstorage.get('darkTheme', true)) {
+    if (refstorage.get('darkTheme', defaultSettings.darkTheme)) {
       htmlClasses.add('dark')
     } else {
       htmlClasses.remove('dark')

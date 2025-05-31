@@ -27,6 +27,7 @@ import IFrameContainer from '@/components/IFrameContainer'
 import { refstorage } from '@/store/globalstate'
 import ReviewMedia from '@/components/ReviewMedia.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+import { defaultSettings } from 'plugins/defaultSettings.ts'
 
 interface Card {
   template: Promise<any>
@@ -57,7 +58,7 @@ const computedSoundList = computed(() => {
 })
 
 const computedDarkTheme = computed(() => {
-  return refstorage.get('darkTheme', true) ? 'dark' : ''
+  return refstorage.get('darkTheme', defaultSettings.darkTheme) ? 'dark' : ''
 })
 
 const computedStyle = computed(() => {

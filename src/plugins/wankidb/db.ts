@@ -3,10 +3,11 @@ import Dexie from 'dexie'
 // import 'dexie-syncable'
 // import './dbSync'
 import { Configuration } from '@/plugins/wankidb/types'
+import { isObject } from 'plugins/utils.ts'
 
 export const databaseName = 'wankidb'
 
-export type Database =
+export type DatabaseNameType =
   | 'cards'
   | 'col'
   | 'tags'
@@ -19,11 +20,11 @@ export type Database =
   | 'decks'
 
 export interface BaseTableType extends Record<string, unknown> {
+  load: (get: Record<string, string | number>) => Promise<void>
   save: () => Promise<void>
 }
-
 // Define interfaces for each table
-interface Card extends BaseTableType {
+export interface CardTableType extends BaseTableType {
   id?: number
   nid?: number
   did?: number
@@ -44,7 +45,7 @@ interface Card extends BaseTableType {
   data?: string
 }
 
-export interface Col extends BaseTableType {
+export interface ColTableType extends BaseTableType {
   id?: number
   crt?: number
   mod?: number
@@ -56,18 +57,18 @@ export interface Col extends BaseTableType {
   conf?: Configuration
 }
 
-interface Tag extends BaseTableType {
+export interface TagTableType extends BaseTableType {
   id?: number
   tag?: string[]
 }
 
-interface Grave extends BaseTableType {
+export interface GraveTableType extends BaseTableType {
   usn?: number
   oid?: number
   type?: number
 }
 
-interface Note extends BaseTableType {
+export interface NoteTableType extends BaseTableType {
   id?: number
   guid?: string
   mid?: number
@@ -81,7 +82,7 @@ interface Note extends BaseTableType {
   data?: string
 }
 
-interface Revlog extends BaseTableType {
+export interface RevlogTableType extends BaseTableType {
   id?: number
   cid?: number
   usn?: number
@@ -93,11 +94,11 @@ interface Revlog extends BaseTableType {
   type?: number
 }
 
-interface Media {
+export interface MediaTableType extends BaseTableType {
   name?: string
 }
 
-interface DconfLapse {
+export interface DconfLapse {
   delays?: number[]
   leechAction?: number
   leechFails?: number
@@ -105,7 +106,7 @@ interface DconfLapse {
   mult?: number
 }
 
-interface DconfRev {
+export interface DconfRev {
   bury?: boolean
   ease4?: number
   fuzz?: number
@@ -115,7 +116,7 @@ interface DconfRev {
   perDay?: number
 }
 
-interface DconfNew {
+export interface DconfNew {
   bury?: boolean
   delays?: number[]
   initialFactor?: number
@@ -125,7 +126,7 @@ interface DconfNew {
   separate?: boolean
 }
 
-interface Dconf {
+export interface DconfTableType extends BaseTableType {
   id?: number
   name?: string
   autoplay?: boolean
@@ -140,7 +141,7 @@ interface Dconf {
   new?: DconfNew
 }
 
-interface Model {
+export interface ModelTableType extends BaseTableType {
   id?: number
   vers?: number
   name?: string
@@ -158,7 +159,7 @@ interface Model {
   latexPre?: string
 }
 
-interface Deck extends BaseTableType {
+export interface DeckTableType extends BaseTableType {
   id?: number
   terms?: Record<string, unknown>
   separate?: boolean
@@ -178,18 +179,17 @@ interface Deck extends BaseTableType {
   desc?: string
 }
 
-// Extend Dexie with our tables
-class WankiDexie extends Dexie {
-  cards!: Dexie.Table<Card, number>
-  col!: Dexie.Table<Col, number>
-  tags!: Dexie.Table<Tag, number>
-  graves!: Dexie.Table<Grave, number>
-  notes!: Dexie.Table<Note, number>
-  revlog!: Dexie.Table<Revlog, number>
-  media!: Dexie.Table<Media, string>
-  dconf!: Dexie.Table<Dconf, number>
-  models!: Dexie.Table<Model, number>
-  decks!: Dexie.Table<Deck, number>
+export class WankiDexie extends Dexie {
+  cards!: Dexie.Table<CardTableType, number, CardTableType>
+  col!: Dexie.Table<ColTableType, number, ColTableType>
+  tags!: Dexie.Table<TagTableType, number, TagTableType>
+  graves!: Dexie.Table<GraveTableType, number, GraveTableType>
+  notes!: Dexie.Table<NoteTableType, number, NoteTableType>
+  revlog!: Dexie.Table<RevlogTableType, number, RevlogTableType>
+  media!: Dexie.Table<MediaTableType, string, MediaTableType>
+  dconf!: Dexie.Table<DconfTableType, number, DconfTableType>
+  models!: Dexie.Table<ModelTableType, number, ModelTableType>
+  decks!: Dexie.Table<DeckTableType, number, DeckTableType>
 
   constructor(name: string) {
     super(name)
@@ -242,4 +242,67 @@ export const initSync = (): void => {
 
 export const wipeDatabase = (): Promise<void> => {
   return Dexie.delete(databaseName)
+}
+
+export type Primitive = string | boolean | number | null | undefined
+
+export type SetParams<T extends BaseTableType> = {
+  value?: Primitive
+  model: Dexie.Table<T, number, T>
+  column: keyof T
+  where: Parameters<Dexie.Table<T, number, T>['get']>[0]
+  jsonKey?: string
+  fallback?: Primitive
+  toggle?: boolean
+}
+
+export async function set<T extends BaseTableType>({
+  value,
+  model,
+  column,
+  where,
+  jsonKey,
+  fallback,
+  toggle,
+}: SetParams<T>): Promise<T> {
+  let obj = await model.get(where)
+
+  if (!obj) {
+    obj = (typeof where === 'object' ? { ...where } : { id: where }) as T
+    if (jsonKey) {
+      obj[column] = { [jsonKey]: fallback } as T[typeof column]
+    }
+    await model.put(obj)
+  }
+
+  if (jsonKey) {
+    const base = obj[column]
+    if (!isObject(base)) {
+      obj[column] = { [jsonKey]: fallback } as T[typeof column]
+    }
+
+    if (toggle) {
+      const current = (obj[column] as Record<string, unknown>)[jsonKey]
+      ;(obj[column] as Record<string, unknown>)[jsonKey] = !current
+    } else if (value !== undefined) {
+      ;(obj[column] as Record<string, unknown>)[jsonKey] = value
+    }
+  } else {
+    if (obj[column] === undefined) {
+      obj[column] = fallback as T[typeof column]
+    }
+
+    if (toggle) {
+      const current = obj[column] as unknown
+      obj[column] = !current as unknown as T[typeof column]
+    } else if (value !== undefined) {
+      obj[column] = value as T[typeof column]
+    }
+  }
+
+  if (typeof obj.save === 'function') {
+    await obj.save()
+  }
+
+  return obj
 }

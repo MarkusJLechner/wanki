@@ -53,12 +53,16 @@ export const refstorage = {
           null,
       )
 
-      watch(storeItemSubscribers[key], () => {
-        localStorage.setItem(
-          key,
-          JSON.stringify(storeItemSubscribers[key].value),
-        )
-      })
+      watch(
+        storeItemSubscribers[key],
+        () => {
+          localStorage.setItem(
+            key,
+            JSON.stringify(storeItemSubscribers[key].value),
+          )
+        },
+        { immediate: true },
+      )
     }
   },
 
@@ -114,7 +118,7 @@ export const refstorage = {
 }
 
 // Initialize darkTheme in refstorage
-refstorage.init('darkTheme', false)
+refstorage.init('darkTheme', defaultSettings.darkTheme)
 
 export const modalOpened = ref(false)
 

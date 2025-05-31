@@ -1,4 +1,4 @@
-import { Col, wankidb } from '@/plugins/wankidb/db'
+import { ColTableType, wankidb } from '@/plugins/wankidb/db'
 
 export async function cardDeckConfig(
   card: Record<string, unknown>,
@@ -42,7 +42,7 @@ export async function getCol(): Promise<Record<string, unknown>> {
 export async function getColKey<T>(
   key?: string,
   fallback?: T,
-): Promise<T | Col> {
+): Promise<T | ColTableType> {
   const col = await wankidb.col.get({ id: 1 })
 
   if (!col) {
