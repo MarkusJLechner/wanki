@@ -3,14 +3,18 @@ import { vibrate } from '@/plugins/global'
 import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
 import { ToastType } from '@/plugins/conts'
-import { DefaultSettings, defaultSettings } from '@/plugins/defaultSettings'
+import {
+  DefaultSettings,
+  defaultSettings,
+  StorageKey,
+} from '@/plugins/defaultSettings'
 
 interface StoreItemSubscribers {
   [key: string]: Ref<unknown>
 }
 
 interface Setting {
-  key: string
+  key: StorageKey
   default?: unknown
 }
 
@@ -43,7 +47,7 @@ const parseType = (value: unknown, type?: string): unknown => {
 }
 
 export const refstorage = {
-  init: (key: string, Default?: unknown): void => {
+  init: (key: StorageKey, Default?: unknown): void => {
     if (!storeItemSubscribers[key]) {
       const defaultSetting = refstorage.getDefaultSetting(key)?.default
       storeItemSubscribers[key] = ref(
@@ -77,7 +81,7 @@ export const refstorage = {
     )
   },
 
-  ref: (key: string): Ref<unknown> => {
+  ref: (key: StorageKey): Ref<unknown> => {
     refstorage.init(key)
     return storeItemSubscribers[key]
   },
@@ -89,18 +93,18 @@ export const refstorage = {
     return parseType(storeItemSubscribers[setting.key].value, valueType)
   },
 
-  getValueType(key: string, Default?: string): string | undefined {
+  getValueType(key: StorageKey, Default?: string): string | undefined {
     return this.getDefaultSetting(key)?.valueType ?? Default
   },
 
-  get: (key: string, Default?: unknown): unknown => {
+  get: (key: StorageKey, Default?: unknown): unknown => {
     const valueType = refstorage.getDefaultSetting(key)?.valueType
     refstorage.init(key, Default)
 
     return parseType(storeItemSubscribers[key].value, valueType)
   },
 
-  set: (key: string, value: unknown): void => {
+  set: (key: StorageKey, value: unknown): void => {
     vibrate()
 
     refstorage.init(key, value)
@@ -108,7 +112,7 @@ export const refstorage = {
     storeItemSubscribers[key].value = value
   },
 
-  toggle: (key: string): void => {
+  toggle: (key: StorageKey): void => {
     vibrate()
 
     refstorage.init(key)

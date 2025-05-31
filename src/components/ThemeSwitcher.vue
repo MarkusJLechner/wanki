@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from 'plugins/defaultSettings.ts'

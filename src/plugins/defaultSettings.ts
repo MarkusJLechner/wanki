@@ -25,11 +25,27 @@ interface ReviewingSettings {
   }
 }
 
-export interface DefaultSettings {
+export interface DefaultSettings extends Record<string, unknown> {
   darkTheme: boolean
   general: GeneralSettings
   reviewing: ReviewingSettings
 }
+
+export type StorageKey =
+  | 'darkTheme'
+  | 'deck.options.new.perDay'
+  | 'deck.options.rev.perDay'
+  | 'deck.options.new.ignoreReviewLimit'
+  | 'deck.options.new.steps'
+  | 'deck.options.new.order'
+  | 'deck.options.lapse.steps'
+  | 'deck.options.lapse.leechThreshold'
+  | 'deck.options.lapse.leechAction'
+  | 'setting.reviewing.audioControls'
+  | 'setting.reviewing.autoPlayAudio'
+  | 'setting.reviewing.autoPlayAudioDelay'
+  | 'setting.reviewing.alignAudioButtonsRight'
+  | 'setting.general.vibrate'
 
 export const defaultSettings: DefaultSettings = {
   darkTheme: true,
