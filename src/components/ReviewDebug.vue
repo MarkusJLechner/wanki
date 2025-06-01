@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="card"
-    class="fixed right-0 bottom-32 left-0 z-20 -mt-3 h-64 overflow-y-auto bg-black/60 px-6 text-xs opacity-90 backdrop-blur-xs"
+    class="fixed right-0 bottom-48 left-0 z-20 -mt-3 h-64 overflow-y-auto bg-black/60 px-6 text-xs opacity-90 backdrop-blur-xs"
   >
     <div class="text-yellow-500">Deck ID: {{ deck.id }}</div>
     <div class="mb-1 text-yellow-400">Deck Name: {{ deck.name }}</div>

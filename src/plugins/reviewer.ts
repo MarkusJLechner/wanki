@@ -129,18 +129,20 @@ export async function getDueCounts(
         newCount += 1
         break
       case CardType.Learn:
+      case CardType.Relearning:
+        // For DayLearnRelearn cards, we need to check if due <= today
+        // For other cards, we need to check if due <= nowMs
         if (
           card.queue === QueueType.DayLearnRelearn
-            ? card.due && card.due <= today
-            : card.due && card.due <= nowMs
+            ? card.due !== undefined && card.due <= today
+            : card.due !== undefined && card.due <= nowMs
         ) {
           learnCount += 1
         }
         break
       case CardType.Review:
-      case CardType.Relearning:
         if (
-          card.due &&
+          card.due !== undefined &&
           ((card.due < 1e12 && card.due <= today) || card.due <= nowMs)
         ) {
           reviewCount += 1
