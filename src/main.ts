@@ -4,6 +4,7 @@ import router from './router'
 import './assets/styles/index.css'
 import store from './store'
 import * as wanki from './plugins/wankidb'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 import longPress from '@/plugins/directives/longPress'
 import ripple from '@/plugins/directives/ripple'

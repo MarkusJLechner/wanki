@@ -145,4 +145,8 @@ export interface ListProps {
    * Property name to use for item text
    */
   itemTextKey?: string
+  /**
+   * Size of list items in pixels. Defaults to 60.
+   */
+  itemSize?: number
 }

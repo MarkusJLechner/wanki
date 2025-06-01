@@ -1,74 +1,70 @@
 <template>
-  <RecycleScroller
-    class="scroller"
+  <ul
     v-bind="$attrs"
-    :items="computedValue"
-    :item-size="computedItemSize"
-    listTag="ul"
-    itemTag="li"
-    listClass="flex w-full flex-col text-lg"
+    class="flex w-full flex-col text-lg"
+    :class="{
+      'py-2': !noGutters,
+      'text-gray-600 dark:text-gray-400': isAnyLoading(),
+    }"
     @[isAnyLoading()].capture.stop.prevent
-    itemClass=""
-    key-field="index"
   >
-    <template #default="{ item, index }">
-      <div
-        :style="item.style"
-        v-ripple
-        @click.prevent="onClick(item)"
-        :class="[
-          'relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden',
-          {
-            seperator: item.type === 'seperator',
-            ...(item.class ? { [item.class]: true } : {}),
-            'my-2': getSubText(item),
-            'px-4 py-3': dense,
-            'px-4 py-4': !dense,
-          },
-        ]"
-      >
-        <component :is="item.component" v-if="item.component" />
-        <hr
-          v-if="item.type === 'seperator'"
-          class="w-full border border-gray-900 dark:border-gray-500"
-        />
+    <li
+      v-for="(item, index) in value"
+      :key="index"
+      v-long-press="() => onLongPress(item)"
+      v-ripple
+      class="relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+      :style="item.style"
+      :class="{
+        seperator: item.type === 'seperator',
+        ...(item.class ? { [item.class]: true } : {}),
+        'my-2': getSubText(item),
+        'px-4 py-3': dense,
+        'px-4 py-4': !dense,
+      }"
+      @click.prevent="onClick(item)"
+    >
+      <component :is="item.component" v-if="item.component" />
+      <hr
+        v-if="item.type === 'seperator'"
+        class="w-full border border-gray-900 dark:border-gray-500"
+      />
 
-        <slot name="prefix-item" :item="item" />
+      <slot name="prefix-item" :item="item" />
 
-        <i
-          v-if="getIcon(item)"
-          class="pr-4"
-          :class="getIcon(item) ? { [getIcon(item)]: true } : {}"
-        />
-        <div class="flex grow items-center">
-          <span v-if="getText(item)" class="flex flex-col">
-            {{ getText(item) }}
-            <span
-              v-if="getSubText(item)"
-              class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
-              >{{ getSubText(item) }}</span
-            >
-          </span>
+      <i
+        v-if="getIcon(item)"
+        class="pr-4"
+        :class="getIcon(item) ? { [getIcon(item)]: true } : {}"
+      />
+      <div class="flex grow items-center">
+        <span v-if="getText(item)" class="flex flex-col">
+          {{ getText(item) }}
+          <span
+            v-if="getSubText(item)"
+            class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
+            >{{ getSubText(item) }}</span
+          >
+        </span>
 
-          <div v-if="callFn(item, 'loading')" class="px-2">
-            <i class="fas fa-spinner fa-spin text-black dark:text-white" />
-          </div>
+        <div v-if="callFn(item, 'loading')" class="px-2">
+          <i class="fas fa-spinner fa-spin text-black dark:text-white" />
         </div>
-
-        <div v-if="hasBoolean(item)">
-          <InputBoolean :model-value="getBoolean(item)" />
-        </div>
-
-        <div v-if="hasText(item)" class="opacity-60">
-          {{ getValueText(item) }}
-        </div>
-
-        <slot name="suffix-item" :item="item" />
-
-        <ListHr v-if="!noSeparation && index < value.length - 1" />
       </div>
-    </template>
-  </RecycleScroller>
+
+      <div v-if="hasBoolean(item)">
+        <InputBoolean :model-value="getBoolean(item)" />
+      </div>
+
+      <div v-if="hasText(item)" class="opacity-60">
+        {{ getValueText(item) }}
+      </div>
+
+      <slot name="suffix-item" :item="item" />
+
+      <ListHr v-if="!noSeparation && index < value.length - 1" />
+    </li>
+  </ul>
 
   <ModalRadio
     :show="!!radioItem"
@@ -111,7 +107,6 @@ const props = withDefaults(defineProps<ListProps>(), {
   dense: false,
   noSeparation: false,
   itemTextKey: 'text',
-  itemSize: 60,
 })
 
 const emit = defineEmits<{
@@ -125,10 +120,6 @@ const computedValue = computed(() => {
     ...v,
     index: i,
   }))
-})
-
-const computedItemSize = computed(() => {
-  return props.itemSize
 })
 
 const radioItem = ref<ListItem | null>(null)

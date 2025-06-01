@@ -8,7 +8,13 @@
       <div class="p-4">
         <InputTextField v-model="search" placeholder="Search" />
       </div>
-      <List :value="listItems" item-text-key="text" @item="onCard"> </List>
+      <List
+        :item-size="80"
+        :value="listItems"
+        item-text-key="text"
+        @item="onCard"
+      >
+      </List>
     </MainContent>
   </div>
 </template>
