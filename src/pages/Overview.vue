@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import ModalImport from '@/components/ModalImport.vue'
 import TheHeader from '@/components/TheHeader.vue'
@@ -193,7 +193,7 @@ async function closeModalOptions() {
 // Methods
 function pullToRefresh(): void {
   console.log('refresh list')
-  updateDeckList()
+  void updateDeckList()
 }
 
 async function updateDeckList(): Promise<void> {
@@ -389,5 +389,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('page/overview/update', updateDeckList)
+})
+
+// Refresh data when component is re-activated (when navigating back from review)
+onActivated(() => {
+  void updateDeckList()
 })
 </script>

@@ -10,7 +10,7 @@
     "serve": "vite preview",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "test:watch": "vitest run",
+    "test:watch": "vitest",
     "lint": "npm run lint:js && npm run lint:style",
     "lint:js": "eslint --ext .ts,.js,.vue --cache",
     "lint:style": "stylelint \"src/**/*.css\" --cache",

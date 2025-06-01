@@ -43,8 +43,6 @@ function onItem(item: RadioItem): void {
 
   emit('item', item)
 
-  console.log({ item })
-
   setTimeout(() => {
     emit('close')
   }, 200)
