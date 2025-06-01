@@ -134,7 +134,7 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import { wankidb } from '@/plugins/wankidb/db'
-import { CardType } from '@/plugins/conts.js'
+import { CardType } from '@/plugins/consts.js'
 
 const route = useRoute()
 

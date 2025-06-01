@@ -1,5 +1,5 @@
 import { wankidb } from '@/plugins/wankidb/db'
-import { QueueType, CardType } from '@/plugins/conts'
+import { QueueType, CardType } from '@/plugins/consts'
 import { collectionCreatedAt } from '@/plugins/fsrs'
 import { now } from '@/plugins/time'
 import { deckConfig } from '@/plugins/collection'

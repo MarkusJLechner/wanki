@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getConstName, ToastType } from '../src/plugins/conts'
+import { getConstName, ToastType } from '../src/plugins/consts'
 
 describe('getConstName', () => {
   it('returns key name for existing value', () => {

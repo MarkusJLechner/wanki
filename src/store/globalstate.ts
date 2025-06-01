@@ -2,7 +2,7 @@ import { ref, watch, Ref } from 'vue'
 import { vibrate } from '@/plugins/global'
 import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
-import { ToastType } from '@/plugins/conts'
+import { ToastType } from '@/plugins/consts'
 import {
   DefaultSettings,
   defaultSettings,

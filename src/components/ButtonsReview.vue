@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Ease } from '@/plugins/conts'
+import { Ease } from '@/plugins/consts'
 
 interface Button {
   text: string

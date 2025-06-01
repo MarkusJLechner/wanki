@@ -1,7 +1,7 @@
 import { fsrs, Grade, Rating, State } from 'ts-fsrs'
 import { wankidb } from '@/plugins/wankidb/db'
 import type { Card } from '@/plugins/wankidb/Card'
-import { CardType, QueueType } from '@/plugins/conts'
+import { CardType, QueueType } from '@/plugins/consts'
 import { creationTimestamp, getConf } from '@/plugins/collection'
 import { now } from '@/plugins/time'
 

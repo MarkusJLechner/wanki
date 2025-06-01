@@ -21,7 +21,7 @@
 import { ref, onMounted, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { wankidb } from '@/plugins/wankidb/db'
-import { NewCardOrder, Leech } from '@/plugins/conts'
+import { NewCardOrder, Leech } from '@/plugins/consts'
 import TheHeader from '@/components/TheHeader.vue'
 import MainContent from '@/components/MainContent.vue'
 import Group from '@/components/Group.vue'

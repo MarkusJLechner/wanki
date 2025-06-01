@@ -6,6 +6,7 @@
       <ThemeSwitcher />
       <ButtonOptions
         :value="[
+          { value: 'debugging', text: 'Debugging' },
           { value: 'import', text: 'Import' },
           { value: 'export-collection', text: 'Export collection' },
         ]"
@@ -14,29 +15,46 @@
     </TheHeader>
 
     <ButtonFloating :model-value="optionsFloating" />
-    <div class="fixed bottom-16 left-2.5 z-10 flex flex-row gap-2">
-      <button
-        class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
-        @click="
-          () => {
-            advanceTime(2 * 3600 * 1000)
-            void updateDeckList()
-          }
-        "
-      >
-        +2h
-      </button>
-      <button
-        class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
-        @click="
-          () => {
-            advanceTime(24 * 3600 * 1000)
-            void updateDeckList()
-          }
-        "
-      >
-        +1d
-      </button>
+    <div
+      v-if="showDebugging"
+      class="fixed bottom-16 left-2.5 z-10 flex flex-col gap-2"
+    >
+      <div class="text-sm text-white">Current time: {{ currentDateTime }}</div>
+      <div class="flex flex-row gap-2">
+        <button
+          class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
+          @click="
+            () => {
+              advanceTime(2 * 3600 * 1000)
+              void updateDeckList()
+            }
+          "
+        >
+          +2h
+        </button>
+        <button
+          class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
+          @click="
+            () => {
+              advanceTime(24 * 3600 * 1000)
+              void updateDeckList()
+            }
+          "
+        >
+          +1d
+        </button>
+        <button
+          class="rounded-md bg-red-800 px-2 py-1 text-sm text-white"
+          @click="
+            () => {
+              setTimeOffset(0)
+              void updateDeckList()
+            }
+          "
+        >
+          Reset
+        </button>
+      </div>
     </div>
 
     <div
@@ -146,7 +164,7 @@ import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { getDueCounts } from '@/plugins/reviewer'
 import { Deck } from 'plugins/wankidb/types.ts'
-import { advanceTime } from '@/plugins/time'
+import { advanceTime, setTimeOffset, nowDate } from '@/plugins/time'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__
@@ -163,6 +181,7 @@ const showModalDelete = ref(false)
 const showModalRename = ref(false)
 const loadingOnRename = ref(false)
 const loadingOnExport = ref(false)
+const showDebugging = ref(false)
 const inputRename = ref<string>('')
 const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([
@@ -186,6 +205,10 @@ const modelOptionDeckDesc = computed(() => {
 
 const modelOptionDeckTitle = computed(() => {
   return modalOptionsItem.value?.deck?.name
+})
+
+const currentDateTime = computed(() => {
+  return nowDate().toLocaleString('de-AT')
 })
 
 const deckOptions = computed(() => [
@@ -296,6 +319,9 @@ async function updateList(): Promise<void> {
 
 function onClick(item: any): void {
   switch (item.value) {
+    case 'debugging':
+      showDebugging.value = !showDebugging.value
+      break
     case 'import':
       return onImport()
     default:

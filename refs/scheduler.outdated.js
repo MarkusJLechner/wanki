@@ -7,7 +7,7 @@ import {
   QueueType,
   StatisticType,
   ToastType,
-} from '@/plugins/conts.ts'
+} from '@/plugins/consts.ts'
 import { wankidb } from '@/plugins/wankidb/db.ts'
 import {
   cardDeckConfig,

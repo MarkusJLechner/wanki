@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getDueCounts } from 'plugins/reviewer'
-import { QueueType, CardType } from 'plugins/conts'
+import { QueueType, CardType } from 'plugins/consts'
 
 const mockCards: any[] = []
 

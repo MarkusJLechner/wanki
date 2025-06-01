@@ -6,7 +6,7 @@ import {
   getConstName,
   QueueType,
   QueueTypeValues,
-} from '@/plugins/conts'
+} from '@/plugins/consts'
 import { cardDeckConfig } from '@/plugins/collection'
 import { collectionCreatedAt, rolloverHour } from '@/plugins/fsrs'
 import { now, nowDate } from '@/plugins/time'
