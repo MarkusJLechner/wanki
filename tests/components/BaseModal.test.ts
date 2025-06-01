@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import BaseModal from '../../src/components/BaseModal.vue'
 
+vi.mock('vue-router', () => ({ onBeforeRouteLeave: vi.fn() }))
+
 vi.mock('../../src/store/globalstate.ts', () => ({
   modalOpened: { value: false },
 }))

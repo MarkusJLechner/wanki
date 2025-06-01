@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ButtonOptions from '../../src/components/ButtonOptions.vue'
 
+vi.mock('vue-router', () => ({ onBeforeRouteLeave: vi.fn() }))
+
 vi.mock('../../src/components/ButtonIcon.vue', () => ({
   default: {
     template:

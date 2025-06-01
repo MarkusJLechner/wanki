@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils'
 import ButtonFloating from '../../src/components/ButtonFloating.vue'
 import { commonGlobal } from '../common.ts'
 
+vi.mock('vue-router', () => ({ onBeforeRouteLeave: vi.fn() }))
+
 const items = [{ text: 'Item', icon: 'fas fa-plus' }]
 
 describe('ButtonFloating.vue', () => {

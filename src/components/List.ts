@@ -56,6 +56,10 @@ export interface ListItem {
    */
   kind?: string
   /**
+   * Label above input
+   */
+  label?: string
+  /**
    * Local storage key for this item's value
    */
   storeLocal?: string
@@ -63,7 +67,7 @@ export interface ListItem {
    * Database path in the form "table.column.path"
    */
   storeDb?: {
-    get: () => void
+    get: () => string | number | null | boolean
     save: (value: any) => void
   }
   /**
