@@ -8,20 +8,14 @@
       <div class="p-4">
         <InputTextField v-model="search" placeholder="Search" />
       </div>
-      <List :value="listItems" item-text-key="text" @item="onCard">
-        <template #suffix-item="{ item }">
-          <span class="text-sm text-gray-600 dark:text-gray-300">
-            {{ item.subtext }}
-          </span>
-        </template>
-      </List>
+      <List :value="listItems" item-text-key="text" @item="onCard"> </List>
     </MainContent>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
@@ -31,11 +25,11 @@ import InputTextField from '@/components/InputTextField.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 
 const route = useRoute()
-const router = useRouter()
 
 interface CardEntry {
   text: string
   subtext: string
+  searchText: string
   cardId: number
 }
 
@@ -55,6 +49,10 @@ function stripCardText(html: string): string {
   return result
 }
 
+function formatDate(ts: number): string {
+  return new Date(ts).toLocaleString()
+}
+
 onMounted(async () => {
   deckId.value = +(route.query.deckid as string) || 0
   const deck = await wankidb.decks.get({ id: deckId.value })
@@ -64,11 +62,19 @@ onMounted(async () => {
   const entries: CardEntry[] = []
   for (const card of deckCards) {
     const note = await card.note
-    const model = await card.model
     const firstField = (note.flds || '').split('\u001f')[0] || ''
+    const text =
+      stripCardText(firstField) ||
+      stripCardText((note.flds || '').replace(/\u001f/g, ' ')) ||
+      '[empty]'
+    const dueDate = await card.dueDate
+    const cardTypeText: string = card.cardType ?? ''
     entries.push({
-      text: stripCardText(firstField) || '[empty]',
-      subtext: model?.name || '',
+      text,
+      subtext: `${cardTypeText} · ${formatDate(dueDate.getTime())}`,
+      searchText: stripCardText(
+        (note.flds || '').replace(/\u001f/g, ' '),
+      ).toLowerCase(),
       cardId: card.id as number,
     })
   }
@@ -78,7 +84,7 @@ onMounted(async () => {
 const filteredCards = computed(() => {
   const term = search.value.trim().toLowerCase()
   if (!term) return cards.value
-  return cards.value.filter((c) => c.text.toLowerCase().includes(term))
+  return cards.value.filter((c) => c.searchText.includes(term))
 })
 
 const listItems = computed(() =>
