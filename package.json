@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "esbuild:install": " node ./node_modules/esbuild/install.js",
+    "start-sync-server": "node server/WebSocketSyncServer.js",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
