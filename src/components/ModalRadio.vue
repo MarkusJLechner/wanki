@@ -14,7 +14,7 @@ import BaseModal from '@/components/BaseModal.vue'
 import InputRadio from '@/components/InputRadio.vue'
 
 interface RadioItem {
-  value: string
+  value: string | number
   text: string
   [key: string]: any
 }
@@ -25,7 +25,7 @@ interface Props {
   radioItems?: RadioItem[]
 }
 
-const modelValue = defineModel<string>()
+const modelValue = defineModel<string | number>()
 
 withDefaults(defineProps<Props>(), {
   show: true,

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ListLi from '../../src/components/ListLi.vue'
+import { commonGlobal } from '../common.ts'
 
 vi.mock('../../src/components/InputBoolean.vue', () => ({
   __esModule: true,
@@ -18,7 +19,12 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 
 describe('ListLi.vue', () => {
   it('emits item when clicked', async () => {
-    const wrapper = mount(ListLi, { props: { item: { text: 'Item' } } })
+    const wrapper = mount(ListLi, {
+      props: { item: { text: 'Item' } },
+      global: {
+        ...commonGlobal,
+      },
+    })
     await wrapper.find('li').trigger('click')
     expect(wrapper.emitted('item')).toBeTruthy()
   })

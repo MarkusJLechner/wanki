@@ -22,14 +22,14 @@ import { watch, onMounted } from 'vue'
 import List from '@/components/List.vue'
 
 interface Item {
-  value: string
+  value: string | number
   selected?: boolean
   [key: string]: unknown
 }
 
 interface Props {
   items: Item[]
-  value?: string | null
+  value?: string | number | null
 }
 
 const props = withDefaults(defineProps<Props>(), {

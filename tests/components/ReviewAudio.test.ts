@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import ReviewAudio from '../../src/components/ReviewAudio.vue'
+import { commonGlobal } from '../common.ts'
 
 vi.mock('../../src/store/globalstate', () => ({
   refstorage: { getSetting: vi.fn().mockReturnValue(false) },
@@ -29,6 +30,9 @@ describe('ReviewAudio.vue', () => {
   it('sets audio source from objectUrl', async () => {
     const wrapper = mount(ReviewAudio, {
       props: { objectUrl: 'foo', autoplay: false },
+      global: {
+        ...commonGlobal,
+      },
     })
     await flushPromises()
     expect((wrapper.find('audio').element as HTMLAudioElement).src).toContain(

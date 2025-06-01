@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ButtonIconReload from '../../src/components/ButtonIconReload.vue'
+import { commonGlobal } from '../common.ts'
 
 describe('ButtonIconReload.vue', () => {
   it('calls location.reload on click', async () => {
@@ -11,7 +12,11 @@ describe('ButtonIconReload.vue', () => {
       writable: true,
     })
 
-    const wrapper = mount(ButtonIconReload)
+    const wrapper = mount(ButtonIconReload, {
+      global: {
+        ...commonGlobal,
+      },
+    })
     await wrapper.trigger('click')
     expect(reload).toHaveBeenCalled()
 
