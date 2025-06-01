@@ -3,7 +3,11 @@
     <TheHeader>
       <FlexSpacer />
       <ThemeSwitcher />
-      <ButtonIcon icon="fas fa-spider" @click="toggleDebugging" />
+      <ButtonIcon
+        icon="fas fa-spider"
+        :show-dot="showDebugDot"
+        @click="toggleDebugging"
+      />
       <ButtonIcon icon="fas fa-info-circle" @click="onInfo" />
       <ButtonOptions
         :value="[
@@ -73,6 +77,7 @@ import ReviewContainer from '@/components/ReviewContainer.vue'
 import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import { Deck } from 'plugins/wankidb/Deck.ts'
 import { refstorage } from '@/store/globalstate'
+import { getTimeOffset } from '@/plugins/time'
 
 const router = useRouter()
 const route = useRoute()
@@ -81,6 +86,7 @@ const route = useRoute()
 refstorage.init('testing.debugging', false)
 // Use computed to reactively get the debugging state from refstorage
 const debug = computed(() => refstorage.get('testing.debugging', false))
+const showDebugDot = computed(() => getTimeOffset() !== 0)
 const deckid = ref(1)
 const deck = ref<Deck | undefined>(undefined)
 const card = ref(undefined)
