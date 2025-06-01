@@ -24,7 +24,7 @@ export interface BaseTableType extends Record<string, unknown> {
   save: () => Promise<void>
 }
 // Define interfaces for each table
-export interface CardTableType extends BaseTableType {
+export interface CardTableType /* extends BaseTableType */ {
   id?: number
   nid?: number
   did?: number
@@ -45,7 +45,7 @@ export interface CardTableType extends BaseTableType {
   data?: string
 }
 
-export interface ColTableType extends BaseTableType {
+export interface ColTableType /* extends BaseTableType */ {
   id?: number
   crt?: number
   mod?: number
@@ -57,18 +57,18 @@ export interface ColTableType extends BaseTableType {
   conf?: Configuration
 }
 
-export interface TagTableType extends BaseTableType {
+export interface TagTableType /* extends BaseTableType */ {
   id?: number
   tag?: string[]
 }
 
-export interface GraveTableType extends BaseTableType {
+export interface GraveTableType /* extends BaseTableType */ {
   usn?: number
   oid?: number
   type?: number
 }
 
-export interface NoteTableType extends BaseTableType {
+export interface NoteTableType /* extends BaseTableType */ {
   id?: number
   guid?: string
   mid?: number
@@ -82,7 +82,7 @@ export interface NoteTableType extends BaseTableType {
   data?: string
 }
 
-export interface RevlogTableType extends BaseTableType {
+export interface RevlogTableType /* extends BaseTableType */ {
   id?: number
   cid?: number
   usn?: number
@@ -94,7 +94,7 @@ export interface RevlogTableType extends BaseTableType {
   type?: number
 }
 
-export interface MediaTableType extends BaseTableType {
+export interface MediaTableType /* extends BaseTableType */ {
   name?: string
 }
 
@@ -126,7 +126,7 @@ export interface DconfNew {
   separate?: boolean
 }
 
-export interface DconfTableType extends BaseTableType {
+export interface DconfTableType /* extends BaseTableType */ {
   id?: number
   name?: string
   autoplay?: boolean
@@ -141,7 +141,7 @@ export interface DconfTableType extends BaseTableType {
   new?: DconfNew
 }
 
-export interface ModelTableType extends BaseTableType {
+export interface ModelTableType /* extends BaseTableType */ {
   id?: number
   vers?: number
   name?: string
@@ -159,7 +159,7 @@ export interface ModelTableType extends BaseTableType {
   latexPre?: string
 }
 
-export interface DeckTableType extends BaseTableType {
+export interface DeckTableType /* extends BaseTableType */ {
   id?: number
   terms?: Record<string, unknown>
   separate?: boolean
@@ -180,16 +180,16 @@ export interface DeckTableType extends BaseTableType {
 }
 
 export class WankiDexie extends Dexie {
-  cards!: Dexie.Table<CardTableType, number, CardTableType>
-  col!: Dexie.Table<ColTableType, number, ColTableType>
-  tags!: Dexie.Table<TagTableType, number, TagTableType>
-  graves!: Dexie.Table<GraveTableType, number, GraveTableType>
-  notes!: Dexie.Table<NoteTableType, number, NoteTableType>
-  revlog!: Dexie.Table<RevlogTableType, number, RevlogTableType>
-  media!: Dexie.Table<MediaTableType, string, MediaTableType>
-  dconf!: Dexie.Table<DconfTableType, number, DconfTableType>
-  models!: Dexie.Table<ModelTableType, number, ModelTableType>
-  decks!: Dexie.Table<DeckTableType, number, DeckTableType>
+  cards!: Dexie.Table<CardTableType & BaseTableType, number, CardTableType>
+  col!: Dexie.Table<ColTableType & BaseTableType, number, ColTableType>
+  tags!: Dexie.Table<TagTableType & BaseTableType, number, TagTableType>
+  graves!: Dexie.Table<GraveTableType & BaseTableType, number, GraveTableType>
+  notes!: Dexie.Table<NoteTableType & BaseTableType, number, NoteTableType>
+  revlog!: Dexie.Table<RevlogTableType & BaseTableType, number, RevlogTableType>
+  media!: Dexie.Table<MediaTableType & BaseTableType, string, MediaTableType>
+  dconf!: Dexie.Table<DconfTableType & BaseTableType, number, DconfTableType>
+  models!: Dexie.Table<ModelTableType & BaseTableType, number, ModelTableType>
+  decks!: Dexie.Table<DeckTableType & BaseTableType, number, DeckTableType>
 
   constructor(name: string) {
     super(name)

@@ -120,6 +120,7 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
     const { today } = await collectionCreatedAt()
     deck.newToday = deck.newToday ?? [today, 0]
     deck.revToday = deck.revToday ?? [today, 0]
+    deck.lrnToday = deck.lrnToday ?? [today, 0]
     if (deck.newToday[0] !== today) {
       deck.newToday[0] = today
       deck.newToday[1] = 0
@@ -128,8 +129,17 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
       deck.revToday[0] = today
       deck.revToday[1] = 0
     }
+    if (deck.lrnToday[0] !== today) {
+      deck.lrnToday[0] = today
+      deck.lrnToday[1] = 0
+    }
     if (originalType === CardType.New) {
       deck.newToday[1] += 1
+    } else if (
+      originalType === CardType.Learn ||
+      originalType === CardType.Relearning
+    ) {
+      deck.lrnToday[1] += 1
     } else {
       deck.revToday[1] += 1
     }
