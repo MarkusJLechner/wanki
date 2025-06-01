@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getDueCounts } from 'plugins/reviewer'
+import { advanceTime, setTimeOffset, now } from 'plugins/time'
 import { QueueType, CardType } from 'plugins/consts'
+
+// jsdom does not implement navigator.vibrate by default
+if (typeof navigator.vibrate !== 'function') {
+  ;(navigator as any).vibrate = vi.fn()
+}
 
 const mockCards: any[] = []
 
@@ -43,6 +49,7 @@ vi.mock('../src/plugins/fsrs', () => {
 describe('getDueCounts', () => {
   beforeEach(() => {
     mockCards.length = 0
+    setTimeOffset(0)
   })
 
   it('counts due cards by queue', async () => {
@@ -116,5 +123,41 @@ describe('getDueCounts', () => {
     )
     const counts = await getDueCounts(1)
     expect(counts).toEqual([0, 1, 1])
+  })
+
+  it('updates due counts after advancing time for learning cards', async () => {
+    const due = now() + 30 * 60 * 1000
+    mockCards.push({
+      id: 20,
+      did: 1,
+      queue: QueueType.Learn,
+      type: CardType.Learn,
+      due,
+    })
+
+    let counts = await getDueCounts(1)
+    expect(counts).toEqual([0, 0, 0])
+
+    advanceTime(31 * 60 * 1000)
+    counts = await getDueCounts(1)
+    expect(counts).toEqual([0, 0, 1])
+  })
+
+  it('updates due counts after advancing time for review cards', async () => {
+    const due = now() + 60 * 60 * 1000
+    mockCards.push({
+      id: 21,
+      did: 1,
+      queue: QueueType.Review,
+      type: CardType.Review,
+      due,
+    })
+
+    let counts = await getDueCounts(1)
+    expect(counts).toEqual([0, 0, 0])
+
+    advanceTime(2 * 60 * 60 * 1000)
+    counts = await getDueCounts(1)
+    expect(counts).toEqual([0, 1, 0])
   })
 })
