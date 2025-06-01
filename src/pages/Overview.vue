@@ -4,7 +4,11 @@
       <FlexSpacer />
       <ButtonIconReload />
       <ThemeSwitcher />
-      <ButtonIcon icon="fas fa-spider" @click="toggleDebugging" />
+      <ButtonIcon
+        icon="fas fa-spider"
+        :show-dot="showDebugDot"
+        @click="toggleDebugging"
+      />
       <ButtonOptions
         :value="[
           { value: 'import', text: 'Import' },
@@ -131,6 +135,7 @@ import { Deck } from 'plugins/wankidb/types.ts'
 import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import { refstorage } from '@/store/globalstate'
 import ButtonIcon from 'components/ButtonIcon.vue'
+import { getTimeOffset } from '@/plugins/time'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__
@@ -151,6 +156,7 @@ const loadingOnExport = ref(false)
 // Initialize debugging state in refstorage if not already initialized
 refstorage.init('testing.debugging', false)
 const showDebugging = computed(() => refstorage.get('testing.debugging', false))
+const showDebugDot = computed(() => getTimeOffset() !== 0)
 const inputRename = ref<string>('')
 const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([

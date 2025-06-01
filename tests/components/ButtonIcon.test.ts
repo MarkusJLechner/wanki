@@ -22,4 +22,14 @@ describe('ButtonIcon.vue', () => {
     })
     expect(wrapper.find('.content').exists()).toBe(true)
   })
+
+  it('shows dot when show-dot is true', () => {
+    const wrapper = mount(ButtonIcon, {
+      props: { showDot: true },
+      global: {
+        ...commonGlobal,
+      },
+    })
+    expect(wrapper.find('.bg-red-600').exists()).toBe(true)
+  })
 })
