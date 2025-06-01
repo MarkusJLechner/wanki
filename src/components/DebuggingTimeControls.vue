@@ -27,6 +27,17 @@
         +1d
       </button>
       <button
+        class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
+        @click="
+          () => {
+            advanceTime(7 * 24 * 3600 * 1000)
+            onTimeChange()
+          }
+        "
+      >
+        +7d
+      </button>
+      <button
         class="rounded-md bg-red-800 px-2 py-1 text-sm text-white"
         @click="
           () => {
@@ -72,16 +83,21 @@ const timeDifference = computed(() => {
   const offset = getTimeOffset()
   if (offset === 0) return ''
 
-  const days = Math.floor(Math.abs(offset) / (24 * 3600 * 1000))
+  const hours = Math.floor(Math.abs(offset) / (3600 * 1000))
+  const days = Math.floor(hours / 24)
   const weeks = Math.floor(days / 7)
   const remainingDays = days % 7
+  const remainingHours = hours % 24
 
   let result = ''
   if (weeks > 0) {
     result += `${weeks}w `
   }
-  if (remainingDays > 0 || result === '') {
-    result += `${remainingDays}d`
+  if (remainingDays > 0) {
+    result += `${remainingDays}d `
+  }
+  if (remainingHours > 0 || result === '') {
+    result += `${remainingHours}h`
   }
 
   return result.trim()
