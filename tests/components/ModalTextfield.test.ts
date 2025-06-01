@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import ModalTextfield from '../../src/components/ModalTextfield.vue'
 
 vi.mock('../../src/components/BaseModal.vue', () => ({
-  default: { template: '<div><slot /></div>' },
+  default: { template: '<div><slot /></div>', name: 'BaseModal' },
 }))
 vi.mock('../../src/components/InputTextField.vue', () => ({
   default: {
@@ -21,11 +21,12 @@ describe('ModalTextfield.vue', () => {
     const input = wrapper.find('input')
     ;(input.element as HTMLInputElement).value = 'abc'
     await input.trigger('input')
-    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['abc'])
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['abc'])
   })
   it('emits close', () => {
     const wrapper = mount(ModalTextfield)
-    ;(wrapper.vm as any).onClose()
+    const baseModal = wrapper.findComponent({ name: 'BaseModal' })
+    baseModal.vm.$emit('close')
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 })
