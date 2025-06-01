@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
-// import 'dexie-observable'
-// import 'dexie-syncable'
+import 'dexie-observable'
+import 'dexie-syncable'
 // import './dbSync'
 import { Configuration } from '@/plugins/wankidb/types'
 import { isObject } from 'plugins/utils.ts'
