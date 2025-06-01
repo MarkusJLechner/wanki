@@ -17,7 +17,12 @@
       :value="modelValue"
       :disabled="disabled"
       @keydown.enter="$emit('enter')"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="
+        emit(
+          'update:modelValue',
+          ($event.target as HTMLInputElement)?.value || '',
+        )
+      "
     />
   </div>
 </template>
@@ -46,7 +51,7 @@ withDefaults(defineProps<Props>(), {
   autocomplete: 'off',
 })
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: string]
   enter: []
 }>()

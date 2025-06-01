@@ -38,10 +38,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'click:action': [action: Action]
-  action: [action: Action]
-  confirm: [action: Action]
-  close: [action: Action]
+  (e: 'click:action', action: Action): void
+  (e: 'action', action: Action): void
+  (e: 'confirm', action: Action): void
+  (e: 'close', action: Action): void
 }>()
 
 const defaultActions = computed<Action[]>(() => [
@@ -65,10 +65,11 @@ const computedActions = computed<Action[]>(() => {
       ...baseActions.value.map((a) => {
         const action = { ...a }
         if (action.emit === 'close') {
-          action.text =
-            typeof props.cancelText === 'function'
-              ? props.cancelText
-              : () => props.cancelText
+          action.text = () => {
+            return typeof props.cancelText === 'function'
+              ? props.cancelText()
+              : props.cancelText
+          }
         }
         return action
       }),
@@ -97,11 +98,14 @@ const canAction = (action: Action): boolean => {
 const getValue = (
   obj: unknown,
 ): string | number | boolean | object | null | undefined => {
-  return typeof obj === 'function' ? (obj as () => string)() : obj
+  if (typeof obj === 'function') {
+    return (obj as () => string)()
+  }
+  return obj as string | number | boolean | object | null | undefined
 }
 
 // Using a more generic component type
-const getComponent = (action: Action): { __name: string } => {
+const getComponent = (action: Action) => {
   return action.type === 'spacer' ? Spacer : Button
 }
 
@@ -112,8 +116,10 @@ const isDisabled = (action: Action): boolean => {
 const onClick = (action: Action): void => {
   if (isDisabled(action)) return
 
-  if (['close', 'confirm'].includes(action.emit || '')) {
-    emit(action.emit as 'close' | 'confirm', action)
+  if (action.emit === 'close') {
+    emit('close', action)
+  } else if (action.emit === 'confirm') {
+    emit('confirm', action)
   }
 
   emit('click:action', action)

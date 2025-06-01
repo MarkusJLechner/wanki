@@ -198,6 +198,11 @@ const deckOptions = computed(() => [
     },
   },
   {
+    text: 'Browse cards',
+    route: '/deck/browse',
+    routeQuery: { deckid: modelOptionDeckId.value },
+  },
+  {
     text: 'Deck options',
     route: '/deck/options',
     routeQuery: { deckid: modelOptionDeckId.value },

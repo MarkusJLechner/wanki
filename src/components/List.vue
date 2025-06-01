@@ -17,7 +17,7 @@
       :style="item.style"
       :class="{
         seperator: item.type === 'seperator',
-        [item.class]: item.class,
+        ...(item.class ? { [item.class]: true } : {}),
         'my-2': getSubText(item),
         'px-4 py-3': dense,
         'px-4 py-4': !dense,
@@ -35,7 +35,7 @@
       <i
         v-if="getIcon(item)"
         class="pr-4"
-        :class="{ [getIcon(item)]: getIcon(item) }"
+        :class="getIcon(item) ? { [getIcon(item)]: true } : {}"
       />
       <div class="flex grow items-center">
         <span v-if="getText(item)" class="flex flex-col">

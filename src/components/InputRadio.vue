@@ -4,12 +4,12 @@
       <div
         class="relative mr-3 h-6 w-6 rounded-full border-2 bg-white dark:border-white dark:bg-gray-700"
         :class="{
-          'border-blue-500 p-1 dark:border-blue-500': item.selected,
-          'border-gray-500': !item.selected,
+          'border-blue-500 p-1 dark:border-blue-500': (item as Item).selected,
+          'border-gray-500': !(item as Item).selected,
         }"
       >
         <div
-          v-if="item.selected"
+          v-if="(item as Item).selected"
           class="absolute h-3 w-3 rounded-full bg-blue-500"
         ></div>
       </div>
@@ -21,10 +21,11 @@
 import { watch, onMounted } from 'vue'
 import List from '@/components/List.vue'
 
-interface Item {
+import type { ListItem } from '@/components/List'
+
+interface Item extends ListItem {
   value: string | number
   selected?: boolean
-  [key: string]: unknown
 }
 
 interface Props {
@@ -52,8 +53,10 @@ const initValue = () => {
   )
 }
 
-const onClick = (item: Item) => {
-  const selected = props.items.indexOf(item)
+const onClick = (item: ListItem) => {
+  // Cast to Item type to access required properties
+  const itemAsItem = item as Item
+  const selected = props.items.indexOf(itemAsItem)
   emit(
     'update:items',
     props.items.map((item, index) => {

@@ -54,6 +54,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/DeckOptions.vue'),
   },
   {
+    path: '/deck/browse',
+    name: 'DeckBrowse',
+    component: () => import('pages/BrowseCards.vue'),
+  },
+  {
     path: '/card/info',
     name: 'CardInfo',
     component: () => import('pages/CardInfo.vue'),

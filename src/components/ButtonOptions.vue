@@ -30,12 +30,11 @@ import ButtonIcon from '@/components/ButtonIcon.vue'
 import List from '@/components/List.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
-interface Item {
-  text?: string
-  value?: string | number | boolean | object | null | undefined
+import type { ListItem } from '@/components/List'
+
+interface Item extends ListItem {
   emit?: string
-  // Using more specific types instead of any
-  [key: string]: string | number | boolean | object | null | undefined
+  value?: string | number | boolean | object | null | undefined
 }
 
 interface Props {
@@ -78,11 +77,12 @@ const onClose = (): void => {
   show.value = false
 }
 
-const onClickItem = (item: Item): void => {
-  if (item.emit) {
-    // item.emit is already a string type, no need for type assertion
-    emit(item.emit, item)
+const onClickItem = (item: ListItem): void => {
+  // Cast to Item type to access the emit property
+  const itemAsItem = item as Item
+  if (itemAsItem.emit) {
+    emit(itemAsItem.emit, itemAsItem)
   }
-  emit('item', item)
+  emit('item', itemAsItem)
 }
 </script>
