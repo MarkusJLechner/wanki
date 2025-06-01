@@ -1,18 +1,16 @@
-import { ColTableType, wankidb } from '@/plugins/wankidb/db'
+import { ColTableType, DconfTableType, wankidb } from '@/plugins/wankidb/db'
 
 export async function cardDeckConfig(
   card: unknown,
   dynamicDeck = false,
-): Promise<Record<string, unknown>> {
+): Promise<DconfTableType> {
   const deckId = (card as { did?: number; odid?: number })[
     dynamicDeck ? 'odid' : 'did'
   ]
   return deckConfig(deckId as number)
 }
 
-export async function deckConfig(
-  deckId: number,
-): Promise<Record<string, unknown>> {
+export async function deckConfig(deckId: number): Promise<DconfTableType> {
   deckId = +deckId || 1
   const deck = await wankidb.decks.get({ id: deckId })
   if (!deck) {
@@ -30,10 +28,9 @@ export async function deckConfig(
     }
   }
 
-  return (await wankidb.dconf.get({ id: configId })) as unknown as Record<
-    string,
-    unknown
-  >
+  return (await wankidb.dconf.get({
+    id: configId,
+  })) as unknown as DconfTableType
 }
 
 export async function getCol(): Promise<Record<string, unknown>> {

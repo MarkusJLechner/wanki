@@ -73,7 +73,7 @@ export async function getNextCard(
 
   if (!next && newCards[0]) {
     const deck = await wankidb.decks.get({ id: deckId })
-    const conf = (await deckConfig(deckId)) as any
+    const conf = await deckConfig(deckId)
 
     let allowNew = true
     if (deck && conf) {
@@ -114,7 +114,7 @@ export async function getDueCounts(
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
   const deck = await wankidb.decks.get({ id: deckId })
-  const conf = (await deckConfig(deckId)) as any
+  const conf = await deckConfig(deckId)
   const { today } = await collectionCreatedAt()
   const now = Date.now()
 
@@ -123,23 +123,23 @@ export async function getDueCounts(
   let learnCount = 0
 
   cards.forEach((card) => {
-    switch (card.type) {
-      case CardType.New:
+    switch (card.queue) {
+      case QueueType.New:
         newCount += 1
         break
-      case CardType.Learn:
-        if (
-          card.queue === QueueType.DayLearnRelearn
-            ? card.due && card.due <= today
-            : card.due && card.due <= now
-        ) {
+      case QueueType.Learn:
+        if (card.due !== undefined && card.due <= now) {
           learnCount += 1
         }
         break
-      case CardType.Review:
-      case CardType.Relearning:
+      case QueueType.DayLearnRelearn:
+        if (card.due !== undefined && card.due <= today) {
+          learnCount += 1
+        }
+        break
+      case QueueType.Review:
         if (
-          card.due &&
+          card.due !== undefined &&
           ((card.due < 1e12 && card.due <= today) || card.due <= now)
         ) {
           reviewCount += 1
