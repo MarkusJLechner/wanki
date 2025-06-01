@@ -98,9 +98,13 @@ export class Note extends BaseTable {
 
   get model(): Promise<Model> {
     return (async () => {
-      let model = await wankidb.models.get({ id: this.mid })
+      let model = (await wankidb.models.get({
+        id: this.mid,
+      })) as unknown as Model
       if (!model) {
-        model = await wankidb.models.get({ id: '' + this.mid })
+        model = (await wankidb.models.get({
+          id: '' + this.mid,
+        })) as unknown as Model
       }
       return model
     })()

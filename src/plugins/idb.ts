@@ -68,12 +68,14 @@ export const idb = (() => {
     keys: () => Promise<IDBValidKey[]>
     close: () => Promise<void>
   }> => {
-    const dbPromise = await openDB<IDBStore>(dbName, 1, {
+    const dbPromise = (await openDB<IDBStore>(dbName, 1, {
       upgrade(db) {
-        const store = db.createObjectStore(storeName, { autoIncrement: true })
+        const store = (db as any).createObjectStore(storeName, {
+          autoIncrement: true,
+        })
         store.createIndex('index', 'index', { unique: true })
       },
-    })
+    })) as any
 
     function callUpdate(): void {
       if (typeof updateEvent === 'function') {
@@ -88,13 +90,13 @@ export const idb = (() => {
     }
 
     async function get(key: string | number): Promise<StoreValue> {
-      return dbPromise.get(storeName, '' + key) as Promise<StoreValue>
+      return dbPromise.get(storeName as any, '' + key) as Promise<StoreValue>
     }
     async function set(
       key: string | number,
       val: StoreValue,
     ): Promise<IDBValidKey> {
-      const result = await dbPromise.put(storeName, val, '' + key)
+      const result = await dbPromise.put(storeName as any, val, '' + key)
       callUpdate()
       return result
     }
@@ -106,12 +108,12 @@ export const idb = (() => {
       return await set(key, updateFn(result))
     }
     async function del(key: string | number): Promise<void> {
-      const result = await dbPromise.delete(storeName, '' + key)
+      const result = await dbPromise.delete(storeName as any, '' + key)
       callUpdate()
       return result
     }
     async function clear(): Promise<void> {
-      const result = await dbPromise.clear(storeName)
+      const result = await dbPromise.clear(storeName as any)
       callUpdate()
       return result
     }
@@ -121,7 +123,7 @@ export const idb = (() => {
     async function all(): Promise<StoreValue[]> {
       return dbPromise.getAll(storeName) as Promise<StoreValue[]>
     }
-    function close(): void {
+    async function close(): Promise<void> {
       dbPromise.close()
     }
 
@@ -183,10 +185,22 @@ export const importDeck = async (
     }
     return json
   }
-  const models = Object.values(cast(col[0].models) || {})
-  const decks = Object.values(cast(col[0].decks) || {})
-  const dconf = Object.values(cast(col[0].dconf) || {})
-  const tags = Object.values(cast(col[0].tags) || {})
+  const models = Object.values(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    cast(col[0].models as unknown as string | Record<string, unknown>) || {},
+  ) as Record<string, unknown>[]
+  const decks = Object.values(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    cast(col[0].decks as unknown as string | Record<string, unknown>) || {},
+  ) as Record<string, unknown>[]
+  const dconf = Object.values(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    cast(col[0].dconf as unknown as string | Record<string, unknown>) || {},
+  ) as Record<string, unknown>[]
+  const tags = Object.values(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    cast(col[0].tags as unknown as string | Record<string, unknown>) || {},
+  ) as Record<string, unknown>[]
 
   delete col[0].models
   delete col[0].decks
@@ -320,9 +334,10 @@ export const updateDeckParsed = async (
 
   await (
     await idbDecks
-  ).update(deckId, (result: Deck) => {
-    result.tables.col = tableCol
-    return result
+  ).update(deckId, (result) => {
+    const deck = result as unknown as Deck
+    deck.tables.col = tableCol
+    return deck as unknown as StoreValue
   })
 }
 
@@ -331,8 +346,9 @@ export const saveDirtySql = async (deckId: string | number): Promise<void> => {
 
   await (
     await idbDecks
-  ).update(deckId, (result: Deck) => {
-    result.decompressedFile.collection = uint8Array
-    return result
+  ).update(deckId, (result) => {
+    const deck = result as unknown as Deck
+    deck.decompressedFile.collection = uint8Array
+    return deck as unknown as StoreValue
   })
 }

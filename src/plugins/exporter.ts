@@ -1,5 +1,5 @@
 import { idbDecks } from '@/plugins/idb'
-import { zipSync } from 'fflate'
+import { zipSync, ZipOptions } from 'fflate'
 
 interface DecompressedFile {
   collection: Uint8Array
@@ -17,7 +17,9 @@ interface Deck {
 }
 
 export const exportDeck = async (deckId: string): Promise<void> => {
-  const deck = (await (await idbDecks).get(deckId)) as Deck | undefined
+  const deck = (await (await idbDecks).get(deckId)) as unknown as
+    | Deck
+    | undefined
   if (!deck) {
     throw new Error('Could not find deck')
   }
@@ -45,8 +47,6 @@ export const exportDeck = async (deckId: string): Promise<void> => {
   const compressed = await new Promise<Uint8Array>((resolve) => {
     resolve(
       zipSync(decompressedFile, {
-        // GZIP-specific: the filename to use when decompressed
-        filename,
         // Higher level means lower performance but better compression
         // The level ranges from 0 (no compression) to 9 (max compression)
         // The default level is 6
@@ -54,7 +54,7 @@ export const exportDeck = async (deckId: string): Promise<void> => {
         // GZIP-specific: the modification time. Can be a Date, date string,
         // or Unix timestamp
         mtime: new Date().toISOString(),
-      }),
+      } as unknown as ZipOptions),
     )
   })
 

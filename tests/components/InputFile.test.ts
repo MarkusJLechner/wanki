@@ -9,6 +9,7 @@ describe('InputFile.vue', () => {
     const file = new File(['hello'], 'hello.txt', { type: 'text/plain' })
     Object.defineProperty(input.element, 'files', { value: [file] })
     await input.trigger('input')
-    expect(wrapper.emitted('select')?.[0][0][0]).toBe(file)
+    const emitted = wrapper.emitted('select') as unknown as Array<any[]>
+    expect(emitted?.[0][0][0]).toBe(file)
   })
 })

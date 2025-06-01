@@ -3,7 +3,7 @@ import { defaultSettings } from './defaultSettings'
 import { resolveObjectPath } from './utils'
 
 export const vibrate = (pattern: number = 30): void => {
-  if (refstorage.getSetting(defaultSettings.general.vibrate)) {
+  if (refstorage.getSetting(defaultSettings.general.vibrate as any)) {
     navigator.vibrate(pattern)
   }
 }
@@ -100,9 +100,10 @@ export function promptFile(
 
   return new Promise(function (resolve, reject) {
     try {
-      document.activeElement!.onfocus = function () {
-        if (document.activeElement) {
-          document.activeElement.onfocus = null
+      ;(document.activeElement as HTMLElement | null)!.onfocus = function () {
+        const active = document.activeElement as HTMLElement | null
+        if (active) {
+          active.onfocus = null
         }
         setTimeout(resolve, 200)
       }
@@ -218,7 +219,7 @@ export function getMediaFromNote(string: string): MediaMatch[] {
       regex.lastIndex++
     }
     if (m.groups) {
-      matches.push(m.groups as MediaMatch)
+      matches.push(m.groups as unknown as MediaMatch)
     }
   }
 

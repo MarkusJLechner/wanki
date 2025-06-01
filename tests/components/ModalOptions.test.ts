@@ -11,7 +11,7 @@ vi.mock('../../src/components/List.vue', () => ({
     template: `<ul class='list' @click="emitItem"></ul>`,
     methods: {
       emitItem() {
-        this.$emit('item', { text: 'x' })
+        ;(this as any).$emit('item', { text: 'x' })
       },
     },
   },

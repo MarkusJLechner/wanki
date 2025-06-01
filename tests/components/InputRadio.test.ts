@@ -15,13 +15,13 @@ describe('InputRadio.vue', () => {
     const items = [{ value: 'a' }, { value: 'b' }]
     const wrapper = mount(InputRadio, { props: { items } })
     await wrapper.find('li').trigger('click')
-    const emitted = wrapper.emitted('update:items')?.pop()?.[0]
-    expect(emitted[0].selected).toBe(true)
+    const emitted = wrapper.emitted('update:items')?.pop() as any[] | undefined
+    expect(emitted?.[0][0].selected).toBe(true)
   })
 
   it('initial selection from value prop', () => {
     const items = [{ value: 'a' }, { value: 'b' }]
     mount(InputRadio, { props: { items, value: 'b' } })
-    expect(items[1].selected).toBe(true)
+    expect((items[1] as any).selected).toBe(true)
   })
 })

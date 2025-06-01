@@ -1,10 +1,13 @@
 import { ColTableType, wankidb } from '@/plugins/wankidb/db'
 
 export async function cardDeckConfig(
-  card: Record<string, unknown>,
+  card: unknown,
   dynamicDeck = false,
 ): Promise<Record<string, unknown>> {
-  return deckConfig(card[dynamicDeck ? 'odid' : 'did'] as number)
+  const deckId = (card as { did?: number; odid?: number })[
+    dynamicDeck ? 'odid' : 'did'
+  ]
+  return deckConfig(deckId as number)
 }
 
 export async function deckConfig(

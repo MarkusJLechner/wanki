@@ -73,7 +73,7 @@ export async function getNextCard(
 
   if (!next && newCards[0]) {
     const deck = await wankidb.decks.get({ id: deckId })
-    const conf = await deckConfig(deckId)
+    const conf = (await deckConfig(deckId)) as any
 
     let allowNew = true
     if (deck && conf) {
@@ -114,7 +114,7 @@ export async function getDueCounts(
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
   const deck = await wankidb.decks.get({ id: deckId })
-  const conf = await deckConfig(deckId)
+  const conf = (await deckConfig(deckId)) as any
   const { today } = await collectionCreatedAt()
   const now = Date.now()
 

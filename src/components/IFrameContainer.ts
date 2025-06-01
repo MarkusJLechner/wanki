@@ -9,6 +9,7 @@ import {
   Ref,
   PropType,
   SetupContext,
+  ComponentPublicInstance,
 } from 'vue'
 
 export default {
@@ -30,7 +31,7 @@ export default {
     const iframeBody: Ref<HTMLElement | null> = ref(null)
     const iframeHead: Ref<HTMLElement | null> = ref(null)
     const iframeStyle: Ref<HTMLStyleElement | null> = ref(null)
-    let iframeApp: ReturnType<typeof createApp> | null = null
+    let iframeApp: ComponentPublicInstance | null = null
     let resizeObserver: ResizeObserver | null = null
 
     // Function to adjust iframe height based on content

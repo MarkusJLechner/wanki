@@ -268,11 +268,11 @@ export class Card extends BaseTable {
   }
 
   get note(): Promise<Note> {
-    return wankidb.notes.get({ id: this.nid })
+    return wankidb.notes.get({ id: this.nid }) as unknown as Promise<Note>
   }
 
   get deck(): Promise<Deck> {
-    return wankidb.decks.get({ id: this.did })
+    return wankidb.decks.get({ id: this.did }) as unknown as Promise<Deck>
   }
 
   get model(): Promise<Model> {
@@ -398,7 +398,7 @@ export class Card extends BaseTable {
     const conf = (await cardDeckConfig(
       this,
       this.isInDynamicDeck(),
-    )) as DeckConfig
+    )) as unknown as DeckConfig
     // Return the max time in milliseconds
     return conf.maxTaken * 1000
   }

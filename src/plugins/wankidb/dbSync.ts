@@ -60,7 +60,7 @@ interface DexieWithSyncable {
       sync(
         context: SyncContext,
         url: string,
-        options: SyncProtocolOptions,
+        _options: SyncProtocolOptions,
         baseRevision: unknown,
         syncedRevision: unknown,
         changes: unknown[],
@@ -134,9 +134,9 @@ interface DexieWithSyncable {
         }
 
         // If network down or other error, tell the framework to reconnect again in some time:
-        ws.onerror = ({ message }) => {
+        ws.onerror = (event) => {
           ws.close()
-          onError(message, RECONNECT_DELAY)
+          onError((event as { message?: string }).message, RECONNECT_DELAY)
         }
 
         // If socket is closed (network disconnected), inform framework and make it reconnect
