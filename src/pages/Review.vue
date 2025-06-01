@@ -8,6 +8,7 @@
         :show-dot="showDebugDot"
         @click="toggleDebugging"
       />
+      <ButtonIcon icon="fas fa-undo" @click="onUndo" />
       <ButtonIcon icon="fas fa-info-circle" @click="onInfo" />
       <ButtonOptions
         :value="[
@@ -79,6 +80,7 @@ import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import type { Deck } from 'plugins/wankidb/Deck.ts'
+import type { Card } from 'plugins/wankidb/Card.ts'
 import { refstorage } from '@/store/globalstate'
 import { getTimeOffset } from '@/plugins/time'
 
@@ -120,6 +122,11 @@ function updateDueText() {
   const deltas = previewCard(card.value)
   dueText.value = deltas.map((ms) => formatDue(ms))
 }
+const undoStack: Array<{
+  card: Partial<Card>
+  deck: Partial<Deck>
+  revlogId?: number
+}> = []
 
 // Initialize timer and load deck
 timer.value = createTimer({
@@ -173,7 +180,9 @@ const toggleDebugging = () => {
 }
 
 const onClickOptions = (item) => {
-  console.log(item)
+  if (item?.value === 'undo') {
+    void onUndo()
+  }
 }
 
 const onInfo = () => {
@@ -181,6 +190,39 @@ const onInfo = () => {
     return
   }
   void router.push({ path: '/card/info', query: { cardid: card.value.id } })
+}
+
+const onUndo = async () => {
+  const entry = undoStack.pop()
+  if (!entry) {
+    return
+  }
+
+  if (entry.revlogId) {
+    await wankidb.revlog.delete(entry.revlogId)
+  }
+
+  if (entry.deck) {
+    // following throws error. but is this needed?
+    // why save back to deck?
+    //await wankidb.decks.put(entry.deck)
+    //deck.value = (await wankidb.decks.get({ id: entry.deck.id })) as Deck
+  }
+
+  if (entry.card) {
+    await wankidb.cards.put(entry.card)
+    const prevCard = (await wankidb.cards.get({
+      id: entry.card.id,
+    })) as Card | undefined
+    if (prevCard) {
+      card.value = prevCard
+      current.value = cardTypeIndex(prevCard)
+    }
+  }
+
+  remaining.value = await getDueCounts(deckid.value)
+  showAnswer.value = false
+  timer.value.reset()
 }
 
 const onShow = () => {
@@ -194,7 +236,17 @@ const onRating = async (ease) => {
     return
   }
   try {
+    const undoEntry: { card: any; deck: any; revlogId?: number } = {
+      card: card.value.getObj(),
+      deck: deck.value ? deck.value.getObj() : {},
+    }
+
     await answerCard(card.value, ease)
+
+    const lastLog = await wankidb.revlog.where({ cid: card.value.id }).last()
+    undoEntry.revlogId = lastLog?.id
+    undoStack.push(undoEntry)
+
     await loadNextCard()
 
     showAnswer.value = false
