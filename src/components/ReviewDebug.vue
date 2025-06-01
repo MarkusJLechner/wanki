@@ -1,96 +1,223 @@
 <template>
   <div
     v-if="card"
-    class="fixed right-0 bottom-48 left-0 z-20 -mt-3 h-64 overflow-y-auto bg-black/60 px-6 text-xs opacity-90 backdrop-blur-xs"
+    class="fixed right-0 bottom-62 left-0 z-20 -mt-3 h-64 overflow-y-auto rounded-t-lg bg-black/80 px-6 py-4 text-xs opacity-95 shadow-2xl backdrop-blur-md"
   >
-    <div class="text-yellow-500">Deck ID: {{ deck.id }}</div>
-    <div class="mb-1 text-yellow-400">Deck Name: {{ deck.name }}</div>
-    <div class="font-bold text-blue-300">Card:</div>
-    <div>id: {{ card.id }}</div>
-    <div>nid: {{ card.nid }}</div>
-    <div>did: {{ card.did }}</div>
-    <div>ord: {{ card.ord }}</div>
-    <div>mod: {{ card.mod }}</div>
-    <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
-    <div>usn: {{ card.usn }}</div>
-    <div>type: {{ card.type }}</div>
-    <div>cardType: {{ card.cardType }}</div>
-    <div>queue: {{ card.queue }}</div>
-    <div>queueType: {{ card.queueType }}</div>
-    <div>due: {{ card.due }}</div>
-    <div>due: {{ new Date(card.due).toLocaleString() }}</div>
-    <Promise :promise="card.dueDate">
-      <template #default="{ result }">
-        <div>dueDate: {{ result?.toLocaleString() }}</div>
-      </template>
-    </Promise>
-    <div>ivl: {{ card.ivl }}</div>
-    <div>factor: {{ card.factor }}</div>
-    <div>reps: {{ card.reps }}</div>
-    <div>lapses: {{ card.lapses }}</div>
-    <div>left: {{ card.left }}</div>
-    <div>odue: {{ card.odue }}</div>
-    <div>odid: {{ card.odid }}</div>
-    <div>flags: {{ card.flags }}</div>
-    <div>data: {{ card.data }}</div>
-    <div class="font-bold text-blue-300">NOTE:</div>
-    <div v-if="note">
-      <div v-html="getFields().join(' ')"></div>
-      <div>Tags: {{ note.tags }}</div>
-      <div>flags: {{ note.flags }}</div>
-      <div>usn: {{ note.usn }}</div>
-      <div>csum: {{ note.csum }}</div>
-      <div>mid: {{ note.mid }}</div>
-      <div>mod: {{ note.mod }}</div>
-      <div>mod: {{ new Date(card.mod * 1000).toLocaleString() }}</div>
+    <div class="mb-3">
+      <div class="mb-2 flex gap-4">
+        <div class="font-semibold text-yellow-500">Deck ID:</div>
+        <div class="text-yellow-100">{{ deck?.id }}</div>
+      </div>
+      <div class="mb-2 flex gap-4">
+        <div class="font-semibold text-yellow-400">Deck Name:</div>
+        <div class="text-yellow-100">{{ deck?.name }}</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <div class="mb-1 font-bold text-blue-300">Card</div>
+      <div
+        class="grid grid-cols-2 gap-x-4 gap-y-1 rounded-md bg-blue-900/30 p-3 md:grid-cols-3"
+      >
+        <template v-for="(value, key) in cardFields" :key="key">
+          <div class="font-medium text-blue-200">{{ key }}:</div>
+          <div class="col-span-1 break-all text-blue-50 md:col-span-2">
+            <span v-if="key === 'mod (date)' || key === 'due (date)'">{{
+              value
+            }}</span>
+            <span v-else>{{ value }}</span>
+          </div>
+        </template>
+        <Promise :promise="card.dueDate">
+          <template #default="{ result }">
+            <div class="font-medium text-blue-200">dueDate:</div>
+            <div class="col-span-1 break-all text-blue-50 md:col-span-2">
+              {{ result?.toLocaleString() }}
+            </div>
+          </template>
+        </Promise>
+      </div>
+    </div>
+    <div class="mb-3" v-if="note">
+      <div class="mb-1 font-bold text-blue-300">Note</div>
+      <div class="grid gap-y-1 rounded-md bg-green-900/20 p-3">
+        <div v-html="getFields().join(' ')" class="mb-1"></div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">Tags:</span>
+          <span class="text-green-50">{{ note.tags }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">flags:</span>
+          <span class="text-green-50">{{ note.flags }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">usn:</span>
+          <span class="text-green-50">{{ note.usn }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">csum:</span>
+          <span class="text-green-50">{{ note.csum }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">mid:</span>
+          <span class="text-green-50">{{ note.mid }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">mod:</span>
+          <span class="text-green-50">{{ note.mod }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-green-200">mod (date):</span>
+          <span class="text-green-50">{{
+            new Date(card.mod * 1000).toLocaleString()
+          }}</span>
+        </div>
+      </div>
       <Promise :promise="card.model">
         <template #default="{ result: model, loading }">
-          <div class="font-bold text-blue-300">MODEL:</div>
-          <div v-if="loading">loading</div>
-          <div v-else>
-            <div>id: {{ model.id }}</div>
-            <div>vers: {{ model.vers }}</div>
-            <div>name: {{ model.name }}</div>
-            <div>tags: {{ model.tags }}</div>
-            <div>did: {{ model.did }}</div>
-            <div>usn: {{ model.usn }}</div>
-            <div>req: {{ model.req }}</div>
-            <div>flds: {{ model.flds }}</div>
-            <div>sortf: {{ model.sortf }}</div>
-            <div>tmpls: {{ model.tmpls }}</div>
-            <div>mod: {{ model.mod }}</div>
-            <div>latexPost: {{ model.latexPost }}</div>
-            <div>type: {{ model.type }}</div>
-            <div>css: {{ model.css }}</div>
-            <div>latexPre: {{ model.latexPre }}</div>
+          <div class="mt-3 mb-1 font-bold text-blue-300">Model</div>
+          <div v-if="loading" class="text-blue-200">loading…</div>
+          <div v-else class="grid gap-y-1 rounded-md bg-indigo-900/20 p-3">
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">id:</span
+              ><span class="text-indigo-50">{{ model.id }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">vers:</span
+              ><span class="text-indigo-50">{{ model.vers }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">name:</span
+              ><span class="text-indigo-50">{{ model.name }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">tags:</span
+              ><span class="text-indigo-50">{{ model.tags }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">did:</span
+              ><span class="text-indigo-50">{{ model.did }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">usn:</span
+              ><span class="text-indigo-50">{{ model.usn }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">req:</span
+              ><span class="text-indigo-50">{{ model.req }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">flds:</span
+              ><span class="text-indigo-50">{{ model.flds }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">sortf:</span
+              ><span class="text-indigo-50">{{ model.sortf }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">tmpls:</span
+              ><span class="text-indigo-50">{{ model.tmpls }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">mod:</span
+              ><span class="text-indigo-50">{{ model.mod }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">latexPost:</span
+              ><span class="text-indigo-50">{{ model.latexPost }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">type:</span
+              ><span class="text-indigo-50">{{ model.type }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">css:</span
+              ><span class="text-indigo-50">{{ model.css }}</span>
+            </div>
+            <div class="flex gap-2">
+              <span class="font-medium text-indigo-200">latexPre:</span
+              ><span class="text-indigo-50">{{ model.latexPre }}</span>
+            </div>
           </div>
         </template>
       </Promise>
     </div>
-    <div class="font-bold text-blue-300">DECK:</div>
-    <div v-if="deck">
-      <div>browserCollapsed: {{ deck.browserCollapsed }}</div>
-      <div>collapsed: {{ deck.collapsed }}</div>
-      <div>conf: {{ deck.conf }}</div>
-      <div>desc: {{ deck.desc }}</div>
-      <div>dyn: {{ deck.dyn }}</div>
-      <div>extendNew: {{ deck.extendNew }}</div>
-      <div>extendRev: {{ deck.extendRev }}</div>
-      <div>id: {{ deck.id }}</div>
-      <div>lrnToday: {{ deck.lrnToday }}</div>
-      <div>mod: {{ deck.mod }}</div>
-      <div>mod: {{ new Date(deck.mod * 1000).toLocaleString() }}</div>
-      <div>name: {{ deck.name }}</div>
-      <div>newToday: {{ deck.newToday }}</div>
-      <div>revToday: {{ deck.revToday }}</div>
-      <div>timeToday: {{ deck.timeToday }}</div>
-      <div>usn: {{ deck.usn }}</div>
+    <div v-if="deck" class="mb-1">
+      <div class="mb-1 font-bold text-blue-300">Deck</div>
+      <div class="grid gap-y-1 rounded-md bg-yellow-900/20 p-3">
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">browserCollapsed:</span
+          ><span class="text-yellow-50">{{ deck.browserCollapsed }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">collapsed:</span
+          ><span class="text-yellow-50">{{ deck.collapsed }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">conf:</span
+          ><span class="text-yellow-50">{{ deck.conf }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">desc:</span
+          ><span class="text-yellow-50">{{ deck.desc }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">dyn:</span
+          ><span class="text-yellow-50">{{ deck.dyn }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">extendNew:</span
+          ><span class="text-yellow-50">{{ deck.extendNew }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">extendRev:</span
+          ><span class="text-yellow-50">{{ deck.extendRev }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">id:</span
+          ><span class="text-yellow-50">{{ deck.id }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">lrnToday:</span
+          ><span class="text-yellow-50">{{ deck.lrnToday }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">mod:</span
+          ><span class="text-yellow-50">{{ deck.mod }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">mod (date):</span
+          ><span class="text-yellow-50">{{
+            new Date(deck.mod * 1000).toLocaleString()
+          }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">name:</span
+          ><span class="text-yellow-50">{{ deck.name }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">newToday:</span
+          ><span class="text-yellow-50">{{ deck.newToday }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">revToday:</span
+          ><span class="text-yellow-50">{{ deck.revToday }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">timeToday:</span
+          ><span class="text-yellow-50">{{ deck.timeToday }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-medium text-yellow-200">usn:</span
+          ><span class="text-yellow-50">{{ deck.usn }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Promise from '@/components/Promise.vue'
+import { computed } from 'vue'
 
 interface Props {
   card?: Record<string, any> | null
@@ -105,12 +232,47 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 function getFields(): string[] {
-  if (!props.note) {
-    return []
-  }
-
+  if (!props.note) return []
   return props.note.flds.split('\u001f')
 }
+
+const cardFields = computed(() => {
+  if (!props.card) return {}
+  const c = props.card
+  return {
+    id: c.id,
+    nid: c.nid,
+    did: c.did,
+    ord: c.ord,
+    mod: c.mod,
+    'mod (date)': new Date(c.mod * 1000).toLocaleString(),
+    usn: c.usn,
+    type: c.type,
+    cardType: c.cardType,
+    queue: c.queue,
+    queueType: c.queueType,
+    due: c.due,
+    'due (date)': new Date(c.due).toLocaleString(),
+    ivl: c.ivl,
+    factor: c.factor,
+    reps: c.reps,
+    lapses: c.lapses,
+    left: c.left,
+    odue: c.odue,
+    odid: c.odid,
+    flags: c.flags,
+    data: c.data,
+  }
+})
 </script>
 
-<style scoped></style>
+<style scoped>
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 6px;
+}
+</style>
