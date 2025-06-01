@@ -28,7 +28,7 @@ import Group from '@/components/Group.vue'
 import MainContent from '@/components/MainContent.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
-import { ListItem } from 'components/List.ts'
+import type { ListItem } from 'components/List.ts'
 
 const listItemsSync: ListItem[] = [
   {

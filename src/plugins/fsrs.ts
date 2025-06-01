@@ -1,4 +1,4 @@
-import { fsrs, Grade, Rating, State } from 'ts-fsrs'
+import { fsrs, type Grade, Rating, State } from 'ts-fsrs'
 import { wankidb } from '@/plugins/wankidb/db'
 import type { Card } from '@/plugins/wankidb/Card'
 import { CardType, QueueType } from '@/plugins/consts'

@@ -1,6 +1,6 @@
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
 import { wankidb } from '@/plugins/wankidb/db'
-import {
+import type {
   Configuration,
   DecksObject,
   DConfObject,

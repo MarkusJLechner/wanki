@@ -1,4 +1,5 @@
-import { ColTableType, DconfTableType, wankidb } from '@/plugins/wankidb/db'
+import { wankidb } from '@/plugins/wankidb/db'
+import type { ColTableType, DconfTableType } from '@/plugins/wankidb/db'
 import { now } from '@/plugins/time'
 
 export async function cardDeckConfig(

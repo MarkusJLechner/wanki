@@ -1,5 +1,6 @@
 import { idbDecks } from '@/plugins/idb'
-import { zipSync, ZipOptions } from 'fflate'
+import { zipSync } from 'fflate'
+import type { ZipOptions } from 'fflate'
 
 interface DecompressedFile {
   collection: Uint8Array

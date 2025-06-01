@@ -23,7 +23,7 @@ import ButtonIcon from '@/components/ButtonIcon.vue'
 import Sidepanel from '@/components/Sidepanel.vue'
 import SidepanelHeader from '@/components/SidepanelHeader.vue'
 import { wipeDatabase } from '@/plugins/wankidb/db'
-import { ListItem } from 'components/List.ts'
+import type { ListItem } from 'components/List.ts'
 import { defaultSettings } from 'plugins/defaultSettings.ts'
 
 interface Props {

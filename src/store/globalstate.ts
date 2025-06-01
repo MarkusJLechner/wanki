@@ -1,12 +1,12 @@
-import { ref, watch, Ref } from 'vue'
+import { ref, watch, type Ref } from 'vue'
 import { vibrate } from '@/plugins/global'
 import { resolveObjectPath } from '@/plugins/utils'
 import { nanoid } from 'nanoid'
 import { ToastType } from '@/plugins/consts'
 import {
-  DefaultSettings,
+  type DefaultSettings,
   defaultSettings,
-  StorageKey,
+  type StorageKey,
 } from '@/plugins/defaultSettings'
 
 interface StoreItemSubscribers {

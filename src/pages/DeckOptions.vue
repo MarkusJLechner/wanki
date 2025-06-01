@@ -26,7 +26,7 @@ import TheHeader from '@/components/TheHeader.vue'
 import MainContent from '@/components/MainContent.vue'
 import Group from '@/components/Group.vue'
 import List from '@/components/List.vue'
-import { ListItem } from '@/components/List'
+import type { ListItem } from '@/components/List'
 
 const route = useRoute()
 const router = useRouter()

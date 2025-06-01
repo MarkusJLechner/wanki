@@ -6,11 +6,8 @@ import {
   onBeforeUpdate,
   watch,
   onUnmounted,
-  Ref,
-  PropType,
-  SetupContext,
-  ComponentPublicInstance,
 } from 'vue'
+import type { Ref, PropType, SetupContext, ComponentPublicInstance } from 'vue'
 
 export default {
   name: 'IFrameContainer',

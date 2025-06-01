@@ -72,7 +72,7 @@ import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
-import { ListItem, ListItemRadio, RadioItem } from 'components/List.ts'
+import type { ListItem, ListItemRadio, RadioItem } from 'components/List.ts'
 
 const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),

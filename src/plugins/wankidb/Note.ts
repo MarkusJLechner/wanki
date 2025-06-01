@@ -2,7 +2,7 @@ import { wankidb } from '@/plugins/wankidb/db'
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
 
 // Import the Model interface from Card.ts
-import { Model } from './Card'
+import { type Model } from './Card'
 
 wankidb.notes.hook('reading', (obj) => Object.assign(new Note(), obj))
 

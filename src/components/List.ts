@@ -1,4 +1,4 @@
-import { StorageKey } from 'plugins/defaultSettings.ts'
+import type { StorageKey } from 'plugins/defaultSettings.ts'
 
 export interface RadioItem {
   /**

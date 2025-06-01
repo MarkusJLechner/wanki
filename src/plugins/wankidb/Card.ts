@@ -2,10 +2,10 @@ import { wankidb } from '@/plugins/wankidb/db'
 import { BaseTable } from '@/plugins/wankidb/BaseTable'
 import {
   CardType,
-  CardTypeValues,
+  type CardTypeValues,
   getConstName,
   QueueType,
-  QueueTypeValues,
+  type QueueTypeValues,
 } from '@/plugins/consts'
 import { cardDeckConfig } from '@/plugins/collection'
 import { collectionCreatedAt, rolloverHour } from '@/plugins/fsrs'

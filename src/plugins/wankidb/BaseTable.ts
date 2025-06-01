@@ -1,6 +1,6 @@
 // https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
 
-import { DatabaseNameType, wankidb } from '@/plugins/wankidb/db'
+import { type DatabaseNameType, wankidb } from '@/plugins/wankidb/db'
 
 export class BaseTable<COLUMNS extends string[] = string[]> {
   tableName: DatabaseNameType

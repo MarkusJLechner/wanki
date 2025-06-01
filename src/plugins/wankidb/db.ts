@@ -2,7 +2,7 @@ import Dexie from 'dexie'
 import 'dexie-observable'
 import 'dexie-syncable'
 // import './dbSync'
-import { Configuration } from '@/plugins/wankidb/types'
+import { type Configuration } from '@/plugins/wankidb/types'
 import { isObject } from 'plugins/utils.ts'
 
 export const databaseName = 'wankidb'

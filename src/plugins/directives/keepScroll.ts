@@ -1,4 +1,4 @@
-import { DirectiveBinding, ObjectDirective } from 'vue'
+import type { DirectiveBinding, ObjectDirective } from 'vue'
 
 interface ScrollPosition {
   left: number

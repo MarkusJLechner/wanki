@@ -1,4 +1,4 @@
-import { DirectiveBinding, ObjectDirective } from 'vue'
+import type { DirectiveBinding, ObjectDirective } from 'vue'
 import { vibrate } from '@/plugins/global'
 
 const PRESS_TIMEOUT = 500

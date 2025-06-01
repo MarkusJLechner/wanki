@@ -14,7 +14,7 @@ import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 import Group from '@/components/Group.vue'
 import { defaultSettings } from '@/plugins/defaultSettings'
-import { ListItem } from 'components/List.ts'
+import type { ListItem } from 'components/List.ts'
 
 const listItemsAudio = ref<ListItem[]>([
   {

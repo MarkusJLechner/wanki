@@ -95,7 +95,7 @@ import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
 import ModalTextfield from '@/components/ModalTextfield.vue'
-import { ListItem, ListProps } from '@/components/List'
+import type { ListItem, ListProps } from '@/components/List'
 const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),
 )

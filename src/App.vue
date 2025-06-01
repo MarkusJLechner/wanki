@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, watch } from 'vue'
-import { useRouter, RouteLocationNormalized } from 'vue-router'
+import { useRouter } from 'vue-router'
+import type { RouteLocationNormalized } from 'vue-router'
 import { clearToasts, refstorage } from '@/store/globalstate'
 import { persist } from '@/plugins/idb'
 import { wankidb } from '@/plugins/wankidb/db'

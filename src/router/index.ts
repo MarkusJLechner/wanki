@@ -1,8 +1,8 @@
 import {
   createWebHashHistory,
   createRouter,
-  RouteRecordRaw,
-  RouteLocationNormalized,
+  type RouteRecordRaw,
+  type RouteLocationNormalized,
 } from 'vue-router'
 import type { RouterScrollBehavior } from 'vue-router'
 

@@ -1,4 +1,4 @@
-import { openDB, DBSchema } from 'idb'
+import { openDB, type DBSchema } from 'idb'
 import Dexie from 'dexie'
 import { exportSqlDb, initSqlDb, sqlDeck, sqlPrepare } from '@/plugins/sql'
 
