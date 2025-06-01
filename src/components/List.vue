@@ -1,9 +1,9 @@
 <template>
-  <RecycleScroller
+  <DynamicScroller
     class="scroller"
     v-bind="$attrs"
     :items="computedValue"
-    :item-size="computedItemSize"
+    :min-item-size="computedItemSize"
     listTag="ul"
     itemTag="li"
     listClass="flex w-full flex-col text-lg"
@@ -11,64 +11,71 @@
     itemClass=""
     key-field="index"
   >
-    <template #default="{ item, index }">
-      <div
-        :style="item.style"
-        v-ripple
-        @click.prevent="onClick(item)"
-        :class="[
-          'relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden',
-          {
-            seperator: item.type === 'seperator',
-            ...(item.class ? { [item.class]: true } : {}),
-            'my-2': getSubText(item),
-            'px-4 py-3': dense,
-            'px-4 py-4': !dense,
-          },
-        ]"
+    <template #default="{ item, index, active }">
+      <DynamicScrollerItem
+        :item="item"
+        :active="active"
+        :size-dependencies="[getText(item), getSubText(item)]"
+        :data-index="index"
       >
-        <component :is="item.component" v-if="item.component" />
-        <hr
-          v-if="item.type === 'seperator'"
-          class="w-full border border-gray-900 dark:border-gray-500"
-        />
+        <div
+          :style="item.style"
+          v-ripple
+          @click.prevent="onClick(item)"
+          :class="[
+            'relative mt-0 mb-0 flex min-h-12 w-full cursor-pointer items-center text-left select-none focus:ring-2 focus:ring-blue-500 focus:outline-hidden',
+            {
+              seperator: item.type === 'seperator',
+              ...(item.class ? { [item.class]: true } : {}),
+              'my-2': getSubText(item),
+              'px-4 py-3': dense,
+              'px-4 py-4': !dense,
+            },
+          ]"
+        >
+          <component :is="item.component" v-if="item.component" />
+          <hr
+            v-if="item.type === 'seperator'"
+            class="w-full border border-gray-900 dark:border-gray-500"
+          />
 
-        <slot name="prefix-item" :item="item" />
+          <slot name="prefix-item" :item="item" />
 
-        <i
-          v-if="getIcon(item)"
-          class="pr-4"
-          :class="getIcon(item) ? { [getIcon(item)]: true } : {}"
-        />
-        <div class="flex grow items-center">
-          <span v-if="getText(item)" class="flex flex-col">
-            {{ getText(item) }}
-            <span
-              v-if="getSubText(item)"
-              class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
-              >{{ getSubText(item) }}</span
-            >
-          </span>
+          <i
+            v-if="getIcon(item)"
+            class="pr-4"
+            :class="getIcon(item) ? { [getIcon(item)]: true } : {}"
+          />
+          <div class="flex grow items-center">
+            <span v-if="getText(item)" class="flex flex-col">
+              {{ getText(item) }}
+              <span
+                v-if="getSubText(item)"
+                class="grow pr-2 text-sm text-gray-600 dark:text-gray-300"
+                >{{ getSubText(item) }}</span
+              >
+            </span>
 
-          <div v-if="callFn(item, 'loading')" class="px-2">
-            <i class="fas fa-spinner fa-spin text-black dark:text-white" />
+            <div v-if="callFn(item, 'loading')" class="px-2">
+              <i class="fas fa-spinner fa-spin text-black dark:text-white" />
+            </div>
           </div>
+
+          <div v-if="hasBoolean(item)">
+            <InputBoolean :model-value="getBoolean(item)" />
+          </div>
+
+          <div v-if="hasText(item)" class="opacity-60">
+            {{ getValueText(item) }}
+          </div>
+
+          <slot name="suffix-item" :item="item" />
+
+          <ListHr v-if="!noSeparation && index < value.length - 1" />
         </div>
-
-        <div v-if="hasBoolean(item)">
-          <InputBoolean :model-value="getBoolean(item)" />
-        </div>
-
-        <div v-if="hasText(item)" class="opacity-60">
-          {{ getValueText(item) }}
-        </div>
-
-        <slot name="suffix-item" :item="item" />
-
-        <ListHr v-if="!noSeparation && index < value.length - 1" />
-      </div>
+      </DynamicScrollerItem>
     </template>
-  </RecycleScroller>
+  </DynamicScroller>
 
   <ModalRadio
     :show="!!radioItem"
@@ -93,7 +100,10 @@
 </template>
 
 <script setup lang="ts">
-import { RecycleScroller } from 'vue-virtual-scroller/dist/vue-virtual-scroller.esm'
+import {
+  DynamicScroller,
+  DynamicScrollerItem,
+} from 'vue-virtual-scroller/dist/vue-virtual-scroller.esm'
 import { defineAsyncComponent, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
