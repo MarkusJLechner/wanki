@@ -92,21 +92,21 @@ const hasRefAudio = computed(() => {
 watch(
   () => props.blob,
   () => {
-    loadAudio()
+    void loadAudio()
   },
 )
 
 watch(
   () => props.objectUrl,
   () => {
-    loadAudio()
+    void loadAudio()
   },
 )
 
 watch(
   () => props.dbMediaString,
   () => {
-    loadAudio()
+    void loadAudio()
   },
 )
 
@@ -114,13 +114,13 @@ watch(
   () => props.autoplay,
   (newValue, oldValue) => {
     if (!oldValue && newValue) {
-      playLoadedAudio()
+      void playLoadedAudio()
     }
   },
 )
 
 onMounted(() => {
-  loadAudio()
+  void loadAudio()
 })
 
 async function loadAudio() {

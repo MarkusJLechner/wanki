@@ -137,7 +137,7 @@ const onInfo = () => {
   if (!card.value) {
     return
   }
-  router.push({ path: '/card/info', query: { cardid: card.value.id } })
+  void router.push({ path: '/card/info', query: { cardid: card.value.id } })
 }
 
 const onShow = () => {

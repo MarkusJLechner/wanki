@@ -205,7 +205,7 @@ onMounted(async () => {
   deckid.value = +(route.query.deckid as string) || 1
   deck.value = await wankidb.decks.get({ id: deckid.value })
   if (!deck.value) {
-    router.push({ path: '/' })
+    void router.push({ path: '/' })
     return
   }
   dconf.value = await wankidb.dconf.get({ id: deck.value.conf || 1 })

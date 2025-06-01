@@ -175,7 +175,7 @@ const deckOptions = computed(() => [
     text: 'Export',
     loading: () => loadingOnExport.value,
     dispatch: () => {
-      onExport()
+      void onExport()
     },
   },
   {
@@ -281,7 +281,7 @@ function onClick(item: any): void {
 function onDeck(item: any): void {
   console.log(item)
 
-  router.push({ path: '/review/on', query: { deckid: item.deck.id } })
+  void router.push({ path: '/review/on', query: { deckid: item.deck.id } })
 }
 
 function onMenu(item: any): void {
@@ -368,19 +368,19 @@ onMounted(async () => {
   wankidb.decks.hook('creating', function () {
     console.log('creating')
     this.onsuccess = function () {
-      updateDeckList()
+      void updateDeckList()
     }
   })
   wankidb.decks.hook('deleting', function () {
     console.log('deleting')
     this.onsuccess = function () {
-      updateDeckList()
+      void updateDeckList()
     }
   })
   wankidb.decks.hook('updating', function () {
     console.log('updating')
     this.onsuccess = function () {
-      updateDeckList()
+      void updateDeckList()
     }
   })
 

@@ -203,7 +203,7 @@ async function onInitImport(importFiles: any[]): Promise<void> {
     decompressedFile = await promise
     worker.removeEventListener('message', workListener)
 
-    onImport(taskId)
+    void onImport(taskId)
   } catch (e: any) {
     currentState.value = state.error
     console.error(e)

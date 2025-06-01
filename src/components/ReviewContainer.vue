@@ -100,7 +100,7 @@ watch(
   () => props.card,
   () => {
     if (props.card) {
-      mountNote()
+      void mountNote()
     }
   },
 )
@@ -206,7 +206,7 @@ async function replaceImages(field: string) {
       const media = await wankidb.media.get({ name: src })
       const url = media ? URL.createObjectURL(new Blob([media.file])) : ''
       console.log('url src', url)
-      preloadImage(url)
+      void preloadImage(url)
       return `loading="lazy" src="${url}" onerror="this.src = '';this.onerror='';" `
     },
   )

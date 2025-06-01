@@ -247,7 +247,7 @@ const onClick = (item: ListItem): void => {
   }
 
   if (item.route) {
-    router.push({ path: item.route, query: item.routeQuery })
+    void router.push({ path: item.route, query: item.routeQuery })
   }
 
   if (item.dispatch) {

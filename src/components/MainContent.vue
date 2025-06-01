@@ -62,7 +62,7 @@ function initPullToRefresh() {
       y > _startY &&
       !document.body.classList.contains('refreshing')
     ) {
-      callPullToRefresh()
+      void callPullToRefresh()
       okPull = false
     }
   }
