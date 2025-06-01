@@ -67,12 +67,12 @@
   </ul>
 
   <ModalRadio
-    :show="!!radio"
+    :show="!!radioItem"
     v-model="radioInput"
-    :title="radio?.title"
-    :radio-items="radio?.items"
-    @item="(item) => refstorage.set(radio!.key, item.value)"
-    @close="radio = null"
+    :title="radioItem?.radio!.title ?? ''"
+    :radio-items="radioItem?.radio!.items ?? []"
+    @item="(item) => onConfirm(radioItem, item.value)"
+    @close="radioItem = null"
   />
 
   <ModalTextfield
@@ -89,20 +89,13 @@
 </template>
 
 <script setup lang="ts">
-import {
-  defineAsyncComponent,
-  ref,
-  watch,
-  watchEffect,
-  onBeforeUnmount,
-} from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import InputBoolean from '@/components/InputBoolean.vue'
 import { refstorage } from '@/store/globalstate'
 import ListHr from '@/components/ListHr.vue'
 import ModalTextfield from '@/components/ModalTextfield.vue'
-import { wankidb } from '@/plugins/wankidb/db'
-import { ListItem, ListProps, ListItemRadio } from '@/components/List'
+import { ListItem, ListProps } from '@/components/List'
 const ModalRadio = defineAsyncComponent(
   () => import('@/components/ModalRadio.vue'),
 )
@@ -121,13 +114,16 @@ const emit = defineEmits<{
 }>()
 const router = useRouter()
 
-const radio = ref<ListItemRadio | null>(null)
+const radioItem = ref<ListItem | null>(null)
 const textfield = ref<ListItem | null>(null)
 const radioInput = ref<string>('')
 const textfieldInput = ref<string>('')
 
-function onConfirm(item: ListItem | null, value: string): void {
-  if (item && item.storeLocal) {
+function onConfirm(
+  item: ListItem | null,
+  value: string | number | boolean,
+): void {
+  if (item?.storeLocal) {
     refstorage.set(item.storeLocal, value)
   }
   if (item?.storeDb) {
@@ -158,7 +154,9 @@ const getText = (item: ListItem): string | undefined => {
 
 const getSubText = (item: ListItem): string | undefined => {
   if (item.radio && item.radio.key) {
-    const key = refstorage.get(item.radio.key, item.radio.default)
+    const key = item.storeDb
+      ? item.storeDb.get()
+      : refstorage.get(item.radio.key, item.radio.default)
     return item.radio.items.find((item) => item.value === key)?.text
   }
 
@@ -168,6 +166,10 @@ const getSubText = (item: ListItem): string | undefined => {
 const getBoolean = (item: ListItem): boolean => {
   if (item.toggle) {
     return !!refstorage.get(item.toggle)
+  }
+
+  if (item.storeDb) {
+    return !!item.storeDb.get()
   }
 
   return !!callFn(item, 'boolean')
@@ -185,6 +187,10 @@ const getValueText = (item: ListItem): any => {
 
 const hasBoolean = (item: ListItem): boolean => {
   if (item.toggle) {
+    return true
+  }
+
+  if (item.storeDb && typeof item.storeDb.get() === 'boolean') {
     return true
   }
 
@@ -213,8 +219,10 @@ const onClick = (item: ListItem): void => {
   emit('item', item)
 
   if (item.radio) {
-    radioInput.value = refstorage.get(item.radio.key, item.radio.default)
-    radio.value = item.radio
+    radioInput.value = item.storeDb
+      ? (item.storeDb.get() as string)
+      : refstorage.get(item.radio.key, item.radio.default)
+    radioItem.value = item
   }
 
   if (item.kind === 'textfield') {
@@ -230,6 +238,8 @@ const onClick = (item: ListItem): void => {
 
   if (item.toggle) {
     refstorage.toggle(item.toggle)
+  } else if (item.storeDb && hasBoolean(item)) {
+    item.storeDb.save(!getBoolean(item))
   }
 
   if (item.click) {
