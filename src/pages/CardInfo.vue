@@ -25,24 +25,12 @@
           <table class="w-full text-left">
             <tbody>
               <tr class="border-b">
-                <td class="w-1/3 px-3 py-1 font-bold">Added</td>
-                <td class="px-3 py-1">{{ formatDate(card.id) }}</td>
-              </tr>
-              <tr class="border-b">
-                <td class="px-3 py-1 font-bold">First review</td>
-                <td class="px-3 py-1">{{ firstReview || '-' }}</td>
-              </tr>
-              <tr class="border-b">
-                <td class="px-3 py-1 font-bold">Latest review</td>
-                <td class="px-3 py-1">{{ latestReview || '-' }}</td>
-              </tr>
-              <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Due</td>
                 <td class="px-3 py-1">{{ due }}</td>
               </tr>
               <tr class="border-b">
-                <td class="px-3 py-1 font-bold">Position</td>
-                <td class="px-3 py-1">{{ card.due }}</td>
+                <td class="px-3 py-1 font-bold">Latest review</td>
+                <td class="px-3 py-1">{{ latestReview || '-' }}</td>
               </tr>
               <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Interval</td>
@@ -53,6 +41,14 @@
                 <td class="px-3 py-1">{{ easePct }}%</td>
               </tr>
               <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Average time</td>
+                <td class="px-3 py-1">{{ avgTime.toFixed(1) }}s</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Total time</td>
+                <td class="px-3 py-1">{{ totalTime.toFixed(1) }}s</td>
+              </tr>
+              <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Reviews</td>
                 <td class="px-3 py-1">{{ card.reps }}</td>
               </tr>
@@ -61,12 +57,8 @@
                 <td class="px-3 py-1">{{ card.lapses }}</td>
               </tr>
               <tr class="border-b">
-                <td class="px-3 py-1 font-bold">Average time</td>
-                <td class="px-3 py-1">{{ avgTime.toFixed(1) }}s</td>
-              </tr>
-              <tr class="border-b">
-                <td class="px-3 py-1 font-bold">Total time</td>
-                <td class="px-3 py-1">{{ totalTime.toFixed(1) }}s</td>
+                <td class="px-3 py-1 font-bold">First review</td>
+                <td class="px-3 py-1">{{ firstReview || '-' }}</td>
               </tr>
               <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Card type</td>
@@ -79,6 +71,14 @@
               <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Deck</td>
                 <td class="px-3 py-1">{{ deck.name }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="w-1/3 px-3 py-1 font-bold">Added</td>
+                <td class="px-3 py-1">{{ formatDate(card.id) }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Position</td>
+                <td class="px-3 py-1">{{ card.due }}</td>
               </tr>
               <tr class="border-b">
                 <td class="px-3 py-1 font-bold">Card id</td>
