@@ -7,8 +7,8 @@ import {
   QueueType,
   StatisticType,
   ToastType,
-} from '@/plugins/conts'
-import { wankidb } from '@/plugins/wankidb/db'
+} from '@/plugins/conts.ts'
+import { wankidb } from '@/plugins/wankidb/db.ts'
 import {
   cardDeckConfig,
   creationTimestamp,
@@ -16,12 +16,12 @@ import {
   getConf,
   getDecks,
   setConf,
-} from '@/plugins/collection'
-import { debug, info, log } from '@/plugins/log'
-import { Counts } from '@/plugins/classes/Counts'
-import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue'
-import { LrnCard } from '@/plugins/classes/LrnCard'
-import { addToast } from '@/store/globalstate'
+} from '@/plugins/collection.ts'
+import { debug, info, log } from '@/plugins/log.ts'
+import { Counts } from '@/plugins/classes/Counts.ts'
+import * as LrnCardQueue from '@/plugins/classes/LrnCardQueue.ts'
+import { LrnCard } from '@/plugins/classes/LrnCard.ts'
+import { addToast } from '@/store/globalstate.ts'
 
 const reportLimit = 99999
 const FACTOR_ADDITION_VALUES = [-150, 0, 150]
