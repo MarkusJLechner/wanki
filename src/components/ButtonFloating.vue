@@ -63,8 +63,6 @@ const onClick = () => {
   }
 }
 
-// Parameter is required for type safety but not used in the function body
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const onClickItem = (_item: ButtonItem) => {
   onClose()
 }

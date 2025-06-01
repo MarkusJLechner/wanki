@@ -215,8 +215,8 @@ async function updateDeckList(): Promise<void> {
   const root = { children: [] }
 
   for (const deck of deckData) {
-    let splits = deck.name.split('::'),
-      path = ''
+    const splits = deck.name.split('::')
+    let path = ''
 
     splits.reduce((parent: any, id: string, i: number) => {
       path += `${id}`

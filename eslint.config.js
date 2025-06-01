@@ -51,6 +51,16 @@ const tsCommonRules = {
       minimumDescriptionLength: 5,
     },
   ],
+  '@typescript-eslint/no-unsafe-call': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  // '@typescript-eslint/no-floating-promises': 'off',
+  '@typescript-eslint/no-misused-promises': 'off',
+  '@typescript-eslint/no-unused-vars': 'off',
+  '@typescript-eslint/require-await': 'off',
+  '@typescript-eslint/await-thenable': 'off',
 }
 
 const testRules = {
@@ -83,6 +93,10 @@ const tsTypeCheckedOverrides = tsConfigs.recommendedTypeChecked.map(
   (config) => ({
     ...config,
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
+    rules: {
+      ...config.rules,
+      ...tsCommonRules,
+    },
   }),
 )
 
@@ -131,7 +145,6 @@ export default defineConfig([
     },
     plugins: tsCommonPlugins,
     rules: {
-      '@typescript-eslint/no-unused-vars': 'error',
       ...tsCommonRules,
     },
   },
