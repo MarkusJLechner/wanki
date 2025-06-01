@@ -3,10 +3,10 @@
     <TheHeader>
       <FlexSpacer />
       <ThemeSwitcher />
+      <ButtonIcon icon="fas fa-spider" @click="toggleDebugging" />
       <ButtonIcon icon="fas fa-info-circle" @click="onInfo" />
       <ButtonOptions
         :value="[
-          { value: 'debug', text: 'Debug Information' },
           { value: 'undo', text: 'Undo' },
           { value: 'enable-whiteboard', text: 'Enable whiteboard' },
           { value: 'add-note', text: 'Add note' },
@@ -72,11 +72,15 @@ import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import { Deck } from 'plugins/wankidb/Deck.ts'
+import { refstorage } from '@/store/globalstate'
 
 const router = useRouter()
 const route = useRoute()
 
-const debug = ref(false)
+// Initialize debugging state in refstorage if not already initialized
+refstorage.init('debugging', false)
+// Use computed to reactively get the debugging state from refstorage
+const debug = computed(() => refstorage.get('debugging', false))
 const deckid = ref(1)
 const deck = ref<Deck | undefined>(undefined)
 const card = ref(undefined)
@@ -132,12 +136,13 @@ const loadNextCard = async () => {
   current.value = cardTypeIndex(card.value)
 }
 
+// Toggle debugging mode using refstorage
+const toggleDebugging = () => {
+  refstorage.toggle('debugging')
+}
+
 const onClickOptions = (item) => {
   console.log(item)
-
-  if (item.value === 'debug') {
-    debug.value = !debug.value
-  }
 }
 
 const onInfo = () => {

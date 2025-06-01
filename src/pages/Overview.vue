@@ -4,9 +4,9 @@
       <FlexSpacer />
       <ButtonIconReload />
       <ThemeSwitcher />
+      <ButtonIcon icon="fas fa-spider" @click="toggleDebugging" />
       <ButtonOptions
         :value="[
-          { value: 'debugging', text: 'Debugging' },
           { value: 'import', text: 'Import' },
           { value: 'export-collection', text: 'Export collection' },
         ]"
@@ -129,6 +129,8 @@ import { wankidb } from '@/plugins/wankidb/db'
 import { getDueCounts } from '@/plugins/reviewer'
 import { Deck } from 'plugins/wankidb/types.ts'
 import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
+import { refstorage } from '@/store/globalstate'
+import ButtonIcon from 'components/ButtonIcon.vue'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__
@@ -145,7 +147,10 @@ const showModalDelete = ref(false)
 const showModalRename = ref(false)
 const loadingOnRename = ref(false)
 const loadingOnExport = ref(false)
-const showDebugging = ref(false)
+// Use computed to reactively get the debugging state from refstorage
+// Initialize debugging state in refstorage if not already initialized
+refstorage.init('debugging', false)
+const showDebugging = computed(() => refstorage.get('debugging', false))
 const inputRename = ref<string>('')
 const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([
@@ -277,11 +282,13 @@ async function updateList(): Promise<void> {
   loading.value = false
 }
 
+// Toggle debugging mode using refstorage
+function toggleDebugging(): void {
+  refstorage.toggle('debugging')
+}
+
 function onClick(item: any): void {
   switch (item.value) {
-    case 'debugging':
-      showDebugging.value = !showDebugging.value
-      break
     case 'import':
       return onImport()
     default:
