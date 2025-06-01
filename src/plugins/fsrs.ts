@@ -3,6 +3,7 @@ import { wankidb } from '@/plugins/wankidb/db'
 import type { Card } from '@/plugins/wankidb/Card'
 import { CardType, QueueType } from '@/plugins/conts'
 import { creationTimestamp, getConf } from '@/plugins/collection'
+import { now } from '@/plugins/time'
 
 const scheduler = fsrs()
 
@@ -67,7 +68,7 @@ function fromCard(card: Card): FSRSData {
     }
   }
   return {
-    due: new Date(data.due ?? card.due ?? Date.now()),
+    due: new Date(data.due ?? card.due ?? now()),
     stability: data.stability ?? 0,
     difficulty: data.difficulty ?? 0,
     elapsed_days: data.elapsed_days ?? 0,
@@ -104,11 +105,15 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
   if (!card) {
     return
   }
-  const now = new Date()
+  const nowDate = new Date(now())
 
   const fsrsCard = fromCard(card)
 
-  const { card: nextCard, log } = scheduler.next(fsrsCard, now, ease as Grade)
+  const { card: nextCard, log } = scheduler.next(
+    fsrsCard,
+    nowDate,
+    ease as Grade,
+  )
 
   const originalType = card.type
   updateCard(card, nextCard)
@@ -121,8 +126,8 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
       card.queue === QueueType.DayLearnRelearn
     ) {
       // If it's already in a learning queue, make sure the due date is set correctly
-      if (card.due && card.due > Date.now()) {
-        card.due = Date.now() // Make it due immediately
+      if (card.due && card.due > now()) {
+        card.due = now() // Make it due immediately
       }
     }
   }
@@ -166,7 +171,7 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
   }
 
   await wankidb.revlog.add({
-    id: Date.now(),
+    id: now(),
     cid: card.id,
     usn: 0,
     ease,
@@ -196,11 +201,11 @@ export async function collectionCreatedAt() {
 
   const createdDate = new Date(created)
   createdDate.setHours(roll, 0, 0, 0)
-  const now = Date.now()
-  const today = Math.floor((now - createdDate.getTime()) / 86400000)
-  const cutoffDate = new Date()
+  const nowMs = now()
+  const today = Math.floor((nowMs - createdDate.getTime()) / 86400000)
+  const cutoffDate = new Date(nowMs)
   cutoffDate.setHours(roll, 0, 0, 0)
-  if (cutoffDate.getTime() <= now) {
+  if (cutoffDate.getTime() <= nowMs) {
     cutoffDate.setDate(cutoffDate.getDate() + 1)
   }
   return { today, dayCutoff: cutoffDate.getTime() }

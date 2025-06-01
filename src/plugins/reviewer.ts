@@ -1,6 +1,7 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import { QueueType, CardType } from '@/plugins/conts'
 import { collectionCreatedAt } from '@/plugins/fsrs'
+import { now } from '@/plugins/time'
 import { deckConfig } from '@/plugins/collection'
 
 interface Card {
@@ -31,7 +32,7 @@ export async function getNextCard(
   deckId = +deckId || 1
   const cards = await wankidb.cards.where({ did: deckId }).toArray()
   const { today } = await collectionCreatedAt()
-  const now = Date.now()
+  const nowMs = now()
 
   const dueLearns: Card[] = []
   const dueReviews: Card[] = []
@@ -40,7 +41,7 @@ export async function getNextCard(
   cards.forEach((card) => {
     switch (card.queue) {
       case QueueType.Learn:
-        if (card.due && card.due <= now) {
+        if (card.due && card.due <= nowMs) {
           dueLearns.push(card)
         }
         break
@@ -52,7 +53,7 @@ export async function getNextCard(
       case QueueType.Review:
         if (
           card.due &&
-          ((card.due < 1e12 && card.due <= today) || card.due <= now)
+          ((card.due < 1e12 && card.due <= today) || card.due <= nowMs)
         ) {
           dueReviews.push(card)
         }
@@ -116,31 +117,31 @@ export async function getDueCounts(
   const deck = await wankidb.decks.get({ id: deckId })
   const conf = await deckConfig(deckId)
   const { today } = await collectionCreatedAt()
-  const now = Date.now()
+  const nowMs = now()
 
   let newCount = 0
   let reviewCount = 0
   let learnCount = 0
 
   cards.forEach((card) => {
-    switch (card.queue) {
-      case QueueType.New:
+    switch (card.type) {
+      case CardType.New:
         newCount += 1
         break
-      case QueueType.Learn:
-        if (card.due !== undefined && card.due <= now) {
-          learnCount += 1
-        }
-        break
-      case QueueType.DayLearnRelearn:
-        if (card.due !== undefined && card.due <= today) {
-          learnCount += 1
-        }
-        break
-      case QueueType.Review:
+      case CardType.Learn:
         if (
-          card.due !== undefined &&
-          ((card.due < 1e12 && card.due <= today) || card.due <= now)
+          card.queue === QueueType.DayLearnRelearn
+            ? card.due && card.due <= today
+            : card.due && card.due <= nowMs
+        ) {
+          learnCount += 1
+        }
+        break
+      case CardType.Review:
+      case CardType.Relearning:
+        if (
+          card.due &&
+          ((card.due < 1e12 && card.due <= today) || card.due <= nowMs)
         ) {
           reviewCount += 1
         }

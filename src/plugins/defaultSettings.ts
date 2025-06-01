@@ -46,11 +46,15 @@ export type StorageKey =
   | 'setting.reviewing.autoPlayAudioDelay'
   | 'setting.reviewing.alignAudioButtonsRight'
   | 'setting.general.vibrate'
+  | 'testing.timeOffset'
 
 export const defaultSettings: DefaultSettings = {
   darkTheme: true,
   // to not take this deck key. only for testing. is in wankidb
   deck: { options: { new: { perDay: { valueType: 'number' } } } },
+  testing: {
+    timeOffset: { key: 'testing.timeOffset', valueType: 'number', default: 0 },
+  },
   general: {
     fetchSync: false,
     automaticSync: false,

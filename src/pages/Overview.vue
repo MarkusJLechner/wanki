@@ -14,6 +14,30 @@
     </TheHeader>
 
     <ButtonFloating :model-value="optionsFloating" />
+    <div class="fixed bottom-16 left-2.5 z-10 flex flex-row gap-2">
+      <button
+        class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
+        @click="
+          () => {
+            advanceTime(2 * 3600 * 1000)
+            void updateDeckList()
+          }
+        "
+      >
+        +2h
+      </button>
+      <button
+        class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
+        @click="
+          () => {
+            advanceTime(24 * 3600 * 1000)
+            void updateDeckList()
+          }
+        "
+      >
+        +1d
+      </button>
+    </div>
 
     <div
       class="fixed bottom-2.5 left-2.5 z-10 text-[0.7rem] text-inherit opacity-60"
@@ -122,6 +146,7 @@ import ListTree from '@/components/ListTree.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { getDueCounts } from '@/plugins/reviewer'
 import { Deck } from 'plugins/wankidb/types.ts'
+import { advanceTime } from '@/plugins/time'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__

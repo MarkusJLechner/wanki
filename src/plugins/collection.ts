@@ -1,4 +1,5 @@
 import { ColTableType, DconfTableType, wankidb } from '@/plugins/wankidb/db'
+import { now } from '@/plugins/time'
 
 export async function cardDeckConfig(
   card: unknown,
@@ -57,7 +58,7 @@ export async function creationTimestamp(): Promise<number> {
   const col = await wankidb.col.get({ id: 1 })
   if (!col) {
     console.error('No collection found')
-    return new Date().getTime()
+    return now()
   }
   // because crt is in seconds
   return (col.crt as number) * 1000

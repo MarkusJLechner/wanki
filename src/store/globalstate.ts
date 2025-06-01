@@ -126,6 +126,11 @@ export const refstorage = {
 
 // Initialize darkTheme in refstorage
 refstorage.init('darkTheme', defaultSettings.darkTheme)
+// Initialize testing time offset
+refstorage.init(
+  'testing.timeOffset',
+  (defaultSettings.testing as any).timeOffset.default,
+)
 
 export const modalOpened = ref(false)
 

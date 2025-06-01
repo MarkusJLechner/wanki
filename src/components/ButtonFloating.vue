@@ -1,12 +1,12 @@
 <template>
-  <div class="fixed right-2 bottom-4 z-10 text-right">
+  <div :class="classesRoot">
     <div
       v-if="show"
       class="fixed top-0 left-0 h-full w-screen bg-gray-900/50 backdrop-grayscale"
       @click="onClose()"
     />
     <transition name="fade">
-      <ul v-if="show" class="relative mr-2 -mb-1">
+      <ul v-if="show" :class="listClass">
         <li
           v-for="(item, index) in modelValue"
           :key="index"
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import ButtonRound from '@/components/ButtonRound.vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
@@ -49,9 +49,23 @@ interface ButtonItem {
   href?: string
 }
 
-defineProps<{
-  modelValue: ButtonItem[]
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue: ButtonItem[]
+    left?: boolean
+  }>(),
+  { left: false },
+)
+
+const classesRoot = computed(() =>
+  props.left
+    ? 'fixed left-2 bottom-4 z-10 text-left'
+    : 'fixed right-2 bottom-4 z-10 text-right',
+)
+
+const listClass = computed(() =>
+  props.left ? 'relative ml-2 -mb-1' : 'relative mr-2 -mb-1',
+)
 
 const show = ref(false)
 

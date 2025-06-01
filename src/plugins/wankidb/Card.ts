@@ -9,6 +9,7 @@ import {
 } from '@/plugins/conts'
 import { cardDeckConfig } from '@/plugins/collection'
 import { collectionCreatedAt, rolloverHour } from '@/plugins/fsrs'
+import { now, nowDate } from '@/plugins/time'
 
 // Define interfaces for related types
 export interface Note {
@@ -346,18 +347,18 @@ export class Card extends BaseTable {
 
       switch (this.type) {
         case CardType.New:
-          date = new Date()
+          date = nowDate()
           break
         case CardType.Learn:
           date = new Date(this.due as number)
           break
         case CardType.Relearning:
-          date = new Date()
+          date = nowDate()
           break
         case CardType.Review:
           if (('' + this.due).length < 13) {
             const { today } = await collectionCreatedAt()
-            const dateToday = new Date()
+            const dateToday = nowDate()
             const dueOffset = (this.due as number) - today
             dateToday.setDate(dateToday.getDate() + dueOffset)
             date = dateToday
@@ -367,7 +368,7 @@ export class Card extends BaseTable {
           }
           break
         default:
-          date = new Date()
+          date = nowDate()
           break
       }
 
@@ -380,13 +381,13 @@ export class Card extends BaseTable {
   }
 
   startTimer(): void {
-    this.timerStarted = new Date().getTime()
+    this.timerStarted = now()
   }
 
   get timeTaken(): Promise<number> {
     return (async () => {
-      const now = new Date().getTime()
-      const total = Math.floor(now - this.timerStarted)
+      const nowMs = now()
+      const total = Math.floor(nowMs - this.timerStarted)
       const limit = await this.timeLimit
       return Math.min(total, limit)
     })()
