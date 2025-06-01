@@ -5,7 +5,7 @@
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
-      <div v-if="card && deck && note" class="space-y-2 p-4 text-sm">
+      <div v-if="card && deck && note" class="space-y-4 p-4 text-sm">
         <div class="mb-4 rounded border p-4">
           <div
             class="mb-2 flex cursor-pointer items-center justify-between font-bold"
@@ -21,22 +21,76 @@
           </div>
         </div>
 
-        <div><strong>Added:</strong> {{ formatDate(card.id) }}</div>
-        <div><strong>First review:</strong> {{ firstReview || '-' }}</div>
-        <div><strong>Latest review:</strong> {{ latestReview || '-' }}</div>
-        <div><strong>Due:</strong> {{ due }}</div>
-        <div><strong>Position:</strong> {{ card.due }}</div>
-        <div><strong>Interval:</strong> {{ intervalText }}</div>
-        <div><strong>Ease:</strong> {{ easePct }}%</div>
-        <div><strong>Reviews:</strong> {{ card.reps }}</div>
-        <div><strong>Lapses:</strong> {{ card.lapses }}</div>
-        <div><strong>Average time:</strong> {{ avgTime.toFixed(1) }}s</div>
-        <div><strong>Total time:</strong> {{ totalTime.toFixed(1) }}s</div>
-        <div><strong>Card type:</strong> {{ card.cardType }}</div>
-        <div><strong>Note type:</strong> {{ modelName }}</div>
-        <div><strong>Deck:</strong> {{ deck.name }}</div>
-        <div><strong>Card id:</strong> {{ card.id }}</div>
-        <div><strong>Note id:</strong> {{ card.nid }}</div>
+        <div class="rounded border">
+          <table class="w-full text-left">
+            <tbody>
+              <tr class="border-b">
+                <td class="w-1/3 px-3 py-1 font-bold">Added</td>
+                <td class="px-3 py-1">{{ formatDate(card.id) }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">First review</td>
+                <td class="px-3 py-1">{{ firstReview || '-' }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Latest review</td>
+                <td class="px-3 py-1">{{ latestReview || '-' }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Due</td>
+                <td class="px-3 py-1">{{ due }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Position</td>
+                <td class="px-3 py-1">{{ card.due }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Interval</td>
+                <td class="px-3 py-1">{{ intervalText }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Ease</td>
+                <td class="px-3 py-1">{{ easePct }}%</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Reviews</td>
+                <td class="px-3 py-1">{{ card.reps }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Lapses</td>
+                <td class="px-3 py-1">{{ card.lapses }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Average time</td>
+                <td class="px-3 py-1">{{ avgTime.toFixed(1) }}s</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Total time</td>
+                <td class="px-3 py-1">{{ totalTime.toFixed(1) }}s</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Card type</td>
+                <td class="px-3 py-1">{{ card.cardType }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Note type</td>
+                <td class="px-3 py-1">{{ modelName }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Deck</td>
+                <td class="px-3 py-1">{{ deck.name }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Card id</td>
+                <td class="px-3 py-1">{{ card.id }}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-3 py-1 font-bold">Note id</td>
+                <td class="px-3 py-1">{{ card.nid }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <div v-else class="p-4">Loading...</div>
 
