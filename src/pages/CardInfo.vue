@@ -17,8 +17,7 @@
             ></i>
           </div>
           <div v-if="isExpanded">
-            <div v-html="note.flds[0]" class="mb-2"></div>
-            <div v-html="note.flds[1]" class="text-gray-600"></div>
+            <div class="mb-2">{{ stripHtmlTags(note.flds) }}</div>
           </div>
         </div>
 
@@ -41,9 +40,12 @@
       </div>
       <div v-else class="p-4">Loading...</div>
 
-      <div v-if="revlogs.length" class="p-4">
+      <div class="p-4">
         <h2 class="mb-2 font-bold">Review History</h2>
-        <table class="w-full text-left text-sm">
+        <div v-if="!revlogs.length" class="text-gray-500 italic">
+          No reviews
+        </div>
+        <table v-else class="w-full text-left text-sm">
           <thead>
             <tr class="border-b">
               <th class="py-1">Date</th>
@@ -82,7 +84,7 @@ import { CardType } from '@/plugins/conts.js'
 
 const route = useRoute()
 
-const isExpanded = ref(false)
+const isExpanded = ref(true)
 const card = ref<any>(null)
 const deck = ref<any>(null)
 const note = ref<any>(null)
@@ -115,6 +117,11 @@ function formatInterval(ivl: number) {
 
 function revType(t: number) {
   return Object.keys(CardType).find((k) => CardType[k] === t) || t
+}
+
+function stripHtmlTags(html: string): string {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '')
 }
 
 onMounted(async () => {

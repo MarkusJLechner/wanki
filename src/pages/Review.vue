@@ -3,13 +3,10 @@
     <TheHeader>
       <FlexSpacer />
       <ThemeSwitcher />
-      <ButtonIcon icon="far fa-flag" />
       <ButtonIcon icon="fas fa-info-circle" @click="onInfo" />
-      <ButtonIcon icon="fas fa-microphone" />
-      <ButtonIcon icon="fas fa-arrow-alt-circle-right" />
-      <ButtonIcon icon="far fa-star" @click="debug = !debug" />
       <ButtonOptions
         :value="[
+          { value: 'debug', text: 'Debug Information' },
           { value: 'undo', text: 'Undo' },
           { value: 'enable-whiteboard', text: 'Enable whiteboard' },
           { value: 'add-note', text: 'Add note' },
@@ -130,6 +127,10 @@ const loadNextCard = async () => {
 
 const onClickOptions = (item) => {
   console.log(item)
+
+  if (item.value === 'debug') {
+    debug.value = !debug.value
+  }
 }
 
 const onInfo = () => {
