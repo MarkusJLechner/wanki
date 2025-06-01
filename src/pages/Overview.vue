@@ -257,8 +257,6 @@ async function updateDeckList(): Promise<void> {
   }
 
   decks.value = root // .children
-
-  console.log(root)
 }
 
 async function fetchAllDecks(): Promise<void> {
