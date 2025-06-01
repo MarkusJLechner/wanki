@@ -47,6 +47,7 @@ export type StorageKey =
   | 'setting.reviewing.alignAudioButtonsRight'
   | 'setting.general.vibrate'
   | 'testing.timeOffset'
+  | 'testing.debugging'
 
 export const defaultSettings: DefaultSettings = {
   darkTheme: true,
@@ -54,6 +55,7 @@ export const defaultSettings: DefaultSettings = {
   deck: { options: { new: { perDay: { valueType: 'number' } } } },
   testing: {
     timeOffset: { key: 'testing.timeOffset', valueType: 'number', default: 0 },
+    debugging: false,
   },
   general: {
     fetchSync: false,

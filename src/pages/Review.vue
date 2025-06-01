@@ -78,9 +78,9 @@ const router = useRouter()
 const route = useRoute()
 
 // Initialize debugging state in refstorage if not already initialized
-refstorage.init('debugging', false)
+refstorage.init('testing.debugging', false)
 // Use computed to reactively get the debugging state from refstorage
-const debug = computed(() => refstorage.get('debugging', false))
+const debug = computed(() => refstorage.get('testing.debugging', false))
 const deckid = ref(1)
 const deck = ref<Deck | undefined>(undefined)
 const card = ref(undefined)
@@ -138,7 +138,7 @@ const loadNextCard = async () => {
 
 // Toggle debugging mode using refstorage
 const toggleDebugging = () => {
-  refstorage.toggle('debugging')
+  refstorage.toggle('testing.debugging')
 }
 
 const onClickOptions = (item) => {

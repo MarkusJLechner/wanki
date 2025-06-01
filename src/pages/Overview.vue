@@ -149,8 +149,8 @@ const loadingOnRename = ref(false)
 const loadingOnExport = ref(false)
 // Use computed to reactively get the debugging state from refstorage
 // Initialize debugging state in refstorage if not already initialized
-refstorage.init('debugging', false)
-const showDebugging = computed(() => refstorage.get('debugging', false))
+refstorage.init('testing.debugging', false)
+const showDebugging = computed(() => refstorage.get('testing.debugging', false))
 const inputRename = ref<string>('')
 const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([
@@ -284,7 +284,7 @@ async function updateList(): Promise<void> {
 
 // Toggle debugging mode using refstorage
 function toggleDebugging(): void {
-  refstorage.toggle('debugging')
+  refstorage.toggle('testing.debugging')
 }
 
 function onClick(item: any): void {

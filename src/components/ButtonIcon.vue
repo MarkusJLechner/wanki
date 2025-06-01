@@ -1,5 +1,8 @@
 <template>
-  <button v-ripple class="relative h-12 w-12 rounded-full dark:text-white">
+  <button
+    v-ripple
+    class="relative h-12 w-12 cursor-pointer rounded-full dark:text-white"
+  >
     <i :class="icon"></i>
     <slot name="content" />
   </button>
