@@ -21,7 +21,7 @@
         :key="index"
         v-ripple
         role="button"
-        class="flex items-center justify-center text-white"
+        class="flex flex-col items-center justify-center text-white"
         :class="{
           'bg-red-500/50': button.color === 'red',
           'bg-gray-500/50': button.color === 'gray',
@@ -30,7 +30,8 @@
         }"
         @click="onClickRating(button.emit)"
       >
-        {{ button.text }}
+        <span>{{ button.text }}</span>
+        <span v-if="showDue" class="text-xs">{{ due[index] }}</span>
       </div>
     </div>
   </div>
@@ -48,10 +49,14 @@ interface Button {
 
 interface Props {
   showRating?: boolean
+  showDue?: boolean
+  due?: string[]
 }
 
 withDefaults(defineProps<Props>(), {
   showRating: false,
+  showDue: false,
+  due: () => [],
 })
 
 const emit = defineEmits<{

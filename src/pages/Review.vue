@@ -49,6 +49,8 @@
       <ButtonsReview
         class="z-20"
         :show-rating="showAnswer"
+        :show-due="showAnswer"
+        :due="dueText"
         @show="onShow"
         @rating="onRating"
       />
@@ -57,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
@@ -71,7 +73,7 @@ import InformationHeaderReview from '@/components/InformationHeaderReview.vue'
 import MainContent from '@/components/MainContent.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { CardType, QueueType } from '@/plugins/consts'
-import { answerCard } from '@/plugins/fsrs'
+import { answerCard, previewCard } from '@/plugins/fsrs'
 import { getNextCard, getDueCounts } from '@/plugins/reviewer'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
@@ -97,6 +99,27 @@ const timerText = ref('00:00')
 const timerDuration = ref(0)
 const remaining = ref([0, 0, 0])
 const current = ref(0)
+const dueText = ref<string[]>([])
+
+function formatDue(ms: number): string {
+  const sec = Math.max(0, Math.round(ms / 1000))
+  if (sec < 3600) {
+    return Math.round(sec / 60) + 'm'
+  }
+  if (sec < 86400) {
+    return Math.round(sec / 3600) + 'h'
+  }
+  return Math.round(sec / 86400) + 'd'
+}
+
+function updateDueText() {
+  if (!card.value) {
+    dueText.value = []
+    return
+  }
+  const deltas = previewCard(card.value)
+  dueText.value = deltas.map((ms) => formatDue(ms))
+}
 
 // Initialize timer and load deck
 timer.value = createTimer({
@@ -141,6 +164,7 @@ const loadNextCard = async () => {
   card.value = await getNextCard(deckid.value)
   remaining.value = await getDueCounts(deckid.value)
   current.value = cardTypeIndex(card.value)
+  updateDueText()
 }
 
 // Toggle debugging mode using refstorage
@@ -178,6 +202,11 @@ const onRating = async (ease) => {
     console.error(e)
   }
 }
+
+watch(card, updateDueText)
+watch(showAnswer, (v) => {
+  if (v) updateDueText()
+})
 
 // Initialize data
 void initializeData()

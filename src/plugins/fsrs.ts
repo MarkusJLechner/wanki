@@ -101,6 +101,18 @@ function updateCard(card: Card, next: FSRSData): void {
   stateToCard(next.state, card)
 }
 
+export function previewCard(card: Card): number[] {
+  if (!card) {
+    return []
+  }
+  const nowDate = new Date(now())
+  const fsrsCard = fromCard(card)
+  const preview = scheduler.repeat(fsrsCard, nowDate)
+  return [Rating.Again, Rating.Hard, Rating.Good, Rating.Easy].map(
+    (g) => preview[g].card.due.getTime() - nowDate.getTime(),
+  )
+}
+
 export async function answerCard(card: Card, ease: Rating): Promise<void> {
   if (!card) {
     return

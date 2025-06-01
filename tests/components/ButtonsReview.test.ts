@@ -23,4 +23,20 @@ describe('ButtonsReview.vue', () => {
     })
     expect(wrapper.findAll('.grid > div').length).toBe(4)
   })
+
+  it('displays due text when showDue is true', () => {
+    const wrapper = mount(ButtonsReview, {
+      props: {
+        showRating: true,
+        showDue: true,
+        due: ['1m', '6m', '10m', '4d'],
+      },
+      global: {
+        ...commonGlobal,
+      },
+    })
+    const spans = wrapper.findAll('.grid > div span:last-child')
+    expect(spans.length).toBe(4)
+    expect(spans[0].text()).toBe('1m')
+  })
 })
