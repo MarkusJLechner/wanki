@@ -1,6 +1,8 @@
 <template>
   <div class="fixed z-30 flex flex-col gap-2" :class="positionClass">
+    <div class="text-sm text-white">Real time: {{ realDateTime }}</div>
     <div class="text-sm text-white">Current time: {{ currentDateTime }}</div>
+    <div class="text-sm text-white">{{ timeDifference }}</div>
     <div class="flex flex-row gap-2">
       <button
         class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
@@ -41,7 +43,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { advanceTime, setTimeOffset, nowDate } from '@/plugins/time'
+import {
+  advanceTime,
+  setTimeOffset,
+  nowDate,
+  getTimeOffset,
+} from '@/plugins/time'
 
 interface Props {
   position?: 'bottom-left' | 'bottom-right' | 'bottom-center'
@@ -53,8 +60,31 @@ const props = withDefaults(defineProps<Props>(), {
   onTimeChange: () => {},
 })
 
+const realDateTime = computed(() => {
+  return new Date().toLocaleString('de-AT')
+})
+
 const currentDateTime = computed(() => {
   return nowDate().toLocaleString('de-AT')
+})
+
+const timeDifference = computed(() => {
+  const offset = getTimeOffset()
+  if (offset === 0) return ''
+
+  const days = Math.floor(Math.abs(offset) / (24 * 3600 * 1000))
+  const weeks = Math.floor(days / 7)
+  const remainingDays = days % 7
+
+  let result = ''
+  if (weeks > 0) {
+    result += `${weeks}w `
+  }
+  if (remainingDays > 0 || result === '') {
+    result += `${remainingDays}d`
+  }
+
+  return result.trim()
 })
 
 const positionClass = computed(() => {
