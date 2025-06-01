@@ -113,6 +113,20 @@ export async function answerCard(card: Card, ease: Rating): Promise<void> {
   const originalType = card.type
   updateCard(card, nextCard)
 
+  // Ensure the due date is properly set for cards rated "Again"
+  if (ease === Rating.Again) {
+    // For cards rated "Again", they should be in Learning or Relearning state
+    if (
+      card.queue === QueueType.Learn ||
+      card.queue === QueueType.DayLearnRelearn
+    ) {
+      // If it's already in a learning queue, make sure the due date is set correctly
+      if (card.due && card.due > Date.now()) {
+        card.due = Date.now() // Make it due immediately
+      }
+    }
+  }
+
   await card.save()
 
   const deck = await wankidb.decks.get({ id: card.did })

@@ -17,7 +17,7 @@
             ></i>
           </div>
           <div v-if="isExpanded">
-            <div class="mb-2">{{ stripHtmlTags(note.flds) }}</div>
+            <div class="mb-2">{{ stripCard(note.flds) }}</div>
           </div>
         </div>
 
@@ -173,9 +173,25 @@ function revType(t: number) {
   return Object.keys(CardType).find((k) => CardType[k] === t) || t
 }
 
-function stripHtmlTags(html: string): string {
+function stripCard(html: string): string {
   if (!html) return ''
-  return html.replace(/<[^>]*>/g, '')
+
+  // Remove text enclosed in square brackets
+  let result = html.replace(/\[[^\]]*\]/g, ' ')
+
+  // Replace HTML tags with spaces
+  result = result.replace(/<[^>]*>/g, ' ')
+
+  // Break long text (limiting to 100 characters per line)
+  if (result.length > 100) {
+    const chunks = []
+    for (let i = 0; i < result.length; i += 100) {
+      chunks.push(result.substring(i, i + 100))
+    }
+    result = chunks.join('\n')
+  }
+
+  return result
 }
 
 onMounted(async () => {

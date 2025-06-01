@@ -1,5 +1,5 @@
 import { wankidb } from '@/plugins/wankidb/db'
-import { QueueType } from '@/plugins/conts'
+import { QueueType, CardType } from '@/plugins/conts'
 import { collectionCreatedAt } from '@/plugins/fsrs'
 import { deckConfig } from '@/plugins/collection'
 
@@ -123,27 +123,27 @@ export async function getDueCounts(
   let learnCount = 0
 
   cards.forEach((card) => {
-    switch (card.queue) {
-      case QueueType.Learn:
-        if (card.due && card.due <= now) {
+    switch (card.type) {
+      case CardType.New:
+        newCount += 1
+        break
+      case CardType.Learn:
+        if (
+          card.queue === QueueType.DayLearnRelearn
+            ? card.due && card.due <= today
+            : card.due && card.due <= now
+        ) {
           learnCount += 1
         }
         break
-      case QueueType.DayLearnRelearn:
-        if (card.due && card.due <= today) {
-          learnCount += 1
-        }
-        break
-      case QueueType.Review:
+      case CardType.Review:
+      case CardType.Relearning:
         if (
           card.due &&
           ((card.due < 1e12 && card.due <= today) || card.due <= now)
         ) {
           reviewCount += 1
         }
-        break
-      case QueueType.New:
-        newCount += 1
         break
       default:
         break
