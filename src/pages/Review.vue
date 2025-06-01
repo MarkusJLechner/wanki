@@ -33,49 +33,11 @@
       <div id="review-container" class="relative grow p-3">
         <ReviewDebug v-if="debug" :card="card" :deck="deck" />
 
-        <div
+        <DebuggingTimeControls
           v-if="debug"
-          class="fixed bottom-32 left-2.5 z-30 flex flex-col gap-2"
-        >
-          <div class="text-sm text-white">
-            Current time: {{ currentDateTime }}
-          </div>
-          <div class="flex flex-row gap-2">
-            <button
-              class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
-              @click="
-                () => {
-                  advanceTime(2 * 3600 * 1000)
-                  void loadNextCard()
-                }
-              "
-            >
-              +2h
-            </button>
-            <button
-              class="rounded-md bg-gray-800 px-2 py-1 text-sm text-white"
-              @click="
-                () => {
-                  advanceTime(24 * 3600 * 1000)
-                  void loadNextCard()
-                }
-              "
-            >
-              +1d
-            </button>
-            <button
-              class="rounded-md bg-red-800 px-2 py-1 text-sm text-white"
-              @click="
-                () => {
-                  setTimeOffset(0)
-                  void loadNextCard()
-                }
-              "
-            >
-              Reset
-            </button>
-          </div>
-        </div>
+          position="bottom-left"
+          :on-time-change="loadNextCard"
+        />
 
         <ReviewContainer :show-answer="showAnswer" :card="card" />
       </div>
@@ -108,16 +70,13 @@ import { answerCard } from '@/plugins/fsrs'
 import { getNextCard, getDueCounts } from '@/plugins/reviewer'
 import ReviewDebug from '@/components/ReviewDebug.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
+import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import { Deck } from 'plugins/wankidb/Deck.ts'
-import { advanceTime, setTimeOffset, nowDate } from '@/plugins/time'
 
 const router = useRouter()
 const route = useRoute()
 
 const debug = ref(false)
-const currentDateTime = computed(() => {
-  return nowDate().toLocaleString('de-AT')
-})
 const deckid = ref(1)
 const deck = ref<Deck | undefined>(undefined)
 const card = ref(undefined)
