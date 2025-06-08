@@ -5,7 +5,7 @@
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
-      <div v-if="card && template && model" class="space-y-4 p-4">
+      <div v-if="!computedIsLoading" class="space-y-4 p-4">
         <div>
           <label class="mb-1 block text-sm font-bold">Deck</label>
           <select
@@ -45,13 +45,14 @@
           <Button text="Save" @click="onSave" />
         </div>
       </div>
-      <div v-else class="p-4">Loading...</div>
+
+      <div v-if="computedIsLoading" class="p-4">Loading...</div>
     </MainContent>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
@@ -71,6 +72,8 @@ const selectedDeck = ref<number>(0)
 const front = ref('')
 const back = ref('')
 const css = ref('')
+
+const computedIsLoading = computed(() => !card || !template || !model)
 
 onMounted(async () => {
   const cid = +(route.query.cardid as string) || 0
