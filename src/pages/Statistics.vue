@@ -4,12 +4,82 @@
       <FlexSpacer />
       <ThemeSwitcher />
     </TheHeader>
-    <h1>Statistics</h1>
+    <MainContent>
+      <div class="space-y-4 p-4">
+        <ContributionCalendar :days="calendar" />
+        <div class="space-y-1 text-sm">
+          <div>Total reviews: {{ totalReviews }}</div>
+          <div>First review: {{ firstReview || '-' }}</div>
+          <div>Active days: {{ activeDays }}</div>
+          <div>Average reviews per active day: {{ averageReviews }}</div>
+          <div>Longest streak: {{ longestStreak }} days</div>
+        </div>
+      </div>
+    </MainContent>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
+import MainContent from '@/components/MainContent.vue'
+import ContributionCalendar from '@/components/ContributionCalendar.vue'
+import { wankidb } from '@/plugins/wankidb/db'
+
+interface DayEntry {
+  date: Date
+  count: number
+}
+
+const calendar = ref<DayEntry[]>([])
+const totalReviews = ref(0)
+const activeDays = ref(0)
+const firstReview = ref('')
+const averageReviews = ref('0')
+const longestStreak = ref(0)
+
+onMounted(async () => {
+  const revlogs = await wankidb.revlog.toArray()
+  totalReviews.value = revlogs.length
+  if (revlogs.length) {
+    firstReview.value = new Date(
+      Math.min(...revlogs.map((r) => r.id || 0)),
+    ).toLocaleDateString()
+  }
+  const counts = new Map<string, number>()
+  for (const rev of revlogs) {
+    const d = new Date(rev.id || 0)
+    d.setHours(0, 0, 0, 0)
+    const k = d.toISOString()
+    counts.set(k, (counts.get(k) || 0) + 1)
+  }
+  activeDays.value = counts.size
+  averageReviews.value = activeDays.value
+    ? (totalReviews.value / activeDays.value).toFixed(1)
+    : '0'
+  const end = new Date()
+  end.setHours(0, 0, 0, 0)
+  const start = new Date(end)
+  start.setDate(start.getDate() - 364)
+  const arr: DayEntry[] = []
+  const date = new Date(start)
+  let streak = 0
+  for (let i = 0; i < 365; i++) {
+    const iso = date.toISOString()
+    const count = counts.get(iso) || 0
+    arr.push({ date: new Date(date), count })
+    if (count > 0) {
+      streak += 1
+      if (streak > longestStreak.value) longestStreak.value = streak
+    } else {
+      streak = 0
+    }
+    date.setDate(date.getDate() + 1)
+  }
+  calendar.value = arr
+})
 </script>
+
+<style scoped></style>
