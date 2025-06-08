@@ -2,6 +2,7 @@
   <div>
     <TheHeader title="Card Info" backButton>
       <FlexSpacer />
+      <ButtonIcon icon="fas fa-edit" @click="onEdit" />
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
@@ -128,15 +129,24 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { CardType } from '@/plugins/consts.js'
 
 const route = useRoute()
+const router = useRouter()
+
+const onEdit = () => {
+  if (!card.value) {
+    return
+  }
+  void router.push({ path: '/card/edit', query: { cardid: card.value.id } })
+}
 
 const isExpanded = ref(true)
 const card = ref<any>(null)
