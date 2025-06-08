@@ -42,7 +42,7 @@
           ></textarea>
         </div>
         <div class="pt-2">
-          <Button text="Save" @click="onSave" />
+          <Button text="Save" @click="onSave" :loading="computedIsLoading" />
         </div>
       </div>
 
@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, toRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
@@ -73,14 +73,20 @@ const front = ref('')
 const back = ref('')
 const css = ref('')
 
-const computedIsLoading = computed(() => !card || !template || !model)
+const computedIsLoading = computed(
+  () => !card.value || !template.value || !model.value,
+)
 
 onMounted(async () => {
   const cid = +(route.query.cardid as string) || 0
-  if (!cid) return
+  if (!cid) {
+    return
+  }
 
   card.value = await wankidb.cards.get({ id: cid })
-  if (!card.value) return
+  if (!card.value) {
+    return
+  }
 
   template.value = await card.value.template
   model.value = await card.value.model
@@ -94,7 +100,9 @@ onMounted(async () => {
 })
 
 const onSave = async () => {
-  if (!card.value || !template.value || !model.value) return
+  if (!card.value || !template.value || !model.value) {
+    return
+  }
 
   card.value.did = selectedDeck.value
   template.value.qfmt = front.value
@@ -102,9 +110,7 @@ const onSave = async () => {
   model.value.css = css.value
 
   await card.value.save()
-  await wankidb.models.put(model.value)
-
-  await router.push({ path: '/card/info', query: { cardid: card.value.id } })
+  await wankidb.models.put(toRaw(model.value))
 }
 </script>
 
