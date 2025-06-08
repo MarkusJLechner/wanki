@@ -104,6 +104,11 @@ const routes: RouteRecordRaw[] = [
     name: 'Reviewing',
     component: () => import('pages/Settings/Reviewing.vue'),
   },
+  {
+    path: '/setting/wanki/fsrs',
+    name: 'FsrsSettings',
+    component: () => import('pages/Settings/Fsrs.vue'),
+  },
 ]
 
 const router = createRouter({

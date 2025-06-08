@@ -1,6 +1,7 @@
 import { wankidb } from '@/plugins/wankidb/db'
 import type { ColTableType, DconfTableType } from '@/plugins/wankidb/db'
 import { now } from '@/plugins/time'
+import { toRaw } from 'vue'
 
 export async function cardDeckConfig(
   card: unknown,
@@ -74,7 +75,11 @@ export async function getConf<T>(
     console.error('No collection found')
     return fallback as T
   }
-  const conf = col.conf as unknown as Record<string, unknown>
+  let conf = col.conf as unknown as Record<string, unknown>
+  if (typeof conf === 'string') {
+    conf = JSON.parse(conf)
+  }
+
   return key ? ((conf[key] ?? fallback) as T) : conf
 }
 
@@ -87,8 +92,11 @@ export async function setConf<T>(
     throw new Error('No collection found or conf is undefined')
   }
 
-  const conf = col.conf as unknown as Record<string, unknown>
-  conf[key] = value
+  let conf = col.conf as unknown as Record<string, unknown>
+  if (typeof conf === 'string') {
+    conf = JSON.parse(conf)
+  }
+  conf[key] = toRaw(value)
 
   await col.save()
   return conf

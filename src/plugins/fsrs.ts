@@ -1,11 +1,38 @@
-import { fsrs, type Grade, Rating, State } from 'ts-fsrs'
+import {
+  fsrs,
+  type Grade,
+  Rating,
+  State,
+  generatorParameters,
+  type FSRSParameters,
+} from 'ts-fsrs'
 import { wankidb } from '@/plugins/wankidb/db'
 import type { Card } from '@/plugins/wankidb/Card'
 import { CardType, QueueType } from '@/plugins/consts'
-import { creationTimestamp, getConf } from '@/plugins/collection'
+import { creationTimestamp, getConf, setConf } from '@/plugins/collection'
 import { now } from '@/plugins/time'
 
-const scheduler = fsrs()
+let scheduler = fsrs()
+let parameters: FSRSParameters = generatorParameters()
+
+async function loadParameters() {
+  const conf = (await getConf<FSRSParameters>('fsrs', null)) || null
+  parameters = conf || generatorParameters()
+  scheduler = fsrs(parameters)
+}
+
+void loadParameters()
+
+export async function getParameters(): Promise<FSRSParameters> {
+  await loadParameters()
+  return parameters
+}
+
+export async function saveParameters(p: FSRSParameters): Promise<void> {
+  parameters = p
+  await setConf('fsrs', parameters)
+  scheduler = fsrs(parameters)
+}
 
 function cardTypeToState(
   type: (typeof CardType)[keyof typeof CardType] | undefined,

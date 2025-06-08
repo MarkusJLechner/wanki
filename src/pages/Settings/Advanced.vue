@@ -10,5 +10,15 @@
 import TheHeader from '@/components/TheHeader.vue'
 import List from '@/components/List.vue'
 
-const listItems: any[] = []
+interface ListItem {
+  text: string
+  route: string
+}
+
+const listItems: ListItem[] = [
+  {
+    text: 'FSRS parameters',
+    route: '/setting/wanki/fsrs',
+  },
+]
 </script>
