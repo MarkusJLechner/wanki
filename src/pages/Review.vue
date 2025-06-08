@@ -16,6 +16,7 @@
           { value: 'enable-whiteboard', text: 'Enable whiteboard' },
           { value: 'add-note', text: 'Add note' },
           { value: 'edit-tags', text: 'Edit tags' },
+          { value: 'edit-card', text: 'Edit card' },
           { value: 'replay-audio', text: 'Replay audio' },
           { value: 'suspend-card', text: 'Suspend card' },
           { value: 'delete-note', text: 'Delete note' },
@@ -83,6 +84,7 @@ import type { Deck } from 'plugins/wankidb/Deck.ts'
 import type { Card } from 'plugins/wankidb/Card.ts'
 import { refstorage } from '@/store/globalstate'
 import { getTimeOffset } from '@/plugins/time'
+import type { ItemButtonOption } from 'components/ButtonOptions.ts'
 
 const router = useRouter()
 const route = useRoute()
@@ -94,7 +96,7 @@ const debug = computed(() => refstorage.get('testing.debugging', false))
 const showDebugDot = computed(() => getTimeOffset() !== 0)
 const deckid = ref(1)
 const deck = ref<Deck | undefined>(undefined)
-const card = ref(undefined)
+const card = ref<Card | undefined>(undefined)
 const showAnswer = ref(false)
 const timer = ref<Timer | null>(null)
 const timerText = ref('00:00')
@@ -179,9 +181,23 @@ const toggleDebugging = () => {
   refstorage.toggle('testing.debugging')
 }
 
-const onClickOptions = (item) => {
-  if (item?.value === 'undo') {
+const onClickOptions = (item: ItemButtonOption) => {
+  const value = item?.value
+  if (!value) {
+    throw new Error('No value')
+  }
+  if (!card.value) {
+    return
+  }
+
+  if (value === 'undo') {
     void onUndo()
+    return
+  }
+
+  if (value === 'edit-card') {
+    void router.push({ path: '/card/edit', query: { cardid: card.value.id } })
+    return
   }
 }
 

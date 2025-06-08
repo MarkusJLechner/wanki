@@ -64,6 +64,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/CardInfo.vue'),
   },
   {
+    path: '/card/edit',
+    name: 'EditCard',
+    component: () => import('pages/EditCard.vue'),
+  },
+  {
     path: '/:catchAll(.*)',
     component: () => import('pages/Error.vue'),
   },
