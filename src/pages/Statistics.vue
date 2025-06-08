@@ -14,6 +14,20 @@
           <div>Average reviews per active day: {{ averageReviews }}</div>
           <div>Longest streak: {{ longestStreak }} days</div>
         </div>
+        <div>
+          <h3 class="mb-1 text-sm font-semibold">Last 30 days</h3>
+          <SimpleBarGraph :values="last30" />
+        </div>
+        <div>
+          <h3 class="mb-1 text-sm font-semibold">Answer buttons</h3>
+          <SimpleBarGraph :values="easeCounts" />
+          <div class="mt-1 flex justify-between text-xs">
+            <span>Again</span>
+            <span>Hard</span>
+            <span>Good</span>
+            <span>Easy</span>
+          </div>
+        </div>
       </div>
     </MainContent>
   </div>
@@ -26,6 +40,7 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import ContributionCalendar from '@/components/ContributionCalendar.vue'
+import SimpleBarGraph from '@/components/SimpleBarGraph.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 
 interface DayEntry {
@@ -39,6 +54,8 @@ const activeDays = ref(0)
 const firstReview = ref('')
 const averageReviews = ref('0')
 const longestStreak = ref(0)
+const last30 = ref<number[]>([])
+const easeCounts = ref([0, 0, 0, 0])
 
 onMounted(async () => {
   const revlogs = await wankidb.revlog.toArray()
@@ -54,6 +71,9 @@ onMounted(async () => {
     d.setHours(0, 0, 0, 0)
     const k = d.toISOString()
     counts.set(k, (counts.get(k) || 0) + 1)
+    if (rev.ease && rev.ease >= 1 && rev.ease <= 4) {
+      easeCounts.value[rev.ease - 1]++
+    }
   }
   activeDays.value = counts.size
   averageReviews.value = activeDays.value
@@ -79,6 +99,7 @@ onMounted(async () => {
     date.setDate(date.getDate() + 1)
   }
   calendar.value = arr
+  last30.value = arr.slice(-30).map((d) => d.count)
 })
 </script>
 
