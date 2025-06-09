@@ -23,17 +23,9 @@
 <script setup lang="ts">
 import BaseModal from '@/components/BaseModal.vue'
 import InputTextField from '@/components/InputTextField.vue'
+import type { ModalTextfieldProps } from './ModalTextfield.ts'
 
-interface Props {
-  show?: boolean
-  title?: string
-  type?: string | null
-  label?: string
-  placeholder?: string
-  confirm?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<ModalTextfieldProps>(), {
   show: true,
   title: '',
   type: null,

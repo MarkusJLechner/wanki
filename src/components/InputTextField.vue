@@ -30,18 +30,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { nanoid } from 'nanoid'
+import type { InputTextFieldProps } from './InputTextField.ts'
 
-interface Props {
-  modelValue?: string | number
-  label?: string
-  disabled?: boolean
-  autofocus?: boolean
-  type?: string
-  placeholder?: string
-  autocomplete?: string
-}
-
-withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<InputTextFieldProps>(), {
   modelValue: '',
   label: '',
   disabled: false,
