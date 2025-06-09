@@ -63,12 +63,14 @@ const chartOptions = computed(() => {
     options.plugins.datalabels = {
       anchor: 'end',
       align: 'top',
-      formatter: (value: number) => value,
+      formatter: (value: number) => (value === 0 ? null : value),
       font: {
         weight: 'bold',
         size: 12,
       },
       color: '#666',
+      offset: 0,
+      clamp: true,
     }
   }
 
