@@ -1,10 +1,13 @@
 <template>
   <div class="absolute top-0 left-0 z-10 h-full w-full">
-    <div class="fixed bottom-28 w-full px-4">
+    <div class="media-player fixed w-full px-4">
       <ReviewMedia :media-list="computedSoundList" />
     </div>
   </div>
-  <div class="relative h-full w-full">
+  <div
+    class="relative h-full w-full"
+    :class="[{ 'pb-24': computedSoundList.length > 0 }]"
+  >
     <IFrameContainer
       :body-class="computedDarkTheme"
       class="w-full"
@@ -17,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   getMediaFromNote,
   replaceAsync,
@@ -105,8 +108,14 @@ watch(
   },
 )
 
+onMounted(() => {
+  void mountNote()
+})
+
 async function mountNote() {
-  if (!props.card) return
+  if (!props.card) {
+    return
+  }
 
   const template = await props.card.template
   const model = await props.card.model
@@ -223,3 +232,9 @@ declare global {
   }
 }
 </script>
+
+<style scoped>
+.media-player {
+  bottom: min(calc(100vw / 4 + 4.5rem), 11rem);
+}
+</style>

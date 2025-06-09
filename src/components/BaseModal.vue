@@ -10,13 +10,15 @@
   <transition name="slide-open" appear>
     <div
       v-if="modelValue"
+      v-bind="$attrs"
       class="fixed inset-0 z-20 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
     >
       <div
-        class="flex h-full items-center justify-center px-4 pt-4 pb-20 text-center"
+        class="flex h-full text-center"
+        :class="fullscreen ? '' : 'items-center justify-center px-4 pt-4 pb-20'"
       >
         <div
           v-if="modelValue"
@@ -33,12 +35,17 @@
         >
 
         <div
-          class="relative z-50 flex max-h-[85vh] min-w-[20rem] flex-col overflow-hidden rounded-lg bg-white p-1 text-left align-bottom text-gray-800 shadow-xl transition-all dark:bg-gray-700 dark:text-white"
+          class="relative z-50 flex flex-col overflow-hidden bg-white p-1 text-left align-bottom text-gray-800 shadow-xl transition-all dark:bg-gray-700 dark:text-white"
+          :class="
+            fullscreen
+              ? 'h-full w-full rounded-none'
+              : 'max-h-[85vh] min-w-[20rem] rounded-lg'
+          "
         >
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
           <div
             style="box-shadow: rgb(0 0 0 / 6%) 0 2px 20px 10px inset"
-            class="grow overflow-y-auto"
+            class="relative grow overflow-y-auto"
             :class="{ 'p-4': !noGutters, ['' + contentClass]: !!contentClass }"
           >
             <slot />
@@ -77,6 +84,7 @@ interface Props {
   contentClass?: string
   disableConfirm?: boolean
   actions?: Action[]
+  fullscreen?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -89,6 +97,7 @@ const props = withDefaults(defineProps<Props>(), {
   contentClass: '',
   disableConfirm: false,
   actions: undefined,
+  fullscreen: false,
 })
 
 const emit = defineEmits<{

@@ -31,7 +31,7 @@
         @click="onClickRating(button.emit)"
       >
         <span>{{ button.text }}</span>
-        <span v-if="showDue" class="text-xs">{{ due[index] }}</span>
+        <span v-if="showDue && !!due" class="text-xs">{{ due[index] }}</span>
       </div>
     </div>
   </div>
