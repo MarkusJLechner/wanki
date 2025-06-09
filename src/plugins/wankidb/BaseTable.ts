@@ -1,6 +1,7 @@
 // https://github.com/ankidroid/Anki-Android/wiki/Database-Structure
 
 import { type DatabaseNameType, wankidb } from '@/plugins/wankidb/db'
+import { deepToRaw } from 'plugins/utils.ts'
 
 export class BaseTable<COLUMNS extends string[] = string[]> {
   tableName: DatabaseNameType
@@ -55,7 +56,18 @@ export class BaseTable<COLUMNS extends string[] = string[]> {
   }
 
   async save(): Promise<BaseTable<COLUMNS>> {
-    await wankidb[this.tableName].put(this.getObj())
+    const obj = deepToRaw(this.getObj())
+    console.log('Put to table', this.tableName, ':', obj, '\n', '---')
+    try {
+      await wankidb[this.tableName].put(obj)
+    } catch (e) {
+      console.error(
+        `Failed to save to table ${this.tableName}:`,
+        e,
+        '\nObject:',
+        obj,
+      )
+    }
     return this
   }
 }

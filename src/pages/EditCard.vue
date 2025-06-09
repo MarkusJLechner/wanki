@@ -61,8 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, toRaw } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
@@ -70,10 +70,13 @@ import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import BtnPreviewCard from 'components/BtnPreviewCard.vue'
+import { toastSuccess } from 'store/globalstate.ts'
+import type { Card } from 'plugins/wankidb/Card.ts'
 
 const route = useRoute()
+const router = useRouter()
 
-const card = ref<any>(null)
+const card = ref<Card | null>(null)
 const template = ref<any>(null)
 const model = ref<any>(null)
 const decks = ref<any[]>([])
@@ -81,7 +84,6 @@ const selectedDeck = ref<number>(0)
 const front = ref('')
 const back = ref('')
 const css = ref('')
-const showPreview = ref(false)
 const previewCard = ref<any>(null)
 
 const computedIsLoading = computed(
@@ -94,7 +96,8 @@ onMounted(async () => {
     return
   }
 
-  card.value = await wankidb.cards.get({ id: cid })
+  card.value =
+    ((await wankidb.cards.get({ id: cid })) as Card | undefined) ?? null
   if (!card.value) {
     return
   }
@@ -118,10 +121,58 @@ const onSave = async () => {
   card.value.did = selectedDeck.value
   template.value.qfmt = front.value
   template.value.afmt = back.value
-  model.value.css = css.value
 
+  model.value.css = css.value
+  await model.value.save()
+
+  //
+  /*
+  Setting template.value does not set template in card.
+
+  Code in card, where template.value -> card.value.template got its value.
+    get template(): Promise<Template | undefined> {
+    return (async () => {
+      const model = await this.model
+      return model?.tmpls?.[this.ord as number]
+    })()
+  }
+
+  Make a function with "setTemplate" to make it work
+   */
   await card.value.save()
-  await wankidb.models.put(toRaw(model.value))
+
+  toastSuccess('Saved')
+  await router.push(`/review/on?deckid=${selectedDeck.value}`)
+}
+
+const modelFromInputs = async () => {
+  if (!model.value) {
+    throw new Error('Model is undefined')
+  }
+
+  return { ...model.value, css: css.value }
+}
+
+const templateFromInputs = async () => {
+  if (!template.value) {
+    throw new Error('Template is undefined')
+  }
+
+  return { ...template.value, qfmt: front.value, afmt: back.value }
+}
+
+const cardFromInputs = async () => {
+  if (!card.value || !template.value || !model.value) {
+    return
+  }
+
+  return {
+    ...card.value,
+    template: Promise.resolve(templateFromInputs),
+    model: Promise.resolve(modelFromInputs),
+    fields: card.value.fields,
+    note: card.value.note,
+  }
 }
 
 const onPreview = async () => {
@@ -129,20 +180,7 @@ const onPreview = async () => {
     return
   }
 
-  const tempTemplate = {
-    ...template.value,
-    qfmt: front.value,
-    afmt: back.value,
-  }
-  const tempModel = { ...model.value, css: css.value }
-
-  previewCard.value = {
-    ...card.value,
-    template: Promise.resolve(tempTemplate),
-    model: Promise.resolve(tempModel),
-    fields: card.value.fields,
-    note: card.value.note,
-  }
+  previewCard.value = await cardFromInputs()
 }
 </script>
 

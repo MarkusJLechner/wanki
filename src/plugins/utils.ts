@@ -1,3 +1,5 @@
+import { toRaw, isRef, isReactive, isProxy } from 'vue'
+
 export function resolveObjectPath<T, P extends Record<string, unknown>>(
   object: P,
   path: string,
@@ -26,3 +28,23 @@ export const isString = <T = string>(val: unknown): val is T =>
 
 export const isBoolean = <T = boolean>(val: unknown): val is T =>
   typeof val === 'boolean'
+
+export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
+  const objectIterator = (input: any): any => {
+    if (Array.isArray(input)) {
+      return input.map((item) => objectIterator(item))
+    }
+    if (isRef(input) || isReactive(input) || isProxy(input)) {
+      return objectIterator(toRaw(input))
+    }
+    if (input && typeof input === 'object') {
+      return Object.keys(input).reduce((acc, key) => {
+        acc[key as keyof typeof acc] = objectIterator(input[key])
+        return acc
+      }, {} as T)
+    }
+    return input
+  }
+
+  return objectIterator(sourceObj)
+}

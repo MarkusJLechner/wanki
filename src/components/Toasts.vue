@@ -1,19 +1,19 @@
 <template>
-  <div class="jusctify-center fixed top-24 right-2 z-50 flex flex-col">
+  <div class="jusctify-center fixed top-18 right-6 z-50 flex flex-col">
     <transition-group name="list" tag="div">
       <div
-        v-for="(toast, index) in toasts"
-        :key="toast"
-        class="mb-2 flex items-center rounded-lg border-r-4 px-3 py-2 shadow-md backdrop-blur-xs"
+        v-for="toast in toasts"
+        :key="toast.id"
+        class="mb-2 flex cursor-pointer items-center rounded-lg border-r-4 px-3 py-2 shadow-md backdrop-blur-xs"
         :class="{
           'border-blue-700 bg-blue-500/70': toast.type === 'info',
           'border-red-700 bg-red-500/70': toast.type === 'error',
           'border-green-700 bg-green-500/70': toast.type === 'success',
         }"
-        @click="removeToast(index)"
+        @click="removeToast(toast.id)"
       >
         <div
-          class="mr-3 h-6 w-6 rounded-full bg-white text-center"
+          class="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-white"
           :class="{
             'text-blue-500': toast.type === 'info',
             'text-red-500': toast.type === 'error',
@@ -21,7 +21,7 @@
           }"
         >
           <i
-            class="fas fa-check mt-[0.2rem] block text-sm"
+            class="fas fa-check block text-sm"
             :class="{
               'fa-info': toast.type === 'info',
               'fa-times': toast.type === 'error',

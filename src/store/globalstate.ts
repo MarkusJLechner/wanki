@@ -141,7 +141,7 @@ export const addToast = ({
   text,
   timeout = 3,
 }: {
-  type: string
+  type: 'error' | 'success' | 'info'
   text: string
   timeout?: number
 }): void => {
@@ -160,6 +160,18 @@ export const addToast = ({
   setTimeout(() => {
     toasts.value = toasts.value.filter((toast) => toast.id !== id)
   }, timeout * 1000)
+}
+
+export const toastSuccess = (text: string, timeout?: number): void => {
+  addToast({ type: 'success', text, timeout })
+}
+
+export const toastError = (text: string, timeout?: number): void => {
+  addToast({ type: 'error', text, timeout })
+}
+
+export const toastInfo = (text: string, timeout?: number): void => {
+  addToast({ type: 'info', text, timeout })
 }
 
 export const removeToast = (id: string): void => {
