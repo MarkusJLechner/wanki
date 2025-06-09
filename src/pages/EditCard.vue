@@ -59,25 +59,7 @@
       </div>
     </MainContent>
 
-    <BaseModal
-      :model-value="showPreview"
-      title="Preview"
-      fullscreen
-      no-gutters
-      @close="showPreview = false"
-    >
-      <div class="flex h-full flex-col">
-        <div class="grow">
-          <ReviewContainer :show-answer="showAnswer" :card="previewCard" />
-        </div>
-        <ButtonsReview
-          class="z-20"
-          :show-rating="showAnswer"
-          @show="onShowPreview"
-          @rating="onRatingPreview"
-        />
-      </div>
-    </BaseModal>
+    <CardPreviewModal v-model="showPreview" :card="previewCard" />
   </div>
 </template>
 
@@ -88,10 +70,8 @@ import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
-import BaseModal from '@/components/BaseModal.vue'
 import Button from '@/components/Button.vue'
-import ReviewContainer from '@/components/ReviewContainer.vue'
-import ButtonsReview from '@/components/ButtonsReview.vue'
+import CardPreviewModal from '@/components/CardPreviewModal.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 
 const route = useRoute()
@@ -105,7 +85,6 @@ const front = ref('')
 const back = ref('')
 const css = ref('')
 const showPreview = ref(false)
-const showAnswer = ref(false)
 const previewCard = ref<any>(null)
 
 const computedIsLoading = computed(
@@ -171,15 +150,6 @@ const onPreview = async () => {
   console.log('set', previewCard.value)
 
   showPreview.value = true
-  showAnswer.value = false
-}
-
-const onShowPreview = () => {
-  showAnswer.value = true
-}
-
-const onRatingPreview = () => {
-  // no-op in preview
 }
 </script>
 

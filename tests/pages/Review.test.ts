@@ -178,4 +178,18 @@ describe('Review undo', () => {
     expect(wrapper.vm.card?.id).toBe(1)
     expect(wrapper.vm.card?.type).toBe(CardType.New)
   })
+
+  it('shows overview button when no cards remain', async () => {
+    const wrapper = mount(Review, { global: { ...commonGlobal } })
+    await flushPromises()
+
+    await (wrapper.vm as any).onRating(3)
+    await flushPromises()
+
+    const btn = wrapper.find('.review-height div[role="button"]')
+    expect(btn.text()).toBe('To overview')
+
+    await btn.trigger('click')
+    expect(push).toHaveBeenCalledWith({ path: '/' })
+  })
 })

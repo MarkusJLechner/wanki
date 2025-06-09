@@ -1,12 +1,10 @@
 <template>
-  <div class="absolute top-0 left-0 z-10 h-full w-full">
-    <div class="media-player fixed w-full px-4">
-      <ReviewMedia :media-list="computedSoundList" />
-    </div>
+  <div class="media-player fixed bottom-26 w-full px-12">
+    <ReviewMedia :media-list="computedSoundList" />
   </div>
   <div
     class="relative h-full w-full"
-    :class="[{ 'pb-24': computedSoundList.length > 0 }]"
+    :class="[{ 'pb-20': computedSoundList.length > 0 }]"
   >
     <IFrameContainer
       :body-class="computedDarkTheme"
@@ -72,7 +70,9 @@ const computedStyle = computed(() => {
       padding: 0;
     }
     body {
-      padding-bottom: 100px;
+      padding: 12px 12px 100px 12px;
+      overflow: hidden;
+      text-align: center;
     }
     body img {
       max-width: 100%;
@@ -93,7 +93,10 @@ const computedStyle = computed(() => {
       border-radius: 6px;
       border-color: #ffffff52;
     }
-    .card { background-color: inherit !important; }
+    .card {
+      background-color: inherit !important;
+
+    }
     .dark .card { color: white; }
     ${cardStyle.value}
   `
@@ -234,7 +237,7 @@ declare global {
 </script>
 
 <style scoped>
-.media-player {
-  bottom: min(calc(100vw / 4 + 4.5rem), 11rem);
+.preview .media-player {
+  bottom: 10.5rem;
 }
 </style>

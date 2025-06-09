@@ -37,18 +37,24 @@
       />
 
       <div id="review-container" class="relative grow p-3">
-        <ReviewDebug v-if="debug" :card="card" :deck="deck" />
+        <template v-if="card">
+          <ReviewDebug v-if="debug" :card="card" :deck="deck" />
 
-        <DebuggingTimeControls
-          v-if="debug"
-          position="bottom-left"
-          :on-time-change="loadNextCard"
-        />
+          <DebuggingTimeControls
+            v-if="debug"
+            position="bottom-left"
+            :on-time-change="loadNextCard"
+          />
 
-        <ReviewContainer :show-answer="showAnswer" :card="card" />
+          <ReviewContainer :show-answer="showAnswer" :card="card" />
+        </template>
+        <div v-else class="p-4 text-center text-gray-500 dark:text-gray-300">
+          No cards for review
+        </div>
       </div>
 
       <ButtonsReview
+        v-if="card"
         class="z-20"
         :show-rating="showAnswer"
         :show-due="showAnswer"
@@ -56,6 +62,19 @@
         @show="onShow"
         @rating="onRating"
       />
+      <div
+        v-else
+        class="review-height sticky bottom-0 z-20 flex w-full bg-gray-500/50 backdrop-blur-xs select-none"
+      >
+        <div
+          v-ripple
+          role="button"
+          class="flex h-28 w-full items-center justify-center text-white"
+          @click="goOverview"
+        >
+          To overview
+        </div>
+      </div>
     </MainContent>
   </div>
 </template>
@@ -243,6 +262,10 @@ const onUndo = async () => {
 
 const onShow = () => {
   showAnswer.value = true
+}
+
+const goOverview = () => {
+  void router.push({ path: '/' })
 }
 
 const onRating = async (ease) => {
