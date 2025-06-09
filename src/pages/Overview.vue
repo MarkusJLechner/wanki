@@ -151,6 +151,7 @@ import DebuggingTimeControls from '@/components/DebuggingTimeControls.vue'
 import { refstorage } from '@/store/globalstate'
 import ButtonIcon from 'components/ButtonIcon.vue'
 import { getTimeOffset } from '@/plugins/time'
+import { debounce } from 'plugins/utils.ts'
 
 // Build date from Vite environment variable
 const buildDate = __BUILD_DATE__
@@ -237,7 +238,7 @@ function pullToRefresh(): void {
   void updateDeckList()
 }
 
-async function updateDeckList(): Promise<void> {
+const updateDeckList = debounce(async (): Promise<void> => {
   const deckArray = await wankidb.decks.toArray()
   const deckData = await Promise.all(
     deckArray.map(async (deck: any) => {
@@ -279,7 +280,7 @@ async function updateDeckList(): Promise<void> {
   }
 
   decks.value = root // .children
-}
+})
 
 async function fetchAllDecks(): Promise<void> {
   idbAllDecks.value = await (await idbDecks).all()

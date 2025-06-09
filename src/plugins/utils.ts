@@ -48,3 +48,14 @@ export function deepToRaw<T extends Record<string, any>>(sourceObj: T): T {
 
   return objectIterator(sourceObj)
 }
+
+export function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number = 300,
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout>
+  return (...args: Parameters<T>): void => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => fn(...args), delay)
+  }
+}

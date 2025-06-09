@@ -14,6 +14,12 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* Fix for select options in dark mode */
+.dark select option {
+  background-color: #4B5563; /* bg-gray-600 equivalent */
+  color: white;
+}
+
 code {
   @apply inline-block rounded-sm border border-gray-500 px-1 text-sm font-bold;
 }

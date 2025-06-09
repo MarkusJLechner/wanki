@@ -35,6 +35,9 @@
             class="w-full rounded border p-2"
             rows="3"
           ></textarea>
+          <p v-if="fieldErrors[i]" class="mt-1 text-sm text-red-600">
+            {{ fieldErrors[i] }}
+          </p>
         </div>
         <div class="pt-2">
           <Button text="Add" @click="onAdd" :loading="!loaded" />
@@ -68,6 +71,7 @@ const fieldValues = ref<string[]>([])
 const selectedDeck = refstorage.ref('note.add.lastDeck', 0)
 const selectedModel = refstorage.ref('note.add.lastModel', 0)
 const loaded = ref(false)
+const fieldErrors = ref<string[]>([])
 
 onMounted(async () => {
   decks.value = await wankidb.decks.toArray()
@@ -99,9 +103,14 @@ function updateFields() {
   const model = models.value.find((m: any) => m.id === selectedModel.value)
   fields.value = model?.flds || []
   fieldValues.value = fields.value.map(() => '')
+  fieldErrors.value = fields.value.map(() => '')
 }
 
 async function onAdd() {
+  fieldErrors.value = fieldValues.value.map((value) =>
+    !value.trim() ? 'This field is required' : '',
+  )
+  if (fieldErrors.value.some((error) => error)) return
   const model = models.value.find((m: any) => m.id === selectedModel.value)
   if (!model) return
   const noteId = Date.now()
