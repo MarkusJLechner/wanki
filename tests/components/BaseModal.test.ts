@@ -10,7 +10,9 @@ vi.mock('../../src/store/globalstate.ts', () => ({
 
 describe('BaseModal.vue', () => {
   it('emits open and close events', async () => {
-    const wrapper = mount(BaseModal, { props: { modelValue: false } })
+    const wrapper = mount(BaseModal, {
+      props: { modelValue: false, closeOnBack: true },
+    })
     ;(wrapper.vm as any).open()
     expect(wrapper.emitted('open')).toBeTruthy()
     ;(wrapper.vm as any).onClose()

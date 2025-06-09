@@ -4,6 +4,7 @@
     title="Preview"
     fullscreen
     no-gutters
+    close-on-back
     @close="onClose"
   >
     <div class="flex min-h-full flex-col">
