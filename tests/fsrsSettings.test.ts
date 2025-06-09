@@ -1,11 +1,11 @@
-// disable eslint rule to allow var for hoisted mocks
-/* eslint-disable no-var */
 import { describe, it, expect, vi } from 'vitest'
 import { generatorParameters } from 'ts-fsrs'
 
 vi.mock('../src/plugins/wankidb/db', () => ({ wankidb: {} }))
 
+// eslint-disable-next-line no-var
 var setConf: any
+// eslint-disable-next-line no-var
 var getConf: any
 vi.mock('../src/plugins/collection', () => {
   setConf = vi.fn(async () => ({}))
