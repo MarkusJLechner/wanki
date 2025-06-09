@@ -26,6 +26,9 @@
           <div>Active days: {{ activeDays }}</div>
           <div>Average reviews per active day: {{ averageReviews }}</div>
           <div>Longest streak: {{ longestStreak }} days</div>
+          <div>Unique cards reviewed: {{ uniqueCards }}</div>
+          <div>Total study time: {{ totalTime }} min</div>
+          <div>Average review time: {{ averageTime }} s</div>
         </div>
         <div>
           <h3 class="mb-1 text-sm font-semibold">Last 30 days</h3>
@@ -72,6 +75,9 @@ const activeDays = ref(0)
 const firstReview = ref('')
 const averageReviews = ref('0')
 const longestStreak = ref(0)
+const uniqueCards = ref(0)
+const averageTime = ref('0')
+const totalTime = ref('0')
 const last30 = ref<number[]>([])
 const easeCounts = ref([0, 0, 0, 0])
 
@@ -84,6 +90,8 @@ onMounted(async () => {
     ).toLocaleDateString()
   }
   const counts = new Map<string, number>()
+  const cards = new Set<number>()
+  let timeSum = 0
   for (const rev of revlogs) {
     const d = new Date(rev.id || 0)
     d.setHours(0, 0, 0, 0)
@@ -92,7 +100,14 @@ onMounted(async () => {
     if (rev.ease && rev.ease >= 1 && rev.ease <= 4) {
       easeCounts.value[rev.ease - 1]++
     }
+    if (rev.cid) cards.add(rev.cid)
+    if (typeof rev.time === 'number') timeSum += rev.time
   }
+  uniqueCards.value = cards.size
+  totalTime.value = (timeSum / 60000).toFixed(1)
+  averageTime.value = revlogs.length
+    ? (timeSum / revlogs.length / 1000).toFixed(1)
+    : '0'
   activeDays.value = counts.size
   averageReviews.value = activeDays.value
     ? (totalReviews.value / activeDays.value).toFixed(1)
