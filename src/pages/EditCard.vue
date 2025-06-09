@@ -119,26 +119,18 @@ const onSave = async () => {
   }
 
   card.value.did = selectedDeck.value
+
+  // Update template values
   template.value.qfmt = front.value
   template.value.afmt = back.value
 
+  // Update CSS in model
   model.value.css = css.value
-  await model.value.save()
 
-  //
-  /*
-  Setting template.value does not set template in card.
+  // Use the new setTemplate method to update the template in the card
+  await card.value.setTemplate(template.value)
 
-  Code in card, where template.value -> card.value.template got its value.
-    get template(): Promise<Template | undefined> {
-    return (async () => {
-      const model = await this.model
-      return model?.tmpls?.[this.ord as number]
-    })()
-  }
-
-  Make a function with "setTemplate" to make it work
-   */
+  // Save the card
   await card.value.save()
 
   toastSuccess('Saved')

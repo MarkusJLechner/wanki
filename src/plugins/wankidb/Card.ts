@@ -290,6 +290,14 @@ export class Card extends BaseTable {
     })()
   }
 
+  async setTemplate(template: Template): Promise<void> {
+    const model = await this.model
+    if (model?.tmpls && this.ord !== undefined) {
+      model.tmpls[this.ord] = template
+      await model.save?.()
+    }
+  }
+
   get fields(): Promise<Array<ModelField & { fieldValue: string }>> {
     return (async () => {
       const model = await this.model

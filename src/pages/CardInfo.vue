@@ -2,6 +2,16 @@
   <div>
     <TheHeader title="Card Info" backButton>
       <FlexSpacer />
+      <ButtonIcon
+        v-if="prevCardId !== undefined"
+        icon="fas fa-chevron-left"
+        @click="onPrev"
+      />
+      <ButtonIcon
+        v-if="nextCardId !== undefined"
+        icon="fas fa-chevron-right"
+        @click="onNext"
+      />
       <BtnPreviewCard :card="card" />
       <ButtonIcon icon="fas fa-edit" @click="onEdit" />
       <ThemeSwitcher />
@@ -129,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
@@ -163,6 +173,21 @@ const intervalText = ref('')
 const easePct = ref('')
 const avgTime = ref(0)
 const totalTime = ref(0)
+const cardIds = ref<number[]>([])
+const prevCardId = computed(() => {
+  const index = cardIds.value.indexOf(card.value?.id ?? -1)
+  if (index > 0) {
+    return cardIds.value[index - 1]
+  }
+  return undefined
+})
+const nextCardId = computed(() => {
+  const index = cardIds.value.indexOf(card.value?.id ?? -1)
+  if (index >= 0 && index < cardIds.value.length - 1) {
+    return cardIds.value[index + 1]
+  }
+  return undefined
+})
 
 function formatDate(ts: number) {
   return new Date(ts).toLocaleString()
@@ -206,8 +231,7 @@ function stripCard(html: string): string {
   return result
 }
 
-onMounted(async () => {
-  const cid = +(route.query.cardid as string) || 0
+async function loadCard(cid: number) {
   if (!cid) return
 
   card.value = await wankidb.cards.get({ id: cid })
@@ -217,6 +241,9 @@ onMounted(async () => {
   deck.value = await card.value.deck
   const model = await card.value.model
   modelName.value = model?.name || ''
+
+  const deckCards = await wankidb.cards.where({ did: card.value.did }).toArray()
+  cardIds.value = deckCards.map((c) => c.id as number).sort((a, b) => a - b)
 
   const dueDate = await card.value.dueDate
   due.value = formatDate(dueDate.getTime())
@@ -232,7 +259,36 @@ onMounted(async () => {
       revlogs.value.reduce((a, b) => a + (b.time || 0), 0) / 1000
     avgTime.value = totalTime.value / revlogs.value.length
   }
+}
+
+onMounted(() => {
+  void loadCard(+(route.query.cardid as string) || 0)
 })
+
+watch(
+  () => route.query.cardid,
+  (val) => {
+    void loadCard(+val!)
+  },
+)
+
+function onPrev() {
+  if (prevCardId.value !== undefined) {
+    void router.replace({
+      path: '/card/info',
+      query: { cardid: prevCardId.value },
+    })
+  }
+}
+
+function onNext() {
+  if (nextCardId.value !== undefined) {
+    void router.replace({
+      path: '/card/info',
+      query: { cardid: nextCardId.value },
+    })
+  }
+}
 </script>
 
 <style scoped></style>
