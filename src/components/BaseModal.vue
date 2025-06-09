@@ -85,6 +85,7 @@ interface Props {
   disableConfirm?: boolean
   actions?: Action[]
   fullscreen?: boolean
+  closeOnBack?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -98,6 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
   disableConfirm: false,
   actions: undefined,
   fullscreen: false,
+  closeOnBack: false,
 })
 
 const emit = defineEmits<{
@@ -111,12 +113,27 @@ const emit = defineEmits<{
 
 const show = ref(false)
 
+const onPopstate = () => {
+  if (show.value) {
+    emit('close')
+    closeModal(true)
+  }
+}
+
 watch(
   () => props.modelValue,
   (newValue) => {
     show.value = !!newValue
     emit('visible', !!newValue)
     modalOpened.value = !!newValue
+    if (props.closeOnBack) {
+      if (show.value) {
+        history.pushState(history.state, document.title, location.href)
+        window.addEventListener('popstate', onPopstate)
+      } else {
+        window.removeEventListener('popstate', onPopstate)
+      }
+    }
   },
   { immediate: true },
 )
@@ -155,7 +172,13 @@ const onConfirm = () => {
   emit('confirm')
 }
 
-const closeModal = () => {
+const closeModal = (fromPop = false): void => {
+  if (props.closeOnBack) {
+    window.removeEventListener('popstate', onPopstate)
+    if (!fromPop) {
+      history.back()
+    }
+  }
   emit('update:modelValue', false)
   show.value = false
 }
