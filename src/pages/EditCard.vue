@@ -160,8 +160,8 @@ const cardFromInputs = async () => {
 
   return {
     ...card.value,
-    template: Promise.resolve(templateFromInputs),
-    model: Promise.resolve(modelFromInputs),
+    template: Promise.resolve(templateFromInputs()),
+    model: Promise.resolve(modelFromInputs()),
     fields: card.value.fields,
     note: card.value.note,
   }
