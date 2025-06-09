@@ -69,6 +69,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/EditCard.vue'),
   },
   {
+    path: '/note/add',
+    name: 'AddNote',
+    component: () => import('pages/AddNote.vue'),
+  },
+  {
     path: '/:catchAll(.*)',
     component: () => import('pages/Error.vue'),
   },

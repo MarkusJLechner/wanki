@@ -18,7 +18,7 @@
       />
     </TheHeader>
 
-    <ButtonFloating :model-value="optionsFloating" />
+    <ButtonFloating :model-value="optionsFloating" @item="onFloatingItem" />
     <DebuggingTimeControls
       v-if="showDebugging"
       position="bottom-left"
@@ -89,6 +89,21 @@
       </ModalDelete>
 
       <BaseModal
+        :model-value="showModalCreateDeck"
+        confirm="Create"
+        title="Create Deck"
+        @confirm="onCreateDeck"
+        @close="showModalCreateDeck = false"
+      >
+        <input-text-field
+          v-model="inputCreateDeck"
+          v-autofocus
+          label="Deck name"
+          @enter="onCreateDeck"
+        />
+      </BaseModal>
+
+      <BaseModal
         :model-value="showModalRename"
         confirm="Rename"
         title="Rename"
@@ -150,6 +165,7 @@ const loading = ref(false)
 const showModalImport = ref(false)
 const showModalDelete = ref(false)
 const showModalRename = ref(false)
+const showModalCreateDeck = ref(false)
 const loadingOnRename = ref(false)
 const loadingOnExport = ref(false)
 // Use computed to reactively get the debugging state from refstorage
@@ -158,6 +174,7 @@ refstorage.init('testing.debugging', false)
 const showDebugging = computed(() => refstorage.get('testing.debugging', false))
 const showDebugDot = computed(() => getTimeOffset() !== 0)
 const inputRename = ref<string>('')
+const inputCreateDeck = ref('')
 const modalOptionsItem = ref<{ deck: Deck } | null>(null)
 const optionsFloating = ref([
   {
@@ -165,8 +182,8 @@ const optionsFloating = ref([
     icon: 'fas fa-cloud-download-alt',
     href: 'https://ankiweb.net/shared/decks/',
   },
-  { text: 'Create deck', icon: 'fas fa-folder-plus' },
-  { text: 'Add note', icon: 'fas fa-plus' },
+  { text: 'Create deck', icon: 'fas fa-folder-plus', value: 'create-deck' },
+  { text: 'Add note', icon: 'fas fa-plus', value: 'add-note' },
 ])
 
 // Computed properties
@@ -305,6 +322,19 @@ function onClick(item: any): void {
   }
 }
 
+function onFloatingItem(item: any): void {
+  switch (item.value) {
+    case 'create-deck':
+      showModalCreateDeck.value = true
+      break
+    case 'add-note':
+      void router.push({ path: '/note/add' })
+      break
+    default:
+      break
+  }
+}
+
 function onDeck(item: any): void {
   console.log(item)
 
@@ -325,6 +355,8 @@ async function onDelete(): Promise<void> {
   showModalDelete.value = false
 
   modalOptionsItem.value = null
+
+  void updateDeckList()
 }
 
 async function onExport(): Promise<void> {
@@ -377,8 +409,32 @@ async function onRename(): Promise<void> {
   console.log(inputRename.value)
 
   showModalRename.value = false
-
   loadingOnRename.value = false
+}
+
+async function onCreateDeck(): Promise<void> {
+  const name = inputCreateDeck.value.trim()
+  if (!name) {
+    return
+  }
+  const nowSec = Math.floor(Date.now() / 1000)
+  await wankidb.decks.put({
+    id: Date.now(),
+    name,
+    mod: nowSec,
+    usn: 0,
+    newToday: [0, 0],
+    revToday: [0, 0],
+    lrnToday: [0, 0],
+    timeToday: [0, 0],
+    dyn: 0,
+    conf: 1,
+    desc: '',
+  } as any)
+  showModalCreateDeck.value = false
+  inputCreateDeck.value = ''
+
+  void updateDeckList()
 }
 
 function closeImport(): void {

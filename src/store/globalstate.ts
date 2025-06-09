@@ -81,8 +81,8 @@ export const refstorage = {
     )
   },
 
-  ref: (key: StorageKey): Ref<unknown> => {
-    refstorage.init(key)
+  ref: (key: StorageKey, Default?: unknown): Ref<unknown> => {
+    refstorage.init(key, Default)
     return storeItemSubscribers[key]
   },
 

@@ -33,6 +33,8 @@ export interface DefaultSettings extends Record<string, unknown> {
 
 export type StorageKey =
   | 'darkTheme'
+  | 'note.add.lastDeck'
+  | 'note.add.lastModel'
   | 'deck.options.new.perDay'
   | 'deck.options.rev.perDay'
   | 'deck.options.new.ignoreReviewLimit'

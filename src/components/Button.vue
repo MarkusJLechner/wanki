@@ -20,6 +20,6 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   text: '',
-  loading: true,
+  loading: false,
 })
 </script>

@@ -47,7 +47,12 @@ interface ButtonItem {
   text: string
   icon: string
   href?: string
+  value?: string
 }
+
+const emit = defineEmits<{
+  item: [item: ButtonItem]
+}>()
 
 const props = withDefaults(
   defineProps<{
@@ -77,7 +82,8 @@ const onClick = () => {
   }
 }
 
-const onClickItem = (_item: ButtonItem) => {
+const onClickItem = (item: ButtonItem) => {
+  emit('item', item)
   onClose()
 }
 
