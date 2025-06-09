@@ -32,16 +32,34 @@
         </div>
         <div>
           <h3 class="mb-1 text-sm font-semibold">Last 30 days</h3>
-          <BarChart :values="last30" />
+          <BarChart
+            :values="last30"
+            :dates="last30Dates"
+            :show-labels="true"
+            :show-values="true"
+          />
         </div>
         <div>
           <h3 class="mb-1 text-sm font-semibold">Answer buttons</h3>
-          <BarChart :values="easeCounts" />
+          <BarChart :values="easeCounts" :show-values="true" />
           <div class="mt-1 flex justify-between text-xs">
             <span>Again</span>
             <span>Hard</span>
             <span>Good</span>
             <span>Easy</span>
+          </div>
+        </div>
+        <div>
+          <h3 class="mb-1 text-sm font-semibold">
+            Review Time Distribution (min)
+          </h3>
+          <BarChart :values="reviewTimeDistribution" :show-values="true" />
+          <div class="mt-1 flex justify-between text-xs">
+            <span>0-1</span>
+            <span>1-2</span>
+            <span>2-5</span>
+            <span>5-10</span>
+            <span>&gt;10</span>
           </div>
         </div>
       </div>
@@ -79,7 +97,9 @@ const uniqueCards = ref(0)
 const averageTime = ref('0')
 const totalTime = ref('0')
 const last30 = ref<number[]>([])
+const last30Dates = ref<Date[]>([])
 const easeCounts = ref([0, 0, 0, 0])
+const reviewTimeDistribution = ref<number[]>([0, 0, 0, 0, 0]) // 0-1min, 1-2min, 2-5min, 5-10min, >10min
 
 onMounted(async () => {
   const revlogs = await wankidb.revlog.toArray()
@@ -132,7 +152,25 @@ onMounted(async () => {
     date.setDate(date.getDate() + 1)
   }
   calendar.value = arr
-  last30.value = arr.slice(-30).map((d) => d.count)
+
+  // Get the last 30 days data with dates
+  const last30Data = arr.slice(-30)
+  last30.value = last30Data.map((d) => d.count)
+  last30Dates.value = last30Data.map((d) => d.date)
+
+  // Calculate review time distribution
+  const timeDistribution = [0, 0, 0, 0, 0]
+  for (const rev of revlogs) {
+    if (typeof rev.time === 'number') {
+      const timeInMinutes = rev.time / 60000
+      if (timeInMinutes <= 1) timeDistribution[0]++
+      else if (timeInMinutes <= 2) timeDistribution[1]++
+      else if (timeInMinutes <= 5) timeDistribution[2]++
+      else if (timeInMinutes <= 10) timeDistribution[3]++
+      else timeDistribution[4]++
+    }
+  }
+  reviewTimeDistribution.value = timeDistribution
 })
 </script>
 

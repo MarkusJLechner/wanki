@@ -21,6 +21,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
     "chart.js": "^3.9.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "dexie": "^4.0.11",
     "dexie-observable": "^4.0.1-beta.13",
     "dexie-syncable": "^4.0.1-beta.13",
