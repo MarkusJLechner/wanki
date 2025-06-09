@@ -6,7 +6,20 @@
     </TheHeader>
     <MainContent>
       <div class="space-y-4 p-4">
-        <ContributionCalendar :days="calendar" />
+        <CalendarHeatmap
+          :dark-mode="darkTheme"
+          :round="8"
+          tooltip-unit="reviews"
+          :range-color="[
+            '#ebedf0',
+            'rgba(0,0,0,0.08)',
+            '#40c463',
+            '#30a14e',
+            '#216e39',
+          ]"
+          :values="calendar"
+          :end-date="new Date()"
+        />
         <div class="space-y-1 text-sm">
           <div>Total reviews: {{ totalReviews }}</div>
           <div>First review: {{ firstReview || '-' }}</div>
@@ -16,11 +29,11 @@
         </div>
         <div>
           <h3 class="mb-1 text-sm font-semibold">Last 30 days</h3>
-          <SimpleBarGraph :values="last30" />
+          <BarChart :values="last30" />
         </div>
         <div>
           <h3 class="mb-1 text-sm font-semibold">Answer buttons</h3>
-          <SimpleBarGraph :values="easeCounts" />
+          <BarChart :values="easeCounts" />
           <div class="mt-1 flex justify-between text-xs">
             <span>Again</span>
             <span>Hard</span>
@@ -39,9 +52,14 @@ import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
-import ContributionCalendar from '@/components/ContributionCalendar.vue'
-import SimpleBarGraph from '@/components/SimpleBarGraph.vue'
+import { CalendarHeatmap } from 'vue3-calendar-heatmap'
+import 'vue3-calendar-heatmap/dist/style.css'
+import 'tippy.js/dist/tippy.css'
+// import 'tippy.js/dist/svg-arrow.css'
+import BarChart from '@/components/BarChart.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+import { refstorage } from 'store/globalstate.ts'
+const darkTheme = refstorage.ref('darkTheme')
 
 interface DayEntry {
   date: Date

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
+    "chart.js": "^3.9.1",
     "dexie": "^4.0.11",
     "dexie-observable": "^4.0.1-beta.13",
     "dexie-syncable": "^4.0.1-beta.13",
@@ -29,10 +30,13 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "sql.js": "^1.13.0",
     "tailwindcss": "^4.1.7",
+    "tippy.js": "^6.3.7",
     "ts-fsrs": "^5.0.0",
     "vue": "^3.5.14",
+    "vue-chart-3": "^3.1.8",
     "vue-router": "^4.5.1",
     "vue-virtual-scroller": "^2.0.0-beta.8",
+    "vue3-calendar-heatmap": "^2.0.5",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
