@@ -2,6 +2,7 @@
   <div>
     <TheHeader title="Card Info" backButton>
       <FlexSpacer />
+      <BtnPreviewCard :card="card" />
       <ButtonIcon icon="fas fa-edit" @click="onEdit" />
       <ThemeSwitcher />
     </TheHeader>
@@ -137,6 +138,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { CardType } from '@/plugins/consts.js'
+import BtnPreviewCard from 'components/BtnPreviewCard.vue'
 
 const route = useRoute()
 const router = useRouter()

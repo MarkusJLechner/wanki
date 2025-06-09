@@ -25,13 +25,14 @@ import { ref } from 'vue'
 import BaseModal from '@/components/BaseModal.vue'
 import ReviewContainer from '@/components/ReviewContainer.vue'
 import ButtonsReview from '@/components/ButtonsReview.vue'
+import type { Card } from 'plugins/wankidb/Card.ts'
 
 interface Props {
   modelValue: boolean
-  card: any
+  card: Card | null
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]

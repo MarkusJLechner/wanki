@@ -56,12 +56,12 @@ export interface ModelField {
 }
 
 export interface Template {
-  name?: string
-  ord?: number
-  qfmt?: string
-  afmt?: string
-  bqfmt?: string
-  bafmt?: string
+  name: string
+  ord: number
+  qfmt: string
+  afmt: string
+  bqfmt: string
+  bafmt: string
   [key: string]: unknown
 }
 

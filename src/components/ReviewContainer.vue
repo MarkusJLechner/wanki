@@ -29,14 +29,7 @@ import { refstorage } from '@/store/globalstate'
 import ReviewMedia from '@/components/ReviewMedia.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { defaultSettings } from 'plugins/defaultSettings.ts'
-
-interface Card {
-  template: Promise<any>
-  model: Promise<any>
-  fields: Promise<any[]>
-  note: Promise<any>
-  [key: string]: any
-}
+import type { Card } from 'plugins/wankidb/Card.ts'
 
 interface Props {
   card?: Card | null
@@ -127,6 +120,10 @@ async function mountNote() {
   window.card = await props.card
   window.note = await props.card.note
   window.model = await props.card.model
+
+  if (!template) {
+    throw new Error('Template not found')
+  }
 
   fieldQuestion.value = parseTemplate(template.qfmt, fields)
   fieldAnswer.value = parseTemplate(template.afmt, [

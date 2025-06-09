@@ -2,6 +2,7 @@
   <div>
     <TheHeader title="Edit Card" back-button>
       <FlexSpacer />
+      <BtnPreviewCard :card="previewCard" @preview="onPreview" />
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
@@ -48,8 +49,6 @@
       <div
         class="sticky right-0 bottom-0 left-0 flex space-x-2 bg-gray-500/50 px-2 backdrop-blur-xs"
       >
-        <Button class="grow" text="Preview" @click="onPreview" />
-
         <Button
           class="grow"
           text="Save"
@@ -58,8 +57,6 @@
         />
       </div>
     </MainContent>
-
-    <CardPreviewModal v-model="showPreview" :card="previewCard" />
   </div>
 </template>
 
@@ -71,8 +68,8 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
-import CardPreviewModal from '@/components/CardPreviewModal.vue'
 import { wankidb } from '@/plugins/wankidb/db'
+import BtnPreviewCard from 'components/BtnPreviewCard.vue'
 
 const route = useRoute()
 
@@ -146,10 +143,6 @@ const onPreview = async () => {
     fields: card.value.fields,
     note: card.value.note,
   }
-
-  console.log('set', previewCard.value)
-
-  showPreview.value = true
 }
 </script>
 
