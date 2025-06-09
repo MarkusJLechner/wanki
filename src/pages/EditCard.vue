@@ -126,6 +126,7 @@ const onSave = async () => {
 
   // Update CSS in model
   model.value.css = css.value
+  await model.value.save()
 
   // Use the new setTemplate method to update the template in the card
   await card.value.setTemplate(template.value)
