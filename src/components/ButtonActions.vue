@@ -16,9 +16,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Spacer from '@/components/Spacer.vue'
 import Button from '@/components/Button.vue'
 import type { Action } from '@/components/ButtonActions'
+
+const { t } = useI18n()
 
 interface Props {
   confirm?: boolean | string
@@ -33,8 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
   confirm: false,
   disableConfirm: false,
   loading: true,
-  confirmText: 'Confirm',
-  cancelText: 'Cancel',
+  confirmText: undefined,
+  cancelText: undefined,
 })
 
 const emit = defineEmits<{
@@ -68,14 +71,16 @@ const computedActions = computed<Action[]>(() => {
           action.text = () => {
             return typeof props.cancelText === 'function'
               ? props.cancelText()
-              : props.cancelText
+              : (props.cancelText ?? t('Cancel'))
           }
         }
         return action
       }),
       {
         text:
-          typeof props.confirm === 'string' ? props.confirm : props.confirmText,
+          typeof props.confirm === 'string'
+            ? props.confirm
+            : (props.confirmText ?? t('Confirm')),
         emit: 'confirm',
       },
     ]

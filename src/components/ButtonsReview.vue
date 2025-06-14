@@ -13,7 +13,7 @@
       class="flex w-full items-center justify-center text-white"
       @click="onShow"
     >
-      Show Answers
+      {{ t('Show Answers') }}
     </div>
     <div v-else class="grid w-full grid-cols-4 justify-items-stretch">
       <div
@@ -39,7 +39,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Ease } from '@/plugins/consts'
+
+const { t } = useI18n()
 
 interface Button {
   text: string
@@ -65,10 +68,10 @@ const emit = defineEmits<{
 }>()
 
 const buttons = ref<Button[]>([
-  { text: 'AGAIN', color: 'red', emit: Ease.One },
-  { text: 'HARD', color: 'gray', emit: Ease.Two },
-  { text: 'GOOD', color: 'green', emit: Ease.Three },
-  { text: 'EASY', color: 'blue', emit: Ease.Four },
+  { text: t('AGAIN'), color: 'red', emit: Ease.One },
+  { text: t('HARD'), color: 'gray', emit: Ease.Two },
+  { text: t('GOOD'), color: 'green', emit: Ease.Three },
+  { text: t('EASY'), color: 'blue', emit: Ease.Four },
 ])
 
 const onShow = (): void => {
