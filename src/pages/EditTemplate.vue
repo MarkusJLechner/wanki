@@ -7,6 +7,19 @@
     </TheHeader>
     <MainContent>
       <div v-if="!computedIsLoading" class="space-y-4 p-4 pb-10">
+        <div>
+          <label class="mb-1 block text-sm font-bold">Fields</label>
+          <div
+            v-for="(f, i) in fields"
+            :key="i"
+            class="flex items-center space-x-2"
+          >
+            <InputTextField v-model="f.name" class="grow" />
+            <ButtonIcon icon="fas fa-trash" @click="removeField(i)" />
+          </div>
+          <Button text="Add Field" @click="addField" />
+        </div>
+        <hr />
         <div v-for="(tmpl, i) in templates" :key="i" class="space-y-4">
           <div>
             <label class="mb-1 block text-sm font-bold"
@@ -22,6 +35,7 @@
           </div>
           <hr class="my-4" />
         </div>
+        <Button text="Add Template" @click="addTemplate" />
         <div>
           <label class="mb-1 block text-sm font-bold">CSS</label>
           <CodeEditor v-model="css" language="css" class="w-full" />
@@ -52,7 +66,9 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 import CodeEditor from '@/components/CodeEditor.vue'
+import InputTextField from '@/components/InputTextField.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import BtnPreviewCard from 'components/BtnPreviewCard.vue'
 import { toastSuccess } from 'store/globalstate.ts'
@@ -64,6 +80,7 @@ const router = useRouter()
 const card = ref<Card | null>(null)
 const model = ref<any>(null)
 const templates = ref<any[]>([])
+const fields = ref<any[]>([])
 const css = ref('')
 const previewCard = ref<any>(null)
 
@@ -86,6 +103,9 @@ onMounted(async () => {
     templates.value = model.value.tmpls
       ? model.value.tmpls.map((t: any) => ({ ...t }))
       : []
+    fields.value = model.value.flds
+      ? model.value.flds.map((f: any) => ({ ...f }))
+      : []
     css.value = model.value.css || ''
   }
 })
@@ -96,12 +116,8 @@ const onSave = async () => {
   }
 
   model.value.css = css.value
-  if (model.value.tmpls) {
-    for (let i = 0; i < templates.value.length; i++) {
-      model.value.tmpls[i].qfmt = templates.value[i].qfmt
-      model.value.tmpls[i].afmt = templates.value[i].afmt
-    }
-  }
+  model.value.tmpls = templates.value.map((t, i) => ({ ...t, ord: i }))
+  model.value.flds = fields.value.map((f, i) => ({ ...f, ord: i }))
   await model.value.save()
 
   toastSuccess('Saved')
@@ -112,9 +128,11 @@ const modelFromInputs = async () => {
   if (!model.value) {
     throw new Error('Model is undefined')
   }
-  const newModel: any = { ...model.value, css: css.value }
-  if (model.value.tmpls) {
-    newModel.tmpls = templates.value.map((t) => ({ ...t }))
+  const newModel: any = {
+    ...model.value,
+    css: css.value,
+    tmpls: templates.value.map((t, i) => ({ ...t, ord: i })),
+    flds: fields.value.map((f, i) => ({ ...f, ord: i })),
   }
   return newModel
 }
@@ -125,12 +143,18 @@ const cardFromInputs = async () => {
   }
 
   const tmpl = templates.value[card.value.ord ?? 0]
+  const note = await card.value.note
+  const values = note.flds?.split('\u001f') || []
+  const tmpFields = fields.value.map((f, i) => ({
+    ...f,
+    fieldValue: values[i] || '',
+  }))
   return {
     ...card.value,
     template: Promise.resolve(tmpl),
     model: Promise.resolve(modelFromInputs()),
-    fields: card.value.fields,
-    note: card.value.note,
+    fields: Promise.resolve(tmpFields),
+    note: Promise.resolve(note),
   }
 }
 
@@ -140,6 +164,23 @@ const onPreview = async () => {
   }
 
   previewCard.value = await cardFromInputs()
+}
+
+const addTemplate = () => {
+  templates.value.push({
+    qfmt: '',
+    afmt: '',
+    name: '',
+    ord: templates.value.length,
+  })
+}
+
+const addField = () => {
+  fields.value.push({ name: '', ord: fields.value.length })
+}
+
+const removeField = (index: number) => {
+  fields.value.splice(index, 1)
 }
 </script>
 
