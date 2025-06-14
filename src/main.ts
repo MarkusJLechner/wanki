@@ -1,4 +1,5 @@
 import { createApp, type Plugin } from 'vue'
+import i18n from './plugins/i18n'
 import App from './App.vue'
 import router from './router'
 import './assets/styles/index.css'
@@ -18,6 +19,7 @@ import keepScroll from '@/plugins/directives/keepScroll'
 const app = createApp(App)
 app.use(router)
 app.use(store as Plugin)
+app.use(i18n)
 
 // Register directives
 app.directive('keep-scroll', keepScroll)

@@ -1,13 +1,13 @@
 <template>
   <div>
-    <TheHeader title="Add Note" back-button>
+    <TheHeader :title="t('Add Note')" back-button>
       <FlexSpacer />
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
       <div v-if="loaded" class="space-y-4 p-4">
         <div>
-          <label class="mb-1 block text-sm font-bold">Deck</label>
+          <label class="mb-1 block text-sm font-bold">{{ t('Deck') }}</label>
           <select
             v-model.number="selectedDeck"
             class="w-full rounded border p-2"
@@ -18,7 +18,7 @@
           </select>
         </div>
         <div>
-          <label class="mb-1 block text-sm font-bold">Model</label>
+          <label class="mb-1 block text-sm font-bold">{{ t('Model') }}</label>
           <select
             v-model.number="selectedModel"
             class="w-full rounded border p-2"
@@ -36,10 +36,10 @@
           </p>
         </div>
         <div class="pt-2">
-          <Button text="Add" @click="onAdd" :loading="!loaded" />
+          <Button :text="t('Add')" @click="onAdd" :loading="!loaded" />
         </div>
       </div>
-      <div v-if="!loaded" class="p-4">Loading...</div>
+      <div v-if="!loaded" class="p-4">{{ t('Loading...') }}</div>
     </MainContent>
   </div>
 </template>
@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import TheHeader from '@/components/TheHeader.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
@@ -60,6 +61,7 @@ import { nanoid } from 'nanoid'
 import { refstorage } from 'store/globalstate.ts'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const decks = ref<any[]>([])
 const models = ref<any[]>([])
@@ -105,7 +107,7 @@ function updateFields() {
 
 async function onAdd() {
   fieldErrors.value = fieldValues.value.map((value) =>
-    !value.trim() ? 'This field is required' : '',
+    !value.trim() ? t('This field is required') : '',
   )
   if (fieldErrors.value.some((error) => error)) return
   const model = models.value.find((m: any) => m.id === selectedModel.value)
