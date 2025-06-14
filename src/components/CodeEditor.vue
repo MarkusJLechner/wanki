@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="code-editor w-full rounded border"></div>
+  <div ref="container" class="code-editor w-full rounded border" />
 </template>
 
 <script setup lang="ts">
@@ -23,19 +23,25 @@ const emit = defineEmits(['update:modelValue'])
 
 const container = ref<HTMLElement | null>(null)
 let editor: any
-
-watch(
-  () => props.fontSize,
-  (val) => {
-    if (editor && val) editor.setOptions({ fontSize: val })
-  },
-)
+let resizeObserver: ResizeObserver | null = null
 
 const theme = computed(() =>
   refstorage.get('darkTheme', defaultSettings.darkTheme)
     ? 'github-dark'
     : 'github-light',
 )
+
+const applyAutoGrow = () => {
+  if (!container.value) return
+  const inner = container.value.querySelector('[contenteditable]')
+  if (!inner) return
+  resizeObserver?.disconnect()
+  resizeObserver = new ResizeObserver(() => {
+    if (!container.value || !inner) return
+    container.value.style.height = inner.scrollHeight + 'px'
+  })
+  resizeObserver.observe(inner)
+}
 
 onMounted(() => {
   if (!container.value) return
@@ -45,7 +51,12 @@ onMounted(() => {
     theme: theme.value,
     wordWrap: true,
   })
-  editor.on('update', (val: string) => emit('update:modelValue', val))
+
+  editor.on('update', (val: string) => {
+    emit('update:modelValue', val)
+  })
+
+  setTimeout(applyAutoGrow, 50)
 })
 
 watch(
@@ -61,15 +72,28 @@ watch(theme, (val) => {
   editor?.setOptions({ theme: val })
 })
 
+watch(
+  () => props.fontSize,
+  (val) => {
+    if (editor && val) {
+      editor.setOptions({ fontSize: val })
+    }
+  },
+)
+
 onBeforeUnmount(() => {
   editor?.remove()
+  resizeObserver?.disconnect()
 })
 </script>
 
 <style scoped>
 .code-editor {
-  display: grid;
-  min-height: 6rem;
+  display: block;
+  max-height: 16rem;
+  overflow: hidden;
+  transition: height 0.1s ease;
+  overflow-y: auto;
   font-size: v-bind(fontSize + 'px');
 }
 </style>
