@@ -69,6 +69,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/EditCard.vue'),
   },
   {
+    path: '/template/edit',
+    name: 'EditTemplate',
+    component: () => import('pages/EditTemplate.vue'),
+  },
+  {
     path: '/note/add',
     name: 'AddNote',
     component: () => import('pages/AddNote.vue'),
