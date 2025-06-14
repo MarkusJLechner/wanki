@@ -77,6 +77,13 @@
         </div>
       </div>
     </MainContent>
+    <div
+      v-show="undoProgress > 0"
+      class="pointer-events-none fixed inset-0 z-30 flex items-center pl-6"
+      :style="{ opacity: Math.min(undoProgress, 1) }"
+    >
+      <i class="fas fa-undo text-5xl text-white" />
+    </div>
   </div>
 </template>
 
@@ -105,6 +112,7 @@ import type { Card } from 'plugins/wankidb/Card.ts'
 import { refstorage } from '@/store/globalstate'
 import { getTimeOffset } from '@/plugins/time'
 import type { ItemButtonOption } from 'components/ButtonOptions.ts'
+import { useSwipeGesture } from '@/plugins/useGesture'
 
 const router = useRouter()
 const route = useRoute()
@@ -124,6 +132,11 @@ const timerDuration = ref(0)
 const remaining = ref([0, 0, 0])
 const current = ref(0)
 const dueText = ref<string[]>([])
+const { progress: undoProgress } = useSwipeGesture({
+  direction: 'right',
+  threshold: 100,
+  onTrigger: onUndo,
+})
 
 function formatDue(ms: number): string {
   const sec = Math.max(0, Math.round(ms / 1000))
@@ -236,7 +249,7 @@ const onInfo = () => {
   void router.push({ path: '/card/info', query: { cardid: card.value.id } })
 }
 
-const onUndo = async () => {
+async function onUndo() {
   const entry = undoStack.pop()
   if (!entry) {
     return
