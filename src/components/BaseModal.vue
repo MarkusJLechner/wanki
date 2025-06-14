@@ -39,7 +39,7 @@
           :class="
             fullscreen
               ? 'h-full w-full rounded-none'
-              : 'max-h-[85vh] min-w-[20rem] rounded-lg'
+              : 'max-h-[85dvh] min-w-[20rem] rounded-lg'
           "
         >
           <h1 class="px-4 py-2 font-bold">{{ title }}</h1>
