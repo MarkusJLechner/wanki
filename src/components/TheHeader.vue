@@ -55,8 +55,8 @@ const items: (ListItem & { doNotClose?: boolean })[] = [
     route: '/',
   },
   { icon: 'fas fa-list', text: 'Decks', route: '/' },
-  { icon: 'fas fa-search', text: 'Card Browser', route: 'browser' },
-  { icon: 'fas fa-chart-pie', text: 'Statistics', route: 'statistics' },
+  { icon: 'fas fa-search', text: 'Card Browser', route: '/browser' },
+  { icon: 'fas fa-chart-pie', text: 'Statistics', route: '/statistics' },
   { type: 'seperator' },
   {
     doNotClose: true,
@@ -68,8 +68,8 @@ const items: (ListItem & { doNotClose?: boolean })[] = [
     text: 'Dark mode',
   },
   { icon: 'fas fa-cog', text: 'Settings', route: '/settings/overview' },
-  { icon: 'fas fa-question-circle', text: 'Help', route: 'help' },
-  { icon: 'fas fa-life-ring', text: 'Support Wanki', route: 'support' },
+  { icon: 'fas fa-question-circle', text: 'Help', route: '/help' },
+  { icon: 'fas fa-life-ring', text: 'Support Wanki', route: '/support' },
   {
     icon: 'fas fa-redo-alt',
     text: 'Reload from Server',
