@@ -17,6 +17,7 @@
           { value: 'add-note', text: 'Add note' },
           { value: 'edit-tags', text: 'Edit tags' },
           { value: 'edit-card', text: 'Edit card' },
+          { value: 'edit-template', text: 'Edit template' },
           { value: 'replay-audio', text: 'Replay audio' },
           { value: 'suspend-card', text: 'Suspend card' },
           { value: 'delete-note', text: 'Delete note' },
@@ -216,6 +217,14 @@ const onClickOptions = (item: ItemButtonOption) => {
 
   if (value === 'edit-card') {
     void router.push({ path: '/card/edit', query: { cardid: card.value.id } })
+    return
+  }
+
+  if (value === 'edit-template') {
+    void router.push({
+      path: '/template/edit',
+      query: { cardid: card.value.id },
+    })
     return
   }
 }

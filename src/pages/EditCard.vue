@@ -3,6 +3,7 @@
     <TheHeader title="Edit Card" back-button>
       <FlexSpacer />
       <BtnPreviewCard :card="previewCard" @preview="onPreview" />
+      <ButtonIcon icon="fas fa-code" @click="onEditTemplate" />
       <ThemeSwitcher />
     </TheHeader>
     <MainContent>
@@ -18,17 +19,9 @@
             </option>
           </select>
         </div>
-        <div>
-          <label class="mb-1 block text-sm font-bold">Front Template</label>
-          <CodeEditor v-model="front" language="html" class="w-full" />
-        </div>
-        <div>
-          <label class="mb-1 block text-sm font-bold">Back Template</label>
-          <CodeEditor v-model="back" language="html" class="w-full" />
-        </div>
-        <div>
-          <label class="mb-1 block text-sm font-bold">CSS</label>
-          <CodeEditor v-model="css" language="css" class="w-full" />
+        <div v-for="(f, i) in fields" :key="i">
+          <label class="mb-1 block text-sm font-bold">{{ f.name }}</label>
+          <CodeEditor v-model="fieldValues[i]" language="html" class="w-full" />
         </div>
       </div>
 
@@ -57,6 +50,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
 import CodeEditor from '@/components/CodeEditor.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import BtnPreviewCard from 'components/BtnPreviewCard.vue'
 import { toastSuccess } from 'store/globalstate.ts'
@@ -66,18 +60,14 @@ const route = useRoute()
 const router = useRouter()
 
 const card = ref<Card | null>(null)
-const template = ref<any>(null)
-const model = ref<any>(null)
+const note = ref<any>(null)
+const fields = ref<any[]>([])
+const fieldValues = ref<string[]>([])
 const decks = ref<any[]>([])
 const selectedDeck = ref<number>(0)
-const front = ref('')
-const back = ref('')
-const css = ref('')
 const previewCard = ref<any>(null)
 
-const computedIsLoading = computed(
-  () => !card.value || !template.value || !model.value,
-)
+const computedIsLoading = computed(() => !card.value || !note.value)
 
 onMounted(async () => {
   const cid = +(route.query.cardid as string) || 0
@@ -91,78 +81,61 @@ onMounted(async () => {
     return
   }
 
-  template.value = await card.value.template
-  model.value = await card.value.model
-
-  front.value = template.value.qfmt || ''
-  back.value = template.value.afmt || ''
-  css.value = model.value.css || ''
+  note.value = await card.value.note
+  fields.value = await card.value.fields
+  fieldValues.value = fields.value.map((f: any) => f.fieldValue)
 
   decks.value = await wankidb.decks.toArray()
   selectedDeck.value = card.value.did || 0
 })
 
 const onSave = async () => {
-  if (!card.value || !template.value || !model.value) {
+  if (!card.value || !note.value) {
     return
   }
 
   card.value.did = selectedDeck.value
-
-  // Update template values
-  template.value.qfmt = front.value
-  template.value.afmt = back.value
-
-  // Update CSS in model
-  model.value.css = css.value
-  await model.value.save()
-
-  // Use the new setTemplate method to update the template in the card
-  await card.value.setTemplate(template.value)
-
-  // Save the card
   await card.value.save()
+
+  note.value.flds = fieldValues.value.join('\u001f')
+  note.value.sfld = fieldValues.value[0] || ''
+  await note.value.save()
 
   toastSuccess('Saved')
   await router.push(`/review/on?deckid=${selectedDeck.value}`)
 }
 
-const modelFromInputs = async () => {
-  if (!model.value) {
-    throw new Error('Model is undefined')
-  }
-
-  return { ...model.value, css: css.value }
-}
-
-const templateFromInputs = async () => {
-  if (!template.value) {
-    throw new Error('Template is undefined')
-  }
-
-  return { ...template.value, qfmt: front.value, afmt: back.value }
-}
-
 const cardFromInputs = async () => {
-  if (!card.value || !template.value || !model.value) {
+  if (!card.value || !note.value) {
     return
   }
 
+  const tmpNote = { ...note.value, flds: fieldValues.value.join('\u001f') }
+  const tmpFields = fields.value.map((f: any, i: number) => ({
+    ...f,
+    fieldValue: fieldValues.value[i],
+  }))
+
   return {
     ...card.value,
-    template: Promise.resolve(templateFromInputs()),
-    model: Promise.resolve(modelFromInputs()),
-    fields: card.value.fields,
-    note: card.value.note,
+    template: card.value.template,
+    model: card.value.model,
+    fields: Promise.resolve(tmpFields),
+    note: Promise.resolve(tmpNote),
   }
 }
 
 const onPreview = async () => {
-  if (!card.value || !template.value || !model.value) {
+  if (!card.value || !note.value) {
     return
   }
 
   previewCard.value = await cardFromInputs()
+}
+
+const onEditTemplate = () => {
+  if (!card.value) return
+  void router.push({ path: '/template/edit', query: { cardid: card.value.id } })
 }
 </script>
 
