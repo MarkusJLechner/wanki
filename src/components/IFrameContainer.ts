@@ -30,6 +30,7 @@ export default {
     const iframeStyle: Ref<HTMLStyleElement | null> = ref(null)
     let iframeApp: ComponentPublicInstance | null = null
     let resizeObserver: ResizeObserver | null = null
+    const boundListeners: [string, EventListener][] = []
 
     // Function to adjust iframe height based on content
     const adjustIframeHeight = (): void => {
@@ -44,6 +45,31 @@ export default {
 
       iframeBody.value = iframeRef.value.contentDocument.body
       iframeHead.value = iframeRef.value.contentDocument.head
+
+      // Forward touch events from the iframe to the parent document so that
+      // global swipe gestures still work when interacting with the iframe.
+      const forwardTouch = (e: TouchEvent) => {
+        const event = new TouchEvent(e.type, {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          touches: e.touches,
+          targetTouches: e.targetTouches,
+          changedTouches: e.changedTouches,
+          ctrlKey: e.ctrlKey,
+          shiftKey: e.shiftKey,
+          altKey: e.altKey,
+          metaKey: e.metaKey,
+        })
+        document.dispatchEvent(event)
+      }
+
+      ;['touchstart', 'touchmove', 'touchend'].forEach((evt) => {
+        iframeRef.value!.contentWindow!.addEventListener(evt, forwardTouch, {
+          passive: true,
+        })
+        boundListeners.push([evt, forwardTouch])
+      })
 
       const el = document.createElement('div')
       if (iframeBody.value) {
@@ -117,6 +143,12 @@ export default {
       // Clean up observers
       if (resizeObserver) {
         resizeObserver.disconnect()
+      }
+
+      if (iframeRef.value && boundListeners.length) {
+        boundListeners.forEach(([evt, listener]) => {
+          iframeRef.value!.contentWindow!.removeEventListener(evt, listener)
+        })
       }
     })
 

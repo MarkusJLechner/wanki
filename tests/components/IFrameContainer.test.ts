@@ -27,6 +27,13 @@ Object.defineProperty(window.HTMLIFrameElement.prototype, 'contentDocument', {
     head: { appendChild: vi.fn() },
   },
 })
+Object.defineProperty(window.HTMLIFrameElement.prototype, 'contentWindow', {
+  writable: true,
+  value: {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  },
+})
 
 const IFrameContainer = (
   await import('../../src/components/IFrameContainer.js')
