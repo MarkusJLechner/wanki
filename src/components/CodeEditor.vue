@@ -1,5 +1,15 @@
 <template>
-  <div ref="container" class="code-editor w-full rounded border" />
+  <div>
+    <div ref="container" class="code-editor w-full rounded border" />
+    <div class="text-right" v-if="props.language === 'html'">
+      <button
+        class="w-full cursor-pointer rounded-b bg-gray-700 py-1 text-sm"
+        @click="formatCode"
+      >
+        Format
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -7,8 +17,11 @@ import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { basicEditor } from 'prism-code-editor/setups'
 import 'prism-code-editor/prism/languages/markup'
 import 'prism-code-editor/prism/languages/css'
+import prettier from 'prettier/standalone'
+import parserHtml from 'prettier/plugins/html'
 import { refstorage } from '@/store/globalstate'
 import { defaultSettings } from 'plugins/defaultSettings'
+import ButtonIcon from 'components/ButtonIcon.vue'
 
 interface Props {
   modelValue: string
@@ -80,6 +93,27 @@ watch(
     }
   },
 )
+
+const formatCode = async () => {
+  if (!editor) return
+  try {
+    const value = editor.value.trim().replaceAll('</br>', '<br />')
+    const formatted = await prettier.format(value, {
+      parser: 'html',
+      plugins: [parserHtml],
+      semi: false,
+      singleQuote: true,
+      tabWidth: 2,
+      trailingComma: 'none',
+      htmlWhitespaceSensitivity: 'css',
+    })
+    editor.setOptions({ value: formatted })
+    emit('update:modelValue', formatted)
+    setTimeout(applyAutoGrow, 50)
+  } catch (e) {
+    console.error('Format error', e)
+  }
+}
 
 onBeforeUnmount(() => {
   editor?.remove()
