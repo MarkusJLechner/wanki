@@ -20,27 +20,15 @@
         </div>
         <div>
           <label class="mb-1 block text-sm font-bold">Front Template</label>
-          <textarea
-            v-model="front"
-            class="w-full rounded border p-2 font-mono"
-            rows="6"
-          ></textarea>
+          <CodeEditor v-model="front" language="html" class="w-full" />
         </div>
         <div>
           <label class="mb-1 block text-sm font-bold">Back Template</label>
-          <textarea
-            v-model="back"
-            class="w-full rounded border p-2 font-mono"
-            rows="6"
-          ></textarea>
+          <CodeEditor v-model="back" language="html" class="w-full" />
         </div>
         <div>
           <label class="mb-1 block text-sm font-bold">CSS</label>
-          <textarea
-            v-model="css"
-            class="w-full rounded border p-2 font-mono"
-            rows="6"
-          ></textarea>
+          <CodeEditor v-model="css" language="css" class="w-full" />
         </div>
       </div>
 
@@ -68,6 +56,7 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
+import CodeEditor from '@/components/CodeEditor.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import BtnPreviewCard from 'components/BtnPreviewCard.vue'
 import { toastSuccess } from 'store/globalstate.ts'

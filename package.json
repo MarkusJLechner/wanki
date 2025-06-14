@@ -29,6 +29,7 @@
     "idb": "^8.0.3",
     "nanoid": "^5.1.5",
     "prettier-plugin-tailwindcss": "^0.6.12",
+    "prism-code-editor": "^4.0.0",
     "sql.js": "^1.13.0",
     "tailwindcss": "^4.1.8",
     "tippy.js": "^6.3.7",

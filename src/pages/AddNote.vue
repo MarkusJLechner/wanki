@@ -30,11 +30,7 @@
         </div>
         <div v-for="(f, i) in fields" :key="i">
           <label class="mb-1 block text-sm font-bold">{{ f.name }}</label>
-          <textarea
-            v-model="fieldValues[i]"
-            class="w-full rounded border p-2"
-            rows="3"
-          ></textarea>
+          <CodeEditor v-model="fieldValues[i]" language="html" class="w-full" />
           <p v-if="fieldErrors[i]" class="mt-1 text-sm text-red-600">
             {{ fieldErrors[i] }}
           </p>
@@ -56,6 +52,7 @@ import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import MainContent from '@/components/MainContent.vue'
 import Button from '@/components/Button.vue'
+import CodeEditor from '@/components/CodeEditor.vue'
 import { wankidb } from '@/plugins/wankidb/db'
 import { CardType, QueueType } from '@/plugins/consts'
 import { now } from '@/plugins/time'
