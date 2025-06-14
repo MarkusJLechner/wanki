@@ -4,7 +4,11 @@ import ReviewAudio from '../../src/components/ReviewAudio.vue'
 import { commonGlobal } from '../common.ts'
 
 vi.mock('../../src/store/globalstate', () => ({
-  refstorage: { getSetting: vi.fn().mockReturnValue(false) },
+  refstorage: {
+    getSetting: vi.fn().mockReturnValue(false),
+    get: vi.fn().mockReturnValue('en'),
+    ref: vi.fn().mockReturnValue({ value: 'en' }),
+  },
 }))
 vi.mock('../../src/plugins/defaultSettings', () => ({
   defaultSettings: {

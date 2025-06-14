@@ -9,6 +9,7 @@ interface GeneralSettings {
     default: string
     items: Array<{ text: string; value: string }>
   }
+  language: { key: string; default: string }
 }
 
 interface ReviewingSettings {
@@ -48,6 +49,7 @@ export type StorageKey =
   | 'setting.reviewing.autoPlayAudioDelay'
   | 'setting.reviewing.alignAudioButtonsRight'
   | 'setting.general.vibrate'
+  | 'setting.general.language'
   | 'testing.timeOffset'
   | 'testing.debugging'
 
@@ -66,6 +68,7 @@ export const defaultSettings: DefaultSettings = {
     shareFeature: false,
     blinkLight: false,
     vibrate: { key: 'setting.general.vibrate', default: true },
+    language: { key: 'setting.general.language', default: 'en' },
     useCard: {
       default: 'current-deck',
       items: [{ text: 'Use current deck', value: 'current-deck' }],

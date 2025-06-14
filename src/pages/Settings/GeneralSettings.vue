@@ -1,20 +1,21 @@
 <template>
   <div>
-    <TheHeader title="General Settings" back-button>
+    <TheHeader :title="t('General Settings')" back-button>
       <FlexSpacer />
+      <LanguageSwitcher />
       <ThemeSwitcher />
     </TheHeader>
 
     <MainContent>
-      <Group value="Sync">
+      <Group :value="t('Sync')">
         <List :value="listItemsSync" />
       </Group>
 
-      <Group value="Wanki">
+      <Group :value="t('Wanki')">
         <List :value="listItemsWanki" />
       </Group>
 
-      <Group value="Notifications">
+      <Group :value="t('Notifications')">
         <List :value="listItemsNotifications" />
       </Group>
     </MainContent>
@@ -28,7 +29,11 @@ import Group from '@/components/Group.vue'
 import MainContent from '@/components/MainContent.vue'
 import FlexSpacer from '@/components/FlexSpacer.vue'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import { useI18n } from 'vue-i18n'
 import type { ListItem } from 'components/List.ts'
+
+const { t } = useI18n()
 
 const listItemsSync: ListItem[] = [
   {
@@ -72,16 +77,16 @@ const listItemsWanki: ListItem[] = [
     },
   },
   {
-    text: 'Language',
+    text: t('Language'),
     icon: 'fas fa-language',
     radio: {
-      title: 'Language',
+      title: t('Language'),
       key: 'setting.general.language',
-      default: 'english',
+      default: 'en',
       items: [
-        { text: 'English', value: 'english' },
-        { text: 'Deutsch', value: 'german' },
-        { text: '日本語', value: 'japanese' },
+        { text: t('English'), value: 'en' },
+        { text: t('Deutsch'), value: 'de' },
+        { text: t('日本語'), value: 'ja' },
       ],
     },
   },
